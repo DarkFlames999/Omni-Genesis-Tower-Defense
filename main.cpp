@@ -19,6 +19,8 @@ int main()
 {
    sf::RenderWindow window(sf::VideoMode({800, 500}), "Omni-Genesis-Tower-Defense", sf::Style::Titlebar | sf::Style::Close);
    InputHandler inputHandler;
+   inputHandler.ImplementHeldKey(sf::Keyboard::W, 1);
+   inputHandler.ImplementDoubleTap(sf::Keyboard::Num1, 0.5);
 
     sf::RectangleShape rectangle(sf::Vector2f(100.f, 100.f));
     window.setFramerateLimit(60);
@@ -27,8 +29,7 @@ int main()
    {
        sf::Event event;
 
-       inputHandler.ImplementHeldKey(sf::Keyboard::W, 1);
-       inputHandler.ImplementDoubleTap(sf::Keyboard::Num1, 0.5);
+
 
        inputHandler.update(event);
 
