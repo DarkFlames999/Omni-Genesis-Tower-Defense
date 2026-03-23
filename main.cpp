@@ -28,9 +28,7 @@ int main()
    while (window.isOpen())
    {
        sf::Event event;
-
-
-
+       
        inputHandler.update(event);
 
        while (window.pollEvent(event))
