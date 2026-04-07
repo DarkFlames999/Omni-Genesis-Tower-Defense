@@ -32,28 +32,40 @@ bool InputHandler::isDoubleTap(DoubleTapBinding& binding, sf::Event event)
 {
     if (event.type == sf::Event::KeyPressed && event.key.code == binding.key)
     {
-        if (!binding.firstTap)
+        if (!binding.firstTap) //If the first tape hasn't occured yet, it registers it as occured, to allow for the second tap to happen.
         {
             binding.firstTap = true;
             binding.tapCount = 1.f;
             binding.timer.restart();
         }
-        else
+        else if(binding.firstTap && !binding.doubleTapOccured && binding.releaseCount == 1.f)
         {
-            binding.tapCount += 1.f;
-            if (binding.tapCount >= 2.f && binding.timer.getElapsedTime().asSeconds() <= binding.timeToDoubleTap && binding.firstTap)
-            {
-                binding.doubleTapOccured = true;
-                return binding.doubleTapOccured;
-            }
+            binding.tapCount = 2.f;
         }
     }
 
-    if ((binding.timer.getElapsedTime().asSeconds() > binding.timeToDoubleTap) || (binding.firstTap && binding.doubleTapOccured))
+    if(event.type == sf::Event::KeyReleased && event.key.code == binding.key && binding.firstTap && !binding.doubleTapOccured && binding.releaseCount == 0.f && binding.tapCount == 1.f)
+    {
+        binding.releaseCount = 1.f;
+    }
+
+    if (binding.tapCount >= 2.f && binding.releaseCount >= 1.f && binding.firstTap)
+    {
+
+        if(event.type == sf::Event::KeyReleased && event.key.code == binding.key)
+        {
+            binding.releaseCount = 2.f;
+            binding.doubleTapOccured = true;
+            if(binding.doubleTapOccured && binding.releaseCount >= 2.f) {return binding.doubleTapOccured;}
+        }
+    }
+
+    if ((binding.timer.getElapsedTime().asSeconds() > binding.timeToDoubleTap) || (binding.firstTap && binding.doubleTapOccured && binding.releaseCount >= 2.f))// resets if threshhold isn't met in time
     {
         binding.firstTap = false;
         binding.doubleTapOccured = false;
         binding.tapCount = 0.f;
+        binding.releaseCount = 0.f;
         return false;
     }
     return false;

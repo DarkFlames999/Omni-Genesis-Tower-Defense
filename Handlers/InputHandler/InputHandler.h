@@ -20,6 +20,7 @@ struct DoubleTapBinding
     bool firstTap = false;
     bool doubleTapOccured = false;
     float tapCount = 0.f;
+    float releaseCount = 0.f;
     sf::Clock timer;
 };
 
