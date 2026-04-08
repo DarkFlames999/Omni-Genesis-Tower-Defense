@@ -36,6 +36,9 @@
 *.exe
 *.out
 *.app
+game
 
 # debug information files
 *.dwo
+
+game
