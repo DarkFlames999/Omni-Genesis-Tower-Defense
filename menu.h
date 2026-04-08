@@ -1,5 +1,5 @@
-#ifndef BUTTON_H
-#define BUTTON_H
+#ifndef MENU_H
+#define MENU_H
 #include <SFML/Graphics.hpp>
 #include <iostream>
 
@@ -57,5 +57,26 @@ private:
     sf::Font mFont;
 
 };
+ 
+struct Title
+{
+    sf::Font font;
+    sf::Texture titleTexture;
+    sf::Clock textClock;
+    sf::Clock shrinkClock;
+    std::vector<std::string> parts;
+    std::string displayedFirst = "";
+    std::string displayedSecond = "";
+    float titleX = 170.0f;
+    float titleY = 170.0f;
+    float titleSize = 50.0f;
+    bool titleComplete = false;
+    bool startPosition = false;
+    
+    Title(const std::string title);
+    void update(sf::RenderWindow& window);
+    void draw(sf::RenderWindow& window);
+};
 
+void starAnimation(sf::RenderWindow& window);
 #endif

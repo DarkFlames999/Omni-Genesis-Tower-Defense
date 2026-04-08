@@ -1,11 +1,17 @@
 CC = g++
 FLAGS = -Wall -std=c++17
 
-button: main.o button.o
-	$(CC) $(FLAGS) $^ -o button -lsfml-graphics -lsfml-window -lsfml-system
+run: menu
+	./menu
+	
+menu: main.o menu.o
+	$(CC) $(FLAGS) $^ -o menu -lsfml-graphics -lsfml-window -lsfml-system
 
-main.o: main.cpp button.h
+main.o: main.cpp menu.h
 	$(CC) $(FLAGS) -c $< -o main.o
 
-button.o: button.cpp button.h
-	$(CC) $(FLAGS) -c $< -o button.o
+menu.o: menu.cpp menu.h
+	$(CC) $(FLAGS) -c $< -o menu.o
+
+clean: 
+	rm -f *.o menu
