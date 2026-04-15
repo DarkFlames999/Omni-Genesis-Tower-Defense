@@ -62,7 +62,7 @@ Button::Button(std::string s, sf::Vector2f position, sf::Vector2f size, sf::Colo
 }
 
 /**
- * @brief Draws Each individul part of the button
+ * @brief Draws Each individul part of the button (Base, Texture, and Text)
  * 
  * @param target 
  * @param states 

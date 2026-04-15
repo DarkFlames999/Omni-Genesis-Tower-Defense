@@ -28,4 +28,9 @@ protected:
     sf::Vector2f mOrigin;
 };
 
+class Tower: public Entity
+{
+    
+};
+
 #endif

@@ -11,8 +11,10 @@
  * 
  */
 #include <SFML/Graphics.hpp>
+#include "Handlers/InputHandler/InputHandler.h"
 #include <iostream>
-#include "menu.h"
+#include "GUI-Components/menu.h"
+
 int main()
 {
     sf::RenderWindow window(sf::VideoMode(800, 500), "Omni-Genesis/TowerDefense");
@@ -70,8 +72,7 @@ int main()
     }
 
     return 0;
-#include "GUI-Components/button.h"
-#include "Handlers/InputHandler/InputHandler.h"
+}
 
 int main()
 {
