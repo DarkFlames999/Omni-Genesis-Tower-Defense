@@ -73,6 +73,9 @@ int main()
 
     return 0;
 }
+#include "menu.h"
+#include "GUI-Components/button.h"
+#include "Handlers/InputHandler/InputHandler.h"
 
 int main()
 {
