@@ -16,6 +16,9 @@ Button::Button(std::string s, sf::Vector2f position, sf::Vector2f size, sf::Colo
         std::cerr<<"Error opening file\n";
         exit(1);
     }
+        std::cout<<"Error opening file\n";
+        exit(1);
+    }   
     
     //set texture
     mButton.setTexture(mTexture);
@@ -42,6 +45,7 @@ Button::Button(std::string s, sf::Vector2f position, sf::Vector2f size, sf::Colo
     if (!mFont.loadFromFile("Fonts/Norse.ttf"))
     {
         std::cerr<<"Error opening file\n";
+        std::cout<<"Error opening file\n";
         exit(2);
     }
     mText.setFont(mFont);
@@ -144,6 +148,7 @@ void starAnimation(sf::RenderWindow& window)
     //Loading the star texture
     sf::Texture star;
     if(!star.loadFromFile("Sprites/Menu-Textures/Star.png"))
+    if(!star.loadFromFile("Sprites/Button-Textures/Star.png"))
     {
         std::cerr<<"Error opening \"Star.png\" file" << std::endl;
         exit(1);
@@ -229,6 +234,7 @@ Title::Title(const std::string title)
 
     //Load the Title screenshot and set up the sprite for it
     if(!titleTexture.loadFromFile("Sprites/Menu-Textures/Title.png"))
+    if(!titleTexture.loadFromFile("Sprites/Button-Textures/Title.png"))
     {
         std::cerr<<"Error opening \"Title.png\" file" << std::endl;
         exit(1);

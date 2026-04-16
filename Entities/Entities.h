@@ -123,4 +123,9 @@ class Attack: public Entity
         
 };
 
+class Tower: public Entity
+{
+    
+};
+
 #endif
