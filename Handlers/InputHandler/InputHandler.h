@@ -27,17 +27,19 @@ struct DoubleTapBinding
 class InputHandler
 {
 public:
-    InputHandler(){};
-    ~InputHandler(){};
+    InputHandler(){}; //Constructor
+    ~InputHandler(){}; //Destructor
 
+    //Return Type
     bool isHeldKey(HeldKeyBinding& binding, sf::Event event);
     bool isDoubleTap(DoubleTapBinding& binding, sf::Event event);
     void ImplementHeldKey(sf::Keyboard::Key Key, float TimeToHold);
     void ImplementDoubleTap(sf::Keyboard::Key Key, float TimeToDoubleTap);
     void update(sf::Event event);
-
+    
     std::vector<HeldKeyBinding> mHeldKeyBindings;
     std::vector<DoubleTapBinding> mDoubleTapBindings;
+    
 };
 
 

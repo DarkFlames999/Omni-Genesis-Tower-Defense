@@ -37,6 +37,8 @@
 *.out
 *.app
 game
+menu
+tower
 
 # debug information files
 *.dwo
