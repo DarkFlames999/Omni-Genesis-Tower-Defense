@@ -19,6 +19,8 @@
  */
 void Game::activateHandlers(){
     // put code here to call handlers
+    activateInputHandler();
+    activateEntityHandler();
 }
 
 void Game::activateInputHandler(){

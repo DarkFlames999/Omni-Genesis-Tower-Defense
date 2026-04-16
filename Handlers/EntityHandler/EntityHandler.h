@@ -4,6 +4,7 @@
 #include "Entities/Entities.h"
 #include "SFML/Graphics.hpp"
 #include <vector>
+#include <memory>
 
 class EntityHandler
 {
@@ -13,15 +14,13 @@ class EntityHandler
 
         void SpawnEntity();
         void DeleteEntity();
-        void DrawEntities(); //For each entity 
-        void UpdateEntities();
+        
+        void DrawEntities(sf::RenderWindow& window); //For each entity 
+        void UpdateEntities(sf::RenderWindow& window);
 
     private:
-        std::vector<Entity> mEntities;
+        std::vector<std::unique_ptr<Entity>> mEntities;
         
-
-        
-
 };
 
 
