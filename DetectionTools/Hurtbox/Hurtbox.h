@@ -3,7 +3,6 @@
 
 #include <SFML/Graphics.hpp>
 
-class Hitbox;
 
 class Hurtbox : public sf::RectangleShape
 {
