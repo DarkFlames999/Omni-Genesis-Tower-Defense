@@ -18,7 +18,7 @@ int main()
     window.setFramerateLimit(60);
 
     Tower tower;
-    if(!tower.createTower(sf::Vector2f(640.0f, 360.0f)))
+    if(!tower.createTower({400.0f, 400.0f}, {40.0f, 130.0f}, {10.f, 10.f}))
         return -1;
 
     sf::Clock clock;
@@ -34,6 +34,7 @@ int main()
             }
         }
         tower.update(window);
+        window.clear(sf::Color::Black);
         window.draw(tower);
 
         window.display();

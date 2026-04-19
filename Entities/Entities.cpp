@@ -23,7 +23,7 @@
  * @return true 
  * @return false 
  */
-bool Tower::createTower(sf::Vector2f position)
+bool Tower::createTower(sf::Vector2f position, sf::Vector2f size, sf::Vector2f spriteSize)
 {
     //Loading textures for the cannon andthe tower spearately
     if(!mTexture.loadFromFile("Sprites/TowerBase.png"))
@@ -38,26 +38,29 @@ bool Tower::createTower(sf::Vector2f position)
     }
 
     mSprite.setTexture(mTexture);
+    sf::FloatRect baseBounds = mSprite.getLocalBounds();
 
     //Create the base Towers origin and rotation
-    sf::FloatRect baseBounds = mSprite.getLocalBounds();
     mOrigin = {baseBounds.width/2.0f, baseBounds.height/2.0f};
     mSprite.setOrigin(mOrigin);
-    mSprite.setPosition(position);
+    mSprite.setPosition(position.x, position.y-50);
+    mSprite.setScale(spriteSize.x/6, spriteSize.y/6);
 
     //Create the cannons origin and rotation in the top center of the tower base
+    mCannon.setTexture(mCannonTexture);
     sf::FloatRect cannonBounds = mCannon.getLocalBounds();
-    mCannon.setOrigin(cannonBounds.width/2.0f, cannonBounds.height/2.0f);
-    mCannon.setPosition(position);
+    mCannon.setOrigin(cannonBounds.width/2.0f, (cannonBounds.height/2.0f)-45.0f);
+    mCannon.setPosition(position.x+5.f, position.y-115.f);
+    mCannon.setScale(spriteSize.x/6, spriteSize.y/6);
 
     //Shared data
     mPosition = position;
-    mSize = {baseBounds.width, baseBounds.height};
+    mSize = size;
 
     //Hitbox is only on the base of the tower
     mHurtbox.setSize(mSize);
-    mHurtbox.setOrigin(mOrigin);
-    mHurtbox.setPosition(mPosition);
+    mHurtbox.setOrigin(size.x/2-8, size.y/2);
+    mHurtbox.setPosition(position.x, position.y-35);
     mHurtbox.setFillColor(sf::Color::Transparent);
     mHurtbox.setOutlineColor(sf::Color::Red);
     mHurtbox.setOutlineThickness(1.f);
@@ -75,7 +78,17 @@ void Tower::aim(sf::Vector2f target)
     //Follow the mouse cursor around the window
     sf::Vector2f cannonPos = mCannon.getPosition();
     float angle = atan2(target.y - cannonPos.y, target.x - cannonPos.x) * 180 / 3.14159f;
-    mCannon.setRotation(angle+90.0f);
+    mCannon.setRotation(angle + 180.0f);
+
+    //Set boundaries so that it the cannon doesn't clip into the tower
+    if(mCannon.getRotation() >= 210.0f && mCannon.getRotation() < 270.0f)
+    {
+        mCannon.setRotation(210.0f);
+    }
+    if(mCannon.getRotation() >= 270.0f && mCannon.getRotation() < 330.0f)
+    {
+        mCannon.setRotation(330.0f);
+    }
 }
 
 /**
@@ -98,8 +111,8 @@ void Tower::shoot(sf::RenderWindow& window)
  */
 void Tower::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
-    target.draw(mSprite, states);
     target.draw(mCannon, states);
+    target.draw(mSprite, states);
     target.draw(mHurtbox, states);
 }
 

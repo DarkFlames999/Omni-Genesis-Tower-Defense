@@ -33,7 +33,7 @@ class Tower: public Entity
         Tower() = default;
         ~Tower() = default;
 
-        bool createTower(sf::Vector2f position);
+        bool createTower(sf::Vector2f position, sf::Vector2f size, sf::Vector2f spriteSize);
         void aim(sf::Vector2f target);
         void shoot(sf::RenderWindow& window);
         void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
@@ -121,11 +121,6 @@ class Attack: public Entity
         enum class AttackType{ Projectile, AreaOfEffect, Buff, Debuff, Melee } mAttackType;
         enum class MagicType{ Determination, Bravery, Justice, Kindness, Patience, Integrity, Perseverance } mMagicType;
         
-};
-
-class Tower: public Entity
-{
-    
 };
 
 #endif
