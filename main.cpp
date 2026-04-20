@@ -17,9 +17,11 @@ int main()
     sf::RenderWindow window(sf::VideoMode(800,500), "Omni-Genesis/TowerDefense");
     window.setFramerateLimit(60);
 
+    Juvenile Juvenile;
+    Juvenile.createJuvenile(window, {600.0f, 400.0f}, {40.0f, 130.0f}, {30.f, 120.f});
+
     Tower tower;
-    if(!tower.createTower({400.0f, 400.0f}, {40.0f, 130.0f}, {10.f, 10.f}))
-        return -1;
+    tower.createTower({400.0f, 400.0f}, {40.0f, 130.0f}, {10.f, 10.f});
 
     sf::Clock clock;
 
@@ -34,15 +36,14 @@ int main()
             }
         }
         tower.update(window);
+        Juvenile.update(window);
         window.clear(sf::Color::Black);
         window.draw(tower);
-
+        window.draw(Juvenile);
         window.display();
     }
 
-    // sf::RenderWindow window(sf::VideoMode(800, 500), "Omni-Genesis/TowerDefense");
-    // window.setFramerateLimit(60);
-
+//TESTING THE MAIN MENU
     // starAnimation(window);
 
     // Title title("Omni-Genesis/TowerDefense");

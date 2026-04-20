@@ -14,7 +14,6 @@
     }
 
 //ALL TOWER FUNCTIONS
-
 /**
  * @brief Loads all of the tower textures and creates the base and cannon of the tower as 
  separate sprite pieces
@@ -57,7 +56,7 @@ bool Tower::createTower(sf::Vector2f position, sf::Vector2f size, sf::Vector2f s
     mPosition = position;
     mSize = size;
 
-    //Hitbox is only on the base of the tower
+    //Hutbox is only on the base of the tower
     mHurtbox.setSize(mSize);
     mHurtbox.setOrigin(size.x/2-8, size.y/2);
     mHurtbox.setPosition(position.x, position.y-35);
@@ -104,7 +103,7 @@ void Tower::shoot(sf::RenderWindow& window)
 }
 
 /**
- * @brief Literally just drawing the tower, cannon, and the hitbox in the window.
+ * @brief Literally just drawing the tower, cannon, and the hutbox in the window.
  * 
  * @param target 
  * @param states 
@@ -129,5 +128,78 @@ void Tower::update(sf::RenderWindow& window)
 }
 
 //ALL ENEMY FUNCTIONS
+/**
+ * @brief Loads the sprite sheet texture frame-by-frame and creates the base and cannon of the tower as 
+ separate sprite pieces
+ * 
+ * @param position 
+ * @param size 
+ * @return true 
+ * @return false 
+ */
+bool Juvenile::createJuvenile(sf::RenderWindow& window, sf::Vector2f position, sf::Vector2f size, sf::Vector2f spriteSize)
+{
+    if(!mJuveniles.loadFromFile("Sprites/J_Walking.png"))
+    {
+        std::cerr <<"Error opening \"J_Walking.png\"!" << std::endl;
+        return false;
+    }
 
+    mSprite.setTexture(mJuveniles);
+    sf::Vector2u textureSize = mJuveniles.getSize();
+    float frameWidth  = static_cast<float>(textureSize.x) / mFrameCount;
+    float frameHeight = static_cast<float>(textureSize.y);
+
+    float scaleX = spriteSize.x / frameWidth;
+    float scaleY = spriteSize.y / frameHeight;
+    mSprite.setScale(scaleX*3, scaleY);
+
+    // Position in bottom right
+    sf::Vector2u windowSize = window.getSize();
+    mPosition = {
+        windowSize.x - spriteSize.x - 70.f,
+        windowSize.y - spriteSize.y - 40.f
+    };
+    mSprite.setPosition(mPosition);
+
+
+    mSize = {(size.x/2)+60.f, (size.y/2)-40.f};
+    mOrigin = {(size.x/2.f)-20.f, (size.y/2.f)-130.f};
+
+    //Juvenile Hurtbox
+    mHurtbox.setSize(mSize);
+    mHurtbox.setOrigin(mOrigin);
+    mHurtbox.setPosition(mPosition);
+    mHurtbox.setFillColor(sf::Color::Transparent);
+    mHurtbox.setOutlineColor(sf::Color::Red);
+    mHurtbox.setOutlineThickness(1.f);
+
+    return true;
+}
+
+/**
+ * @brief Literally just drawing the juvenile enemy, and the hurtbox in the window.
+ * 
+ * @param target 
+ * @param states 
+ */
+void Enemies::draw(sf::RenderTarget& target, sf::RenderStates states) const
+{
+    target.draw(mSprite, states);
+    target.draw(mHurtbox, states);
+}
+
+void Enemies::update(sf::RenderWindow& window)
+{
+    //All enemy walking animations
+    sf::Vector2u textureSize = mJuveniles.getSize();
+    int frameWidth = textureSize.x / mFrameCount;
+    int frameHeight = textureSize.y;
+    if(mAnimClock.getElapsedTime().asSeconds() >= mFrameTime)
+    {
+        mCurrentFrame = (mCurrentFrame+1)%mFrameCount;
+        mSprite.setTextureRect(sf::IntRect(mCurrentFrame * frameWidth,0,frameWidth,frameHeight));
+        mAnimClock.restart();
+    }
+}
 //ALL BULLET/MAGIC FUNCTIONS
