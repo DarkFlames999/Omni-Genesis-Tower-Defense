@@ -13,7 +13,8 @@ public:
     Entity() {};
     virtual ~Entity() {};
 
-    virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const override = 0;
+    virtual bool loadTextureFromFile(const std::string& filename, sf::Texture& texture);
+    virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const override= 0;
     virtual void update(sf::RenderWindow& window) = 0;
 
 protected:
@@ -65,7 +66,7 @@ class Enemies: public Entity
         sf::Texture mOvergrown;
         sf::Clock mAnimClock;
         int mCurrentFrame = 0;
-        int mFrameCount = 12;
+        int mFrameCount = 0;
         float mFrameTime = 0.1f;
 
         //Enemy stats like movement and health
@@ -92,10 +93,10 @@ class Matured: public Enemies
         Matured() = default;
         ~Matured() = default;
 
+        bool createMatured(sf::RenderWindow& window, sf::Vector2f position, sf::Vector2f size, sf::Vector2f spriteSize);
+
     protected:
-        int mCurrentFrame = 0;
-        int mFrameCount = 12;
-        float mFrameTime = 0.5f;
+
 };
 
 class Overgrown: public Enemies
@@ -103,6 +104,8 @@ class Overgrown: public Enemies
     public:
         Overgrown() = default;
         ~Overgrown() = default;
+
+        bool createOvergrown(sf::RenderWindow& window, sf::Vector2f position, sf::Vector2f size, sf::Vector2f spriteSize);
 
     protected:
         int mCurrentFrame = 0;

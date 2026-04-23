@@ -3,15 +3,25 @@
 #include <cmath>
 
 //ENTITY CLASS FUNCTIONS
-    void draw(sf::RenderWindow& window)
+/**
+ * @brief Loads all possible textures for the different entities and sets the sprite to the texture,
+ * which is used for drawing the entity in the window.    
+ * 
+ * @param filename 
+ * @param texture 
+ * @return true 
+ * @return false 
+ */
+bool Entity::loadTextureFromFile(const std::string& filename, sf::Texture& texture)
+{
+    if(!texture.loadFromFile(filename))
     {
-        
+        std::cerr <<"Error opening \"" << filename << "\"!" << std::endl;
+        return false;
     }
-    
-    void update(sf::RenderWindow& window)
-    {
-        
-    }
+    mSprite.setTexture(texture);
+    return true;
+}
 
 //ALL TOWER FUNCTIONS
 /**
@@ -25,16 +35,8 @@
 bool Tower::createTower(sf::Vector2f position, sf::Vector2f size, sf::Vector2f spriteSize)
 {
     //Loading textures for the cannon andthe tower spearately
-    if(!mTexture.loadFromFile("Sprites/TowerBase.png"))
-    {
-        std::cerr <<"Error opening \"TowerBase.png\"!" << std::endl;
-        return false;
-    }
-    if(!mCannonTexture.loadFromFile("Sprites/Cannon.png"))
-    {
-        std::cerr <<"Error opening \"Cannon.png\"!" << std::endl;
-        return false;
-    }
+    loadTextureFromFile("Sprites/TowerBase.png", mTexture);
+    loadTextureFromFile("Sprites/Cannon.png", mCannonTexture);
 
     mSprite.setTexture(mTexture);
     sf::FloatRect baseBounds = mSprite.getLocalBounds();
@@ -129,8 +131,8 @@ void Tower::update(sf::RenderWindow& window)
 
 //ALL ENEMY FUNCTIONS
 /**
- * @brief Loads the sprite sheet texture frame-by-frame and creates the base and cannon of the tower as 
- separate sprite pieces
+ * @brief Loads the sprite sheet texture and hardcodes the Juvenile enemy with the 
+ * correct position, size, and hurtbox.
  * 
  * @param position 
  * @param size 
@@ -139,11 +141,10 @@ void Tower::update(sf::RenderWindow& window)
  */
 bool Juvenile::createJuvenile(sf::RenderWindow& window, sf::Vector2f position, sf::Vector2f size, sf::Vector2f spriteSize)
 {
-    if(!mJuveniles.loadFromFile("Sprites/J_Walking.png"))
-    {
-        std::cerr <<"Error opening \"J_Walking.png\"!" << std::endl;
-        return false;
-    }
+    mFrameCount = 12;
+    mSpeed = 10;
+    mHealth = 50;
+    loadTextureFromFile("Sprites/J_Walking.png", mJuveniles);
 
     mSprite.setTexture(mJuveniles);
     sf::Vector2u textureSize = mJuveniles.getSize();
@@ -178,6 +179,106 @@ bool Juvenile::createJuvenile(sf::RenderWindow& window, sf::Vector2f position, s
 }
 
 /**
+ * @brief Loads the sprite sheet texture and hardcodes the Matured enemy with the 
+ * correct position, size, and hurtbox.
+ * 
+ * @param window 
+ * @param position 
+ * @param size 
+ * @param spriteSize 
+ * @return true 
+ * @return false 
+ */
+bool Matured::createMatured(sf::RenderWindow& window, sf::Vector2f position, sf::Vector2f size, sf::Vector2f spriteSize)
+{
+    mFrameCount = 8;
+    mSpeed = 20;
+    mHealth = 100;
+    loadTextureFromFile("Sprites/M_Walking.png", mMatured);
+
+    mSprite.setTexture(mMatured);
+    sf::Vector2u textureSize = mMatured.getSize();
+    float frameWidth  = static_cast<float>(textureSize.x) / mFrameCount;
+    float frameHeight = static_cast<float>(textureSize.y);
+
+    float scaleX = spriteSize.x / frameWidth;
+    float scaleY = spriteSize.y / frameHeight;
+    mSprite.setScale(scaleX*3, scaleY);
+
+    // Position in bottom right
+    sf::Vector2u windowSize = window.getSize();
+    mPosition = {
+        windowSize.x - spriteSize.x - 70.f,
+        windowSize.y - spriteSize.y - 40.f
+    };
+    mSprite.setPosition(mPosition);
+
+
+    mSize = {(size.x/2)+60.f, (size.y/2)-40.f};
+    mOrigin = {(size.x/2.f)-20.f, (size.y/2.f)-130.f};
+
+    //Juvenile Hurtbox
+    mHurtbox.setSize(mSize);
+    mHurtbox.setOrigin(mOrigin);
+    mHurtbox.setPosition(mPosition);
+    mHurtbox.setFillColor(sf::Color::Transparent);
+    mHurtbox.setOutlineColor(sf::Color::Red);
+    mHurtbox.setOutlineThickness(1.f);
+
+    return true;
+}
+
+/**
+ * @brief Loads the sprite sheet texture and hardcodes the Overgrown enemy with the 
+ * correct position, size, and hurtbox.
+ * 
+ * @param window 
+ * @param position 
+ * @param size 
+ * @param spriteSize 
+ * @return true 
+ * @return false 
+ */
+// bool Overgrown::createOvergrown(sf::RenderWindow& window, sf::Vector2f position, sf::Vector2f size, sf::Vector2f spriteSize)
+// {
+//     mFrameCount = 7;
+//     mSpeed = 30;
+//     mHealth = 200;
+//     loadTextureFromFile("Sprites/O_Walking.png", mOvergrown);
+
+//     mSprite.setTexture(mOvergrown);
+//     sf::Vector2u textureSize = mOvergrown.getSize();
+//     float frameWidth  = static_cast<float>(textureSize.x) / mFrameCount;
+//     float frameHeight = static_cast<float>(textureSize.y);
+
+//     float scaleX = spriteSize.x / frameWidth;
+//     float scaleY = spriteSize.y / frameHeight;
+//     mSprite.setScale(scaleX*3, scaleY);
+
+//     // Position in bottom right
+//     sf::Vector2u windowSize = window.getSize();
+//     mPosition = {
+//         windowSize.x - spriteSize.x - 70.f,
+//         windowSize.y - spriteSize.y - 40.f
+//     };
+//     mSprite.setPosition(mPosition);
+
+
+//     mSize = {(size.x/2)+60.f, (size.y/2)-40.f};
+//     mOrigin = {(size.x/2.f)-20.f, (size.y/2.f)-130.f};
+
+//     //Juvenile Hurtbox
+//     mHurtbox.setSize(mSize);
+//     mHurtbox.setOrigin(mOrigin);
+//     mHurtbox.setPosition(mPosition);
+//     mHurtbox.setFillColor(sf::Color::Transparent);
+//     mHurtbox.setOutlineColor(sf::Color::Red);
+//     mHurtbox.setOutlineThickness(1.f);
+
+//     return true;
+// }
+
+/**
  * @brief Literally just drawing the juvenile enemy, and the hurtbox in the window.
  * 
  * @param target 
@@ -192,7 +293,7 @@ void Enemies::draw(sf::RenderTarget& target, sf::RenderStates states) const
 void Enemies::update(sf::RenderWindow& window)
 {
     //All enemy walking animations
-    sf::Vector2u textureSize = mJuveniles.getSize();
+    sf::Vector2u textureSize = mSprite.getTexture()->getSize();
     int frameWidth = textureSize.x / mFrameCount;
     int frameHeight = textureSize.y;
     if(mAnimClock.getElapsedTime().asSeconds() >= mFrameTime)
@@ -201,5 +302,9 @@ void Enemies::update(sf::RenderWindow& window)
         mSprite.setTextureRect(sf::IntRect(mCurrentFrame * frameWidth,0,frameWidth,frameHeight));
         mAnimClock.restart();
     }
+
+    mPosition.x -= mSpeed * mMovement.restart().asSeconds();
+    mSprite.setPosition(mPosition);
+    mHurtbox.setPosition(mPosition);
 }
 //ALL BULLET/MAGIC FUNCTIONS

@@ -17,6 +17,12 @@ int main()
     sf::RenderWindow window(sf::VideoMode(800,500), "Omni-Genesis/TowerDefense");
     window.setFramerateLimit(60);
 
+    // Overgrown overgrown;
+    // overgrown.createOvergrown(window, {600.0f, 400.0f}, {40.0f, 130.0f}, {30.f, 120.f});
+
+    Matured matured;
+    matured.createMatured(window, {600.0f, 400.0f}, {40.0f, 130.0f}, {30.f, 120.f});
+
     Juvenile Juvenile;
     Juvenile.createJuvenile(window, {600.0f, 400.0f}, {40.0f, 130.0f}, {30.f, 120.f});
 
@@ -35,11 +41,21 @@ int main()
                 window.close(); 
             }
         }
+
+        float deltaTime = clock.restart().asSeconds();
+        if(deltaTime > 0.1f) deltaTime = 0.1f;
+
         tower.update(window);
         Juvenile.update(window);
+        matured.update(window);
+        // overgrown.update(window);
+
         window.clear(sf::Color::Black);
         window.draw(tower);
         window.draw(Juvenile);
+        window.draw(matured);
+        // window.draw(overgrown);
+
         window.display();
     }
 
