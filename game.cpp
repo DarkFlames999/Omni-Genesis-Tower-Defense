@@ -24,6 +24,7 @@ void Game::activateHandlers(){
 }
 
 void Game::activateInputHandler(){
+    
 
 }
 

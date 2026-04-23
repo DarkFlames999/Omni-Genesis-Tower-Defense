@@ -32,7 +32,7 @@ bool Entity::loadTextureFromFile(const std::string& filename, sf::Texture& textu
  * @return true 
  * @return false 
  */
-bool Tower::createTower(sf::Vector2f position, sf::Vector2f size, sf::Vector2f spriteSize)
+bool Tower::createTower(sf::RenderWindow& window, sf::Vector2f size, sf::Vector2f spriteSize)
 {
     //Loading textures for the cannon andthe tower spearately
     loadTextureFromFile("Sprites/TowerBase.png", mTexture);
@@ -44,24 +44,23 @@ bool Tower::createTower(sf::Vector2f position, sf::Vector2f size, sf::Vector2f s
     //Create the base Towers origin and rotation
     mOrigin = {baseBounds.width/2.0f, baseBounds.height/2.0f};
     mSprite.setOrigin(mOrigin);
-    mSprite.setPosition(position.x, position.y-50);
+    mSprite.setPosition(window.getSize().x/2.f, (window.getSize().y/2.f)+200.f);
     mSprite.setScale(spriteSize.x/6, spriteSize.y/6);
 
     //Create the cannons origin and rotation in the top center of the tower base
     mCannon.setTexture(mCannonTexture);
     sf::FloatRect cannonBounds = mCannon.getLocalBounds();
     mCannon.setOrigin(cannonBounds.width/2.0f, (cannonBounds.height/2.0f)-45.0f);
-    mCannon.setPosition(position.x+5.f, position.y-115.f);
+    mCannon.setPosition(window.getSize().x/2.f+5.f, (window.getSize().y/2.f)+135.f);
     mCannon.setScale(spriteSize.x/6, spriteSize.y/6);
 
     //Shared data
-    mPosition = position;
-    mSize = size;
+    mSize = {size.x+65.f, size.y};
 
     //Hutbox is only on the base of the tower
     mHurtbox.setSize(mSize);
-    mHurtbox.setOrigin(size.x/2-8, size.y/2);
-    mHurtbox.setPosition(position.x, position.y-35);
+    mHurtbox.setOrigin(size.x/2+23.f, size.y/2);
+    mHurtbox.setPosition(window.getSize().x/2.f, (window.getSize().y/2.f)+210.f);
     mHurtbox.setFillColor(sf::Color::Transparent);
     mHurtbox.setOutlineColor(sf::Color::Red);
     mHurtbox.setOutlineThickness(1.f);
@@ -142,7 +141,7 @@ void Tower::update(sf::RenderWindow& window)
 bool Juvenile::createJuvenile(sf::RenderWindow& window, sf::Vector2f position, sf::Vector2f size, sf::Vector2f spriteSize)
 {
     mFrameCount = 12;
-    mSpeed = 10;
+    mSpeed = 30;
     mHealth = 50;
     loadTextureFromFile("Sprites/J_Walking.png", mJuveniles);
 
@@ -162,7 +161,6 @@ bool Juvenile::createJuvenile(sf::RenderWindow& window, sf::Vector2f position, s
         windowSize.y - spriteSize.y - 40.f
     };
     mSprite.setPosition(mPosition);
-
 
     mSize = {(size.x/2)+60.f, (size.y/2)-40.f};
     mOrigin = {(size.x/2.f)-20.f, (size.y/2.f)-130.f};
@@ -217,7 +215,7 @@ bool Matured::createMatured(sf::RenderWindow& window, sf::Vector2f position, sf:
     mSize = {(size.x/2)+60.f, (size.y/2)-40.f};
     mOrigin = {(size.x/2.f)-20.f, (size.y/2.f)-130.f};
 
-    //Juvenile Hurtbox
+    //Matured Hurtbox
     mHurtbox.setSize(mSize);
     mHurtbox.setOrigin(mOrigin);
     mHurtbox.setPosition(mPosition);
@@ -229,7 +227,7 @@ bool Matured::createMatured(sf::RenderWindow& window, sf::Vector2f position, sf:
 }
 
 /**
- * @brief Loads the sprite sheet texture and hardcodes the Overgrown enemy with the 
+ * @brief Loads the sprite sheet texture and hardcodes the Warden enemy with the 
  * correct position, size, and hurtbox.
  * 
  * @param window 
@@ -239,44 +237,44 @@ bool Matured::createMatured(sf::RenderWindow& window, sf::Vector2f position, sf:
  * @return true 
  * @return false 
  */
-// bool Overgrown::createOvergrown(sf::RenderWindow& window, sf::Vector2f position, sf::Vector2f size, sf::Vector2f spriteSize)
-// {
-//     mFrameCount = 7;
-//     mSpeed = 30;
-//     mHealth = 200;
-//     loadTextureFromFile("Sprites/O_Walking.png", mOvergrown);
+bool Warden::createWarden(sf::RenderWindow& window, sf::Vector2f position, sf::Vector2f size, sf::Vector2f spriteSize)
+{
+    mFrameCount = 7;
+    mSpeed = 10;
+    mHealth = 200;
+    loadTextureFromFile("Sprites/W_Walking.png", mWarden);
 
-//     mSprite.setTexture(mOvergrown);
-//     sf::Vector2u textureSize = mOvergrown.getSize();
-//     float frameWidth  = static_cast<float>(textureSize.x) / mFrameCount;
-//     float frameHeight = static_cast<float>(textureSize.y);
+    mSprite.setTexture(mWarden);
+    sf::Vector2u textureSize = mWarden.getSize();
+    float frameWidth  = static_cast<float>(textureSize.x) / mFrameCount;
+    float frameHeight = static_cast<float>(textureSize.y);
 
-//     float scaleX = spriteSize.x / frameWidth;
-//     float scaleY = spriteSize.y / frameHeight;
-//     mSprite.setScale(scaleX*3, scaleY);
+    float scaleX = spriteSize.x / frameWidth;
+    float scaleY = spriteSize.y / frameHeight;
+    mSprite.setScale(scaleX*3, scaleY);
 
-//     // Position in bottom right
-//     sf::Vector2u windowSize = window.getSize();
-//     mPosition = {
-//         windowSize.x - spriteSize.x - 70.f,
-//         windowSize.y - spriteSize.y - 40.f
-//     };
-//     mSprite.setPosition(mPosition);
+    // Position in bottom right
+    sf::Vector2u windowSize = window.getSize();
+    mPosition = {
+        windowSize.x - spriteSize.x - 70.f,
+        windowSize.y - spriteSize.y - 40.f
+    };
+    mSprite.setPosition(mPosition);
 
 
-//     mSize = {(size.x/2)+60.f, (size.y/2)-40.f};
-//     mOrigin = {(size.x/2.f)-20.f, (size.y/2.f)-130.f};
+    mSize = {(size.x/2)+60.f, (size.y/2)-40.f};
+    mOrigin = {(size.x/2.f)-20.f, (size.y/2.f)-130.f};
 
-//     //Juvenile Hurtbox
-//     mHurtbox.setSize(mSize);
-//     mHurtbox.setOrigin(mOrigin);
-//     mHurtbox.setPosition(mPosition);
-//     mHurtbox.setFillColor(sf::Color::Transparent);
-//     mHurtbox.setOutlineColor(sf::Color::Red);
-//     mHurtbox.setOutlineThickness(1.f);
+    //Warden Hurtbox
+    mHurtbox.setSize(mSize);
+    mHurtbox.setOrigin(mOrigin);
+    mHurtbox.setPosition(mPosition);
+    mHurtbox.setFillColor(sf::Color::Transparent);
+    mHurtbox.setOutlineColor(sf::Color::Red);
+    mHurtbox.setOutlineThickness(1.f);
 
-//     return true;
-// }
+    return true;
+}
 
 /**
  * @brief Literally just drawing the juvenile enemy, and the hurtbox in the window.
@@ -290,6 +288,11 @@ void Enemies::draw(sf::RenderTarget& target, sf::RenderStates states) const
     target.draw(mHurtbox, states);
 }
 
+/**
+ * @brief Updates the enemy's position and animation.
+ * 
+ * @param window 
+ */
 void Enemies::update(sf::RenderWindow& window)
 {
     //All enemy walking animations
@@ -306,5 +309,42 @@ void Enemies::update(sf::RenderWindow& window)
     mPosition.x -= mSpeed * mMovement.restart().asSeconds();
     mSprite.setPosition(mPosition);
     mHurtbox.setPosition(mPosition);
+
+    //The enemy stops when it hits the global bounds of the tower  and starts attacking the tower instead of moving
+    if(mPosition.x <= (window.getSize().x/2.f)+50.f)
+    {
+        mPosition.x = (window.getSize().x/2.f)+50.f;
+        mSprite.setPosition(mPosition);
+        mHurtbox.setPosition(mPosition);
+        //Call the attack function for the enemy to start attacking the tower
+        // attack(window);
+    }
 }
-//ALL BULLET/MAGIC FUNCTIONS
+
+//ALL BULLET/MAGIC FUNCTIONS 
+bool Attack::createAttack(sf::Vector2f position, sf::Vector2f direction)
+{
+    mPosition = position;
+    sf::RectangleShape bulletShape;
+    bulletShape.setSize({10.f, 10.f});
+    bulletShape.setOrigin({5.f, 5.f});
+    bulletShape.setPosition(mPosition);
+    bulletShape.setFillColor(sf::Color::Yellow);
+
+    return true;
+}
+
+// void Attack::update(sf::RenderWindow& window)
+// {
+//     //Move the attack in the direction of the velocity
+//     mPosition += mMovementVelocity * mMovement.restart().asSeconds();
+//     mSprite.setPosition(mPosition);
+//     mHurtbox.setPosition(mPosition);
+
+//     //Check if the attack has lasted for its duration and if so, destroy it
+//     if(mDurationClock.getElapsedTime().asSeconds() >= mDuration)
+//     {
+//         //Destroy the attack
+//         // This will be handled in the EntityHandler class by checking if the attack is active or not and removing it from the vector of attacks if it's not active
+//     }
+// }

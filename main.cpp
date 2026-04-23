@@ -11,23 +11,30 @@
 #include <iostream>
 #include "GUI-Components/menu.h"
 #include "Entities/Entities.h"
+#include "Handlers/EntityHandler/EntityHandler.h"
 
 int main()
 {
-    sf::RenderWindow window(sf::VideoMode(800,500), "Omni-Genesis/TowerDefense");
+    sf::RenderWindow window(sf::VideoMode(900,700), "Omni-Genesis/TowerDefense");
     window.setFramerateLimit(60);
 
-    // Overgrown overgrown;
-    // overgrown.createOvergrown(window, {600.0f, 400.0f}, {40.0f, 130.0f}, {30.f, 120.f});
+    EntityHandler entityhandler;
 
-    Matured matured;
-    matured.createMatured(window, {600.0f, 400.0f}, {40.0f, 130.0f}, {30.f, 120.f});
+    // Warden warden;
+    // warden.createWarden(window, {600.0f, 400.0f}, {40.0f, 130.0f}, {30.f, 120.f});
 
-    Juvenile Juvenile;
-    Juvenile.createJuvenile(window, {600.0f, 400.0f}, {40.0f, 130.0f}, {30.f, 120.f});
+    // Matured matured;
+    // matured.createMatured(window, {600.0f, 400.0f}, {40.0f, 130.0f}, {30.f, 120.f});
+
+    // Juvenile Juvenile;
+    // Juvenile.createJuvenile(window, {600.0f, 400.0f}, {40.0f, 130.0f}, {30.f, 120.f});
 
     Tower tower;
-    tower.createTower({400.0f, 400.0f}, {40.0f, 130.0f}, {10.f, 10.f});
+    tower.createTower(window,{40.0f, 130.0f}, {10.f, 10.f});
+
+    entityhandler.SpawnEntity("Juvenile", window);
+    entityhandler.SpawnEntity("Warden", window);
+
 
     sf::Clock clock;
 
@@ -46,15 +53,17 @@ int main()
         if(deltaTime > 0.1f) deltaTime = 0.1f;
 
         tower.update(window);
-        Juvenile.update(window);
-        matured.update(window);
-        // overgrown.update(window);
+        entityhandler.UpdateEntities(window);
+        // Juvenile.update(window);
+        // matured.update(window);
+        // warden.update(window);
 
         window.clear(sf::Color::Black);
         window.draw(tower);
-        window.draw(Juvenile);
-        window.draw(matured);
-        // window.draw(overgrown);
+        entityhandler.DrawEntities(window, sf::RenderStates());
+        // window.draw(Juvenile);
+        // window.draw(matured);
+        // window.draw(warden);
 
         window.display();
     }
