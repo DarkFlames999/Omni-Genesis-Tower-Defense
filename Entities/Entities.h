@@ -13,7 +13,8 @@ public:
     Entity() {};
     virtual ~Entity() {};
 
-    virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const override = 0;
+    virtual bool loadTextureFromFile(const std::string& filename, sf::Texture& texture);
+    virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const override= 0;
     virtual void update(sf::RenderWindow& window) = 0;
 
 protected:
@@ -33,7 +34,7 @@ class Tower: public Entity
         Tower() = default;
         ~Tower() = default;
 
-        bool createTower(sf::Vector2f position);
+        bool createTower(sf::Vector2f position, sf::Vector2f size, sf::Vector2f spriteSize);
         void aim(sf::Vector2f target);
         void shoot(sf::RenderWindow& window);
         void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
@@ -56,40 +57,60 @@ class Enemies: public Entity
         Enemies() = default;
         ~Enemies() = default;
 
-        bool createEnemies(sf::Vector2f position, sf::Vector2f size);
         void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
-        void update(sf::RenderWindow& window);
+        void update(sf::RenderWindow& window) override;
 
     protected:
-        sf::Texture juveniles;
-        sf::Texture matured;
-        sf::Texture overgrown;
+        sf::Texture mJuveniles;
+        sf::Texture mMatured;
+        sf::Texture mOvergrown;
+        sf::Clock mAnimClock;
+        int mCurrentFrame = 0;
+        int mFrameCount = 0;
+        float mFrameTime = 0.1f;
+
+        //Enemy stats like movement and health
+        sf::Clock mMovement;
+        int mSpeed;
+        int mHealth;
     
 };
 
 class Juvenile: public Enemies
 {
     public:
-        Juvenile();
-        ~Juvenile();
-        
+        Juvenile() = default;
+        ~Juvenile() = default;
 
+        bool createJuvenile(sf::RenderWindow& window, sf::Vector2f position, sf::Vector2f size, sf::Vector2f spriteSize);
+
+    protected:
 };
 
 class Matured: public Enemies
 {
     public:
-        Matured();
-        ~Matured();
+        Matured() = default;
+        ~Matured() = default;
+
+        bool createMatured(sf::RenderWindow& window, sf::Vector2f position, sf::Vector2f size, sf::Vector2f spriteSize);
+
+    protected:
 
 };
 
 class Overgrown: public Enemies
 {
     public:
-        Overgrown();
-        ~Overgrown();
+        Overgrown() = default;
+        ~Overgrown() = default;
 
+        bool createOvergrown(sf::RenderWindow& window, sf::Vector2f position, sf::Vector2f size, sf::Vector2f spriteSize);
+
+    protected:
+        int mCurrentFrame = 0;
+        int mFrameCount = 12;
+        float mFrameTime = 0.5f;
 };
 
 //ATTACK CLASS - SUBCLASSES FOLLOW!
@@ -121,11 +142,6 @@ class Attack: public Entity
         enum class AttackType{ Projectile, AreaOfEffect, Buff, Debuff, Melee } mAttackType;
         enum class MagicType{ Determination, Bravery, Justice, Kindness, Patience, Integrity, Perseverance } mMagicType;
         
-};
-
-class Tower: public Entity
-{
-    
 };
 
 #endif
