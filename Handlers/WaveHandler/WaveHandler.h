@@ -1,0 +1,53 @@
+#ifndef WAVEHANDLER_H
+#define WAVEHANDLER_H
+
+#include "EntityHandler.h"
+#include "SFML/Graphics.hpp"
+#include <vector>
+#include <string>
+#include <cmath>
+
+/**
+ * @file WaveHandler.h
+ * @author Isaiah Watkins, Konner Knoll, and Keali Lake
+ * @brief WaveHandler class declaration
+ * @version 0.1
+ * @date 2026-04-22
+ */
+
+class WaveHandler : public EntityHandler
+{
+public:
+    WaveHandler();
+    ~WaveHandler() = default;
+
+    void Update(sf::RenderWindow& window, float deltaTime);
+
+    void StartNextWave(sf::RenderWindow& window);
+
+    bool IsWaveComplete() const;
+
+    bool IsWaveActive() const;
+
+    int GetCurrentWave() const { return mCurrentWave; }
+    int GetTotalEnemiesThisWave() const { return mTotalEnemiesToSpawn; }
+    int GetEnemiesRemainingToSpawn() const { return mEnemiesRemainingToSpawn; }
+
+private:
+    int ComputeEnemyCount(int wave) const;
+
+    void BuildSpawnQueue(int wave);
+
+    int mCurrentWave;
+    int mTotalEnemiesToSpawn;
+    int mEnemiesRemainingToSpawn;
+
+    float mSpawnInterval;
+    float mSpawnTimer;
+
+    std::vector<std::string> mSpawnQueue;
+
+    bool mAllSpawned;
+};
+
+#endif
