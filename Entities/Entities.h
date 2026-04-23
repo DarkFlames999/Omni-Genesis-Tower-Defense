@@ -34,7 +34,7 @@ class Tower: public Entity
         Tower() = default;
         ~Tower() = default;
 
-        bool createTower(sf::Vector2f position, sf::Vector2f size, sf::Vector2f spriteSize);
+        bool createTower(sf::RenderWindow& window, sf::Vector2f size, sf::Vector2f spriteSize);
         void aim(sf::Vector2f target);
         void shoot(sf::RenderWindow& window);
         void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
@@ -63,7 +63,7 @@ class Enemies: public Entity
     protected:
         sf::Texture mJuveniles;
         sf::Texture mMatured;
-        sf::Texture mOvergrown;
+        sf::Texture mWarden;
         sf::Clock mAnimClock;
         int mCurrentFrame = 0;
         int mFrameCount = 0;
@@ -73,6 +73,7 @@ class Enemies: public Entity
         sf::Clock mMovement;
         int mSpeed;
         int mHealth;
+        int mDamage;
     
 };
 
@@ -99,18 +100,16 @@ class Matured: public Enemies
 
 };
 
-class Overgrown: public Enemies
+class Warden: public Enemies
 {
     public:
-        Overgrown() = default;
-        ~Overgrown() = default;
+        Warden() = default;
+        ~Warden() = default;
 
-        bool createOvergrown(sf::RenderWindow& window, sf::Vector2f position, sf::Vector2f size, sf::Vector2f spriteSize);
+        bool createWarden(sf::RenderWindow& window, sf::Vector2f position, sf::Vector2f size, sf::Vector2f spriteSize);
 
     protected:
-        int mCurrentFrame = 0;
-        int mFrameCount = 12;
-        float mFrameTime = 0.5f;
+
 };
 
 //ATTACK CLASS - SUBCLASSES FOLLOW!

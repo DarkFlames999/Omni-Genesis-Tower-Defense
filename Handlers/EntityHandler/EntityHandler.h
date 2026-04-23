@@ -1,25 +1,35 @@
 #ifndef ENTITYHANDLER_H
 #define ENTITYHANDLER_H
 
-#include "Entities/Entities.h"
+#include "../../Entities/Entities.h"
 #include "SFML/Graphics.hpp"
 #include <vector>
 #include <memory>
+#include <map>
+#include <string>
+#include <functional>
 
 class EntityHandler
 {
     public:
-        EntityHandler();
-        ~EntityHandler();
+        using EntitySpawning = std::function<std::unique_ptr<Entity>()>;
 
-        void SpawnEntity();
-        void DeleteEntity();
+        EntityHandler()
+        {
+            mEnemyTypeMapping["Juvenile"] = []() {return std::make_unique<Juvenile>();}; 
+            mEnemyTypeMapping["Matured"] = []() {return std::make_unique<Matured>();};
+            mEnemyTypeMapping["Warden"] = []() {return std::make_unique<Warden>();};  
+        }
+        ~EntityHandler(){};
+
+        void SpawnEntity(const std::string& type, sf::RenderWindow& window);
         
-        void DrawEntities(sf::RenderWindow& window); //For each entity 
+        void DrawEntities(sf::RenderWindow& window, sf::RenderStates states); //For each entity 
         void UpdateEntities(sf::RenderWindow& window);
 
-    private:
-        std::vector<std::unique_ptr<Entity>> mEntities;
+    protected:
+        std::vector<std::unique_ptr<Entity>> mEnemies;
+        std::map<std::string, EntitySpawning> mEnemyTypeMapping;
         
 };
 
