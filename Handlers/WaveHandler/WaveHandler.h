@@ -1,12 +1,3 @@
-#ifndef WAVEHANDLER_H
-#define WAVEHANDLER_H
-
-#include "EntityHandler.h"
-#include "SFML/Graphics.hpp"
-#include <vector>
-#include <string>
-#include <cmath>
-
 /**
  * @file WaveHandler.h
  * @author Isaiah Watkins, Konner Knoll, and Keali Lake
@@ -14,6 +5,15 @@
  * @version 0.1
  * @date 2026-04-22
  */
+
+#ifndef WAVEHANDLER_H
+#define WAVEHANDLER_H
+
+#include "../EntityHandler/EntityHandler.h"
+#include "SFML/Graphics.hpp"
+#include <string>
+#include <cmath>
+#include <queue>
 
 class WaveHandler : public EntityHandler
 {
@@ -45,7 +45,7 @@ private:
     float mSpawnInterval;
     float mSpawnTimer;
 
-    std::vector<std::string> mSpawnQueue;
+    std::queue<std::string> mSpawnQueue;
 
     bool mAllSpawned;
 };

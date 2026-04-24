@@ -13,35 +13,28 @@
 
     void EntityHandler::SpawnEntity(const std::string& type, sf::RenderWindow& window)
     {
-         if(mEnemyTypeMapping.find(type) == mEnemyTypeMapping.end()) return;
+        auto iteration = mEnemyTypeMapping.find(type);
+        if(iteration == mEnemyTypeMapping.end()) return;
 
-         auto entity = mEnemyTypeMapping.find(type)->second();
-         if(type == "Juvenile")
-         {
+        auto entity = iteration->second();
+
+        if(type == "Juvenile")
+        {
             Juvenile* j = dynamic_cast<Juvenile*>(entity.get());
-            if(j) 
-            {
-                j->createJuvenile(window, {0.f, 0.f}, {40.f, 130.f}, {30.f, 120.f});
-            };
-         }
-         else if(type == "Matured")
-         {
+            if(j) j->createJuvenile(window, {0.f, 0.f}, {40.f, 130.f}, {30.f, 120.f});
+        }
+        else if(type == "Matured")
+        {
             Matured* m = dynamic_cast<Matured*>(entity.get());
-            if(m) 
-            {
-                m->createMatured(window, {0.f, 0.f}, {40.f, 130.f}, {30.f, 120.f});
-            };
-         }
-         else if(type == "Warden")
-         {
+            if(m) m->createMatured(window, {0.f, 0.f}, {40.f, 130.f}, {30.f, 120.f});
+        }
+        else if(type == "Warden")
+        {
             Warden* w = dynamic_cast<Warden*>(entity.get());
-            if(w) 
-            {
-                w->createWarden(window, {0.f, 0.f}, {40.f, 130.f}, {30.f, 120.f});
-            };
-         }
-               mEnemies.push_back(std::move(entity));
+            if(w) w->createWarden(window, {0.f, 0.f}, {40.f, 130.f}, {30.f, 120.f});
+        }
 
+        mEnemies.push_back(std::move(entity));
     }
 
     void EntityHandler::DrawEntities(sf::RenderWindow& window, sf::RenderStates states)
@@ -52,10 +45,10 @@
         }
 
     }
-    void EntityHandler::UpdateEntities(sf::RenderWindow& window)
+    void EntityHandler::UpdateEntities(sf::RenderWindow& window, float deltaTime)
     {
         for(auto& enemies : mEnemies)
         {
-            enemies->update(window);
+            enemies->update(window, deltaTime);
         }
     }
