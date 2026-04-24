@@ -9,15 +9,16 @@
 #include "WaveHandler.h"
 #include <algorithm>
 #include <stdexcept>
+#include <iostream>
 
 // Seconds between each enemy spawn within a wave.
 static constexpr float SPAWN_INTERVAL_SECONDS = 1.5f;
 
 struct WaveTier
 {
-    int     minWave;
-    float   juvenileRatio;
-    float   maturedRatio;
+    int minWave;
+    float juvenileRatio;
+    float maturedRatio;
 };
 
 static constexpr WaveTier WAVE_TIERS[] = {
@@ -30,12 +31,12 @@ static constexpr WaveTier WAVE_TIERS[] = {
 /**
  * @brief Selects the wave tier in WAVE_TIERS based on the current wave
  * 
- * @param wave 
+ * @param wave
  * @return const WaveTier& 
  */
 static const WaveTier& SelectTier(int wave)
 {
-    for (int i = static_cast<int>(std::size(WAVE_TIERS)) - 1; i >= 0; --i)
+    for (int i = static_cast<int>(std::size(WAVE_TIERS)) - 1; i >= 0; i--)
     {
         if (wave >= WAVE_TIERS[i].minWave)
         {
@@ -93,7 +94,7 @@ void WaveHandler::Update(sf::RenderWindow& window, float deltaTime)
             mSpawnTimer -= mSpawnInterval;
 
             const std::string type = mSpawnQueue.back();
-            mSpawnQueue.pop_back();
+            mSpawnQueue.pop();
 
             SpawnEntity(type, window);
             mEnemiesRemainingToSpawn--;
@@ -105,14 +106,14 @@ void WaveHandler::Update(sf::RenderWindow& window, float deltaTime)
         }
     }
 
-    UpdateEntities(window);
+    UpdateEntities(window, deltaTime);
 }
 
 /**
  * @brief Wave ends when every scheduled enemy has spawned AND all have been destroyed
  * 
- * @return true 
- * @return false 
+ * @return true
+ * @return false
  */
 bool WaveHandler::IsWaveComplete() const
 {
@@ -151,7 +152,10 @@ int WaveHandler::ComputeEnemyCount(int wave) const
  */
 void WaveHandler::BuildSpawnQueue(int wave)
 {
-    mSpawnQueue.clear();
+    while(!mSpawnQueue.empty())
+    {
+        mSpawnQueue.pop();
+    }
 
     const int total = mTotalEnemiesToSpawn;
     const WaveTier& tier = SelectTier(wave);
@@ -161,12 +165,12 @@ void WaveHandler::BuildSpawnQueue(int wave)
     const int wardenCount = total - juvenileCount - maturedCount;
 
     for (int i = 0; i < wardenCount; i++) {
-        mSpawnQueue.push_back("Warden");
+        mSpawnQueue.push("Warden");
     }
     for (int i = 0; i < maturedCount; i++) {
-        mSpawnQueue.push_back("Matured");
+        mSpawnQueue.push("Matured");
     }
     for (int i = 0; i < juvenileCount; i++) {
-        mSpawnQueue.push_back("Juvenile");
+        mSpawnQueue.push("Juvenile");
     }
 }
