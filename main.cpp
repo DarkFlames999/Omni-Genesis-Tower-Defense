@@ -12,13 +12,12 @@
 #include "GUI-Components/menu.h"
 #include "Entities/Entities.h"
 #include "Handlers/EntityHandler/EntityHandler.h"
+#include "Handlers/WaveHandler/WaveHandler.h"
 
 int main()
 {
-    sf::RenderWindow window(sf::VideoMode(900,700), "Omni-Genesis/TowerDefense");
+    sf::RenderWindow window(sf::VideoMode::getDesktopMode(), "Omni-Genesis/TowerDefense", sf::Style::Fullscreen);
     window.setFramerateLimit(60);
-
-    EntityHandler entityhandler;
 
     // Warden warden;
     // warden.createWarden(window, {600.0f, 400.0f}, {40.0f, 130.0f}, {30.f, 120.f});
@@ -32,14 +31,15 @@ int main()
     Tower tower;
     tower.createTower(window,{40.0f, 130.0f}, {10.f, 10.f});
 
-    entityhandler.SpawnEntity("Juvenile", window);
-    entityhandler.SpawnEntity("Warden", window);
-
+    WaveHandler waves;
+    
+    waves.StartNextWave(window);
 
     sf::Clock clock;
 
     while (window.isOpen())
     {
+
         sf::Event event;
         while (window.pollEvent(event))
         {
@@ -47,24 +47,41 @@ int main()
             {
                 window.close(); 
             }
+            if(event.type == sf::Event::MouseButtonPressed)
+            {
+                if(event.mouseButton.button == sf::Mouse::Left)
+                {
+                    tower.shoot(window);
+                }
+            }
+            if(event.type == sf::Event::KeyPressed)
+            {
+                if(event.key.code == sf::Keyboard::Escape)
+                {
+                    window.close();
+                }
+            }
         }
 
         float deltaTime = clock.restart().asSeconds();
         if(deltaTime > 0.1f) deltaTime = 0.1f;
 
-        tower.update(window);
-        entityhandler.UpdateEntities(window);
+        tower.update(window, deltaTime);
+        tower.updateAttack(window, deltaTime);
+        // entityhandler.UpdateEntities(window);
         // Juvenile.update(window);
         // matured.update(window);
         // warden.update(window);
 
+        waves.Update(window, deltaTime);
+
         window.clear(sf::Color::Black);
         window.draw(tower);
-        entityhandler.DrawEntities(window, sf::RenderStates());
+        tower.drawAttack(window);
+        waves.DrawEntities(window, sf::RenderStates::Default);
         // window.draw(Juvenile);
         // window.draw(matured);
         // window.draw(warden);
-
         window.display();
     }
 
