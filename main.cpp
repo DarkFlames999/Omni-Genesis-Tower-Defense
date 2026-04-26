@@ -16,7 +16,7 @@
 
 int main()
 {
-    sf::RenderWindow window(sf::VideoMode(900,700), "Omni-Genesis/TowerDefense");
+    sf::RenderWindow window(sf::VideoMode::getDesktopMode(), "Omni-Genesis/TowerDefense", sf::Style::Fullscreen);
     window.setFramerateLimit(60);
 
     // Warden warden;
@@ -52,6 +52,13 @@ int main()
                 if(event.mouseButton.button == sf::Mouse::Left)
                 {
                     tower.shoot(window);
+                }
+            }
+            if(event.type == sf::Event::KeyPressed)
+            {
+                if(event.key.code == sf::Keyboard::Escape)
+                {
+                    window.close();
                 }
             }
         }

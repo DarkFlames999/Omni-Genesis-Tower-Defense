@@ -7,48 +7,48 @@
  * @date 2026-04-15
  * 
  */
-    #include <iostream>
-    #include "SFML/Graphics.hpp"
-    #include "EntityHandler.h"
+#include <iostream>
+#include "SFML/Graphics.hpp"
+#include "EntityHandler.h"
 
-    void EntityHandler::SpawnEntity(const std::string& type, sf::RenderWindow& window)
+void EntityHandler::SpawnEntity(const std::string& type, sf::RenderWindow& window)
+{
+    auto iteration = mEnemyTypeMapping.find(type);
+    if(iteration == mEnemyTypeMapping.end()) return;
+
+    auto entity = iteration->second();
+
+    if(type == "Juvenile")
     {
-        auto iteration = mEnemyTypeMapping.find(type);
-        if(iteration == mEnemyTypeMapping.end()) return;
-
-        auto entity = iteration->second();
-
-        if(type == "Juvenile")
-        {
-            Juvenile* j = dynamic_cast<Juvenile*>(entity.get());
-            if(j) j->createJuvenile(window, {0.f, 0.f}, {40.f, 130.f}, {30.f, 120.f});
-        }
-        else if(type == "Matured")
-        {
-            Matured* m = dynamic_cast<Matured*>(entity.get());
-            if(m) m->createMatured(window, {0.f, 0.f}, {40.f, 130.f}, {30.f, 120.f});
-        }
-        else if(type == "Warden")
-        {
-            Warden* w = dynamic_cast<Warden*>(entity.get());
-            if(w) w->createWarden(window, {0.f, 0.f}, {40.f, 130.f}, {30.f, 120.f});
-        }
-
-        mEnemies.push_back(std::move(entity));
+        Juvenile* j = dynamic_cast<Juvenile*>(entity.get());
+        if(j) j->createJuvenile(window, {window.getSize().x/2 + 1200.f, 830.0f}, {40.f, 130.f}, {70.f, 175.f});
+    }
+    else if(type == "Matured")
+    {
+        Matured* m = dynamic_cast<Matured*>(entity.get());
+        if(m) m->createMatured(window, {window.getSize().x/2 + 1200.f, 830.0f}, {40.f, 130.f}, {70.f, 175.f});
+    }
+    else if(type == "Warden")
+    {
+        Warden* w = dynamic_cast<Warden*>(entity.get());
+        if(w) w->createWarden(window, {window.getSize().x/2 + 1200.f, 830.0f}, {40.f, 130.f}, {70.f, 175.f});
     }
 
-    void EntityHandler::DrawEntities(sf::RenderWindow& window, sf::RenderStates states)
-    {
-        for(auto& enemies : mEnemies)
-        {
-            window.draw(*enemies, states);
-        }
+    mEnemies.push_back(std::move(entity));
+}
 
-    }
-    void EntityHandler::UpdateEntities(sf::RenderWindow& window, float deltaTime)
+void EntityHandler::DrawEntities(sf::RenderWindow& window, sf::RenderStates states)
+{
+    for(auto& enemies : mEnemies)
     {
-        for(auto& enemies : mEnemies)
-        {
-            enemies->update(window, deltaTime);
-        }
+        window.draw(*enemies, states);
     }
+
+}
+void EntityHandler::UpdateEntities(sf::RenderWindow& window, float deltaTime)
+{
+    for(auto& enemies : mEnemies)
+    {
+        enemies->update(window, deltaTime);
+    }
+}
