@@ -1,27 +1,46 @@
 /**
  * @file game.h
  * @author Konner Knoll
- * @brief Define game state class, which manages all the handlers
- * @version 0.1
- * @date 2026-04-08
- * 
- * @copyright Copyright (c) 2026
- * 
+ * @brief Game class
+ * @version 0.2
+ * @date 2026-04-28
  */
 
 #ifndef GAME_H
 #define GAME_H
 
-class Game{
+#include <SFML/Graphics.hpp>
+#include "Handlers/WaveHandler/WaveHandler.h"
+#include "Entities/Entities.h"
+
+class Game
+{
 public:
-    Game(){};
-    ~Game(){};
-    void activateHandlers();
-    void activateInputHandler();
-    void activateEntityHandler();
+    Game();
+    ~Game() = default;
+
+    // Game class should not be copyable
+    Game(const Game&) = delete;
+    Game& operator=(const Game&) = delete;
+
+    void run();
+
 private:
-    enum mState{menu, game, paused};
-    enum mDifficulty{none, easy, medium, hard};
+    enum class State { Menu, Playing, Paused };
+    enum class Difficulty { None, Easy, Medium, Hard };
+
+    void processEvents();
+    void update(float deltaTime);
+    void render();
+
+    sf::RenderWindow mWindow;
+    sf::Clock mClock;
+
+    State mState { State::Playing };
+    Difficulty mDifficulty { Difficulty::None };
+
+    Tower mTower;
+    WaveHandler mWaves;
 };
 
 #endif
