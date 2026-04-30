@@ -1,35 +1,39 @@
 CC = g++
-FLAGS = -Wall -std=c++17 
+FLAGS = -Wall -std=c++17
+LIBS = -lsfml-graphics -lsfml-window -lsfml-system -lsfml-audio
 
 run: game
 	./game
 
-game: entities.o main.o EntityHandler.o InputHandler.o  WaveHandler.o CollisionHandler.o hitbox.o hurtbox.o
-	$(CC) $(FLAGS) $^ -o game -lsfml-graphics -lsfml-window -lsfml-system
+game: entities.o hurtbox.o hitbox.o main.o InputHandler.o EntityHandler.o WaveHandler.o game.o
+	$(CC) $(FLAGS) $^ -o game $(LIBS)
 
 entities.o: Entities/Entities.cpp Entities/Entities.h
-	$(CC) $(FLAGS) -c $< -o entities.o
+	$(CC) $(FLAGS) -c $< -o $@
 
-hitbox.o: DetectionTools/Hitbox.cpp DetectionTools/Hitbox.h
-	$(CC) $(FLAGS) -c $< -o hitbox.o
+hurtbox.o: DetectionTools/Hurtbox/Hurtbox.cpp DetectionTools/Hurtbox/Hurtbox.h
+	$(CC) $(FLAGS) -c $< -o $@
 
-hurtbox.o: DetectionTools/Hurtbox.cpp DetectionTools/Hurtbox.h
-	$(CC) $(FLAGS) -c $< -o hurtbox.o
+hitbox.o: DetectionTools/Hitbox/Hitbox.cpp DetectionTools/Hitbox/Hitbox.h
+	$(CC) $(FLAGS) -c $< -o $@
 
-main.o: main.cpp Entities/Entities.h Handlers/InputHandler/InputHandler.h Handlers/EntityHandler/EntityHandler.h
-	$(CC) $(FLAGS) -c $< -o main.o
+main.o: main.cpp game.h
+	$(CC) $(FLAGS) -c $< -o $@
+
+game.o: game.cpp game.h Entities/Entities.h Handlers/WaveHandler/WaveHandler.h
+	$(CC) $(FLAGS) -c $< -o $@
 
 InputHandler.o: Handlers/InputHandler/InputHandler.cpp Handlers/InputHandler/InputHandler.h
-	$(CC) $(FLAGS) -c $< -o InputHandler.o
+	$(CC) $(FLAGS) -c $< -o $@
 
 EntityHandler.o: Handlers/EntityHandler/EntityHandler.cpp Handlers/EntityHandler/EntityHandler.h
-	$(CC) $(FLAGS) -c $< -o EntityHandler.o
+	$(CC) $(FLAGS) -c $< -o $@
 
 CollisionHandler.o: Handlers/CollisionHandler/CollisionHandler.cpp Handlers/CollisionHandler/CollisionHandler.h
 	$(CC) $(FLAGS) -c $< -o CollisionHandler.o
 
 WaveHandler.o: Handlers/WaveHandler/WaveHandler.cpp Handlers/WaveHandler/WaveHandler.h
-	$(CC) $(FLAGS) -c $< -o WaveHandler.o
+	$(CC) $(FLAGS) -c $< -o $@
 
 clean:
-	rm -f *.o tower game menu
+	rm -f *.o game
