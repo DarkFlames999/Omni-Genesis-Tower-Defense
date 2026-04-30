@@ -18,9 +18,15 @@ Game::Game()
               sf::Style::Fullscreen)
 {
     mWindow.setFramerateLimit(60);
-
     mTower.createTower(mWindow, {40.0f, 130.0f}, {10.f, 10.f});
     mWaves.StartNextWave(mWindow);
+
+    // Background music
+    if (!mMusic.openFromFile("music/background.ogg"))
+        std::cerr << "Warning: failed to load background music\n";
+    mMusic.setLoop(true);
+    mMusic.setVolume(50.f);
+    mMusic.play();
 }
 
 /**

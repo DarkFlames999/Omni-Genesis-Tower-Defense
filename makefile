@@ -1,6 +1,6 @@
 CC = g++
 FLAGS = -Wall -std=c++17
-LIBS = -lsfml-graphics -lsfml-window -lsfml-system
+LIBS = -lsfml-graphics -lsfml-window -lsfml-system -lsfml-audio
 
 run: game
 	./game

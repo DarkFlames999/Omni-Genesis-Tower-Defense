@@ -10,6 +10,7 @@
 #define GAME_H
 
 #include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
 #include "Handlers/WaveHandler/WaveHandler.h"
 #include "Entities/Entities.h"
 
@@ -41,6 +42,8 @@ private:
 
     Tower mTower;
     WaveHandler mWaves;
+
+    sf::Music mMusic;
 };
 
 #endif
