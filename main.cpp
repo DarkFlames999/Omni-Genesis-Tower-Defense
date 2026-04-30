@@ -6,7 +6,6 @@
  * @date 2026-4-15
  * @copyright Copyright (c) 2022
  */
-
 #include "game.h"
 
 int main()

@@ -29,6 +29,9 @@ InputHandler.o: Handlers/InputHandler/InputHandler.cpp Handlers/InputHandler/Inp
 EntityHandler.o: Handlers/EntityHandler/EntityHandler.cpp Handlers/EntityHandler/EntityHandler.h
 	$(CC) $(FLAGS) -c $< -o $@
 
+CollisionHandler.o: Handlers/CollisionHandler/CollisionHandler.cpp Handlers/CollisionHandler/CollisionHandler.h
+	$(CC) $(FLAGS) -c $< -o CollisionHandler.o
+
 WaveHandler.o: Handlers/WaveHandler/WaveHandler.cpp Handlers/WaveHandler/WaveHandler.h
 	$(CC) $(FLAGS) -c $< -o $@
 

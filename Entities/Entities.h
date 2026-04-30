@@ -4,8 +4,8 @@
 #include <SFML/Graphics.hpp>
 #include <vector>
 #include <memory>
-#include "../DetectionTools/Hurtbox/Hurtbox.h"
-#include "../DetectionTools/Hitbox/Hitbox.h"
+#include "../DetectionTools/Hitbox.h"
+#include "../DetectionTools/Hurtbox.h"
 
 //Entities class, general use, able to be used for polymorphism and inheritance later.
 
@@ -18,6 +18,9 @@ public:
     virtual bool loadTextureFromFile(const std::string& filename, sf::Texture& texture);
     virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const override = 0;
     virtual void update(sf::RenderWindow& window, float deltaTime) = 0;
+    friend class CollisionHandler; // Allow CollisionHandler to access protected members of Entity and its subclasses
+    sf::FloatRect getHurtboxBounds() const { return mHurtbox.getGlobalBounds(); }
+    sf::FloatRect getHitboxBounds()  const { return mHitbox.getGlobalBounds(); }
 
 protected:
     sf::Sprite mSprite;
@@ -38,7 +41,10 @@ class Attack: public Entity
         bool createAttack(sf::Vector2f position, sf::Vector2f direction);
         void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
         void update(sf::RenderWindow& window, float deltaTime) override;
-        bool isAlive() const { return mAlive; };
+        bool isAlive() const { return mAlive; }
+        void setAlive(bool alive) { mAlive = alive; }
+        float getDamage() const { return mDamage; }
+        sf::FloatRect getCircleBounds() const { return mBulletShape.getGlobalBounds(); }
 
     protected:
         float mDamage; //Classic Damage
@@ -81,9 +87,12 @@ class Tower: public Entity
         void update(sf::RenderWindow& window, float deltaTime) override;
         void updateAttack(sf::RenderWindow& window, float deltaTime);
         void drawAttack(sf::RenderTarget& target) const;
+        void takeDamage(float damage) { mHP -= damage; }
+        float getHealth() const { return mHP; }
+        bool towerDestroyed(sf::RenderWindow& window);
+        std::vector<std::unique_ptr<Attack>>& getAttacks() { return mAttack; }
 
-
-    private:
+    protected:
         sf::Sprite mCannon;
         sf::Texture mCannonTexture;
         sf::Clock mShootClock;
@@ -104,6 +113,11 @@ class Enemies: public Entity
 
         void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
         void update(sf::RenderWindow& window, float deltaTime) override;
+        // sf::FloatRect getHurtboxBounds() const { return mHurtbox.getGlobalBounds(); }
+        int getDamage() { return mDamage; }
+        void takeDamage(float damage) { mHealth -= damage; }
+        int getHealth() const { return mHealth; }
+        bool isDead() const { return mHealth <= 0; }
 
     protected:
         sf::Texture mJuveniles;

@@ -228,7 +228,7 @@ Title::Title(const std::string title)
     }
 
     //Load the Title screenshot and set up the sprite for it
-    if(!titleTexture.loadFromFile("Sprites/Menu-Textures/Title.png"))
+    if(!titleTexture.loadFromFile("Sprites/Title.png"))
     {
         std::cerr<<"Error opening \"Title.png\" file" << std::endl;
         exit(1);

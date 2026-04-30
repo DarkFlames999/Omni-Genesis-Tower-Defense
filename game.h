@@ -17,15 +17,13 @@
 class Game
 {
 public:
-    Game();
-    ~Game() = default;
-
-    // Game class should not be copyable
-    Game(const Game&) = delete;
-    Game& operator=(const Game&) = delete;
-
-    void run();
-
+    Game(){};
+    ~Game(){};
+    void playGame();
+    void activateHandlers();
+    void activateInputHandler();
+    void activateEntityHandler();
+    void activateWaveHandler();
 private:
     enum class State { Menu, Playing, Paused };
     enum class Difficulty { None, Easy, Medium, Hard };
