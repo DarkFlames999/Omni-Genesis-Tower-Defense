@@ -21,7 +21,7 @@ void EntityHandler::SpawnEntity(const std::string& type, sf::RenderWindow& windo
     if(type == "Juvenile")
     {
         Juvenile* j = dynamic_cast<Juvenile*>(entity.get());
-        if(j) j->createJuvenile(window, {window.getSize().x/2 + 1200.f, 830.0f}, {40.f, 130.f}, {70.f, 175.f});
+        if(j) j->createJuvenile(window, {window.getSize().x/2 + 1200.f, 770.0f}, {40.f, 130.f}, {70.f, 175.f});
     }
     else if(type == "Matured")
     {
@@ -49,6 +49,16 @@ void EntityHandler::UpdateEntities(sf::RenderWindow& window, float deltaTime)
 {
     for(auto& enemies : mEnemies)
     {
+        if(!enemies) continue;
         enemies->update(window, deltaTime);
     }
+    
+    mEnemies.erase(
+        std::remove_if(mEnemies.begin(), mEnemies.end(),
+            [](const std::unique_ptr<Entity>& e)
+            {
+                Enemies* enemy = dynamic_cast<Enemies*>(e.get());
+                return enemy && enemy->isDead();
+            }),
+        mEnemies.end());
 }

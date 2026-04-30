@@ -16,9 +16,11 @@ class Game{
 public:
     Game(){};
     ~Game(){};
+    void playGame();
     void activateHandlers();
     void activateInputHandler();
     void activateEntityHandler();
+    void activateWaveHandler();
 private:
     enum mState{menu, game, paused};
     enum mDifficulty{none, easy, medium, hard};

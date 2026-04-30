@@ -5,7 +5,7 @@
 //ENTITY CLASS FUNCTIONS
 /**
  * @brief Loads all possible textures for the different entities and sets the sprite to the texture,
- * which is used for drawing the entity in the window.    
+ * which is used for drawing the entity in the window.
  * 
  * @param filename 
  * @param texture 
@@ -154,6 +154,8 @@ void Tower::updateAttack(sf::RenderWindow& window, float deltaTime)
         std::remove_if(mAttack.begin(), mAttack.end(),
             [](const std::unique_ptr<Attack>& a){ return !a->isAlive(); }),
         mAttack.end());
+
+    
 }
 
 /**
@@ -166,6 +168,21 @@ void Tower::drawAttack(sf::RenderTarget& target) const
     for(const auto& attack : mAttack)
         target.draw(*attack);
 }
+
+// bool Tower::towerDestroyed(sf::RenderWindow& window)
+// {
+//     if(mHP <= 10)
+//     {
+//         loadTextureFromFile("Sprites/Destroyed.png", mTexture);
+//     if(!mTexture.loadFromFile("Fonts/Norse.ttf"))
+//     {
+//         std::cerr<<"Error opening \"Magic.ttf\" file" << std::endl;
+//         exit(1);
+//     }
+//         return true;
+//     }
+//     return false;
+// }
 
 //ALL ENEMY FUNCTIONS
 /**
@@ -180,8 +197,9 @@ void Tower::drawAttack(sf::RenderTarget& target) const
 bool Juvenile::createJuvenile(sf::RenderWindow& window, sf::Vector2f position, sf::Vector2f size, sf::Vector2f spriteSize)
 {
     mFrameCount = 12;
-    mSpeed = 200;
+    mSpeed = 100;
     mHealth = 50;
+    mDamage = 10;
     loadTextureFromFile("Sprites/J_Walking.png", mJuveniles);
 
     mSprite.setTexture(mJuveniles);
@@ -210,7 +228,6 @@ bool Juvenile::createJuvenile(sf::RenderWindow& window, sf::Vector2f position, s
     mHurtbox.setOutlineColor(sf::Color::Red);
     mHurtbox.setOutlineThickness(1.f);
 
-
     return true;
 }
 
@@ -235,6 +252,7 @@ bool Matured::createMatured(sf::RenderWindow& window, sf::Vector2f position, sf:
     mFrameCount = 8;
     mSpeed = 20;
     mHealth = 100;
+    mDamage = 20;
     loadTextureFromFile("Sprites/M_Walking.png", mMatured);
 
     mSprite.setTexture(mMatured);
@@ -279,6 +297,7 @@ bool Warden::createWarden(sf::RenderWindow& window, sf::Vector2f position, sf::V
     mFrameCount = 7;
     mSpeed = 10;
     mHealth = 200;
+    mDamage = 40;
     loadTextureFromFile("Sprites/W_Walking.png", mWarden);
 
     mSprite.setTexture(mWarden);
@@ -344,17 +363,21 @@ void Enemies::update(sf::RenderWindow& window, float deltaTime)
         mAnimClock.restart();
     }
 
-    // Use deltaTime passed from main instead of restarting mMovement
+    // Stop the enemy and the hurt and hitboxes when it hits the tower bounds
     mPosition.x -= mSpeed * deltaTime;
     mSprite.setPosition(mPosition.x, mPosition.y);
     mHurtbox.setPosition(mPosition.x, mPosition.y);
 
-    if(mPosition.x <= (window.getSize().x/2.f) + 150.f)
+    if(mPosition.x <= (window.getSize().x/2.f) + 100.f)
     {
-        mPosition.x = (window.getSize().x/2.f) + 150.f;
+        mPosition.x = (window.getSize().x/2.f) + 100.f;
         mSprite.setPosition(mPosition.x, mPosition.y);
         mHurtbox.setPosition(mPosition.x, mPosition.y);
     }
+
+    //Remove the enemies from the vector if their health is below 1
+    if(!mSprite.getTexture()) return;
+    if(isDead()) return;
 }
 
 //ALL BULLET/MAGIC FUNCTIONS 
@@ -372,6 +395,7 @@ bool Attack::createAttack(sf::Vector2f position, sf::Vector2f direction)
 {
     mDirection = direction;
     mPosition = position;
+    mDamage = 15.f;
 
     mBulletShape.setRadius(10.f);
     mBulletShape.setOrigin({5.f, 5.f});

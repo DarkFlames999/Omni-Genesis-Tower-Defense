@@ -13,27 +13,31 @@
 #include "Entities/Entities.h"
 #include "Handlers/EntityHandler/EntityHandler.h"
 #include "Handlers/WaveHandler/WaveHandler.h"
+#include "Handlers/CollisionHandler/CollisionHandler.h"
 
 int main()
 {
     sf::RenderWindow window(sf::VideoMode::getDesktopMode(), "Omni-Genesis/TowerDefense", sf::Style::Fullscreen);
     window.setFramerateLimit(60);
 
-    // Warden warden;
-    // warden.createWarden(window, {600.0f, 400.0f}, {40.0f, 130.0f}, {30.f, 120.f});
-
-    // Matured matured;
-    // matured.createMatured(window, {600.0f, 400.0f}, {40.0f, 130.0f}, {30.f, 120.f});
-
-    // Juvenile Juvenile;
-    // Juvenile.createJuvenile(window, {600.0f, 400.0f}, {40.0f, 130.0f}, {30.f, 120.f});
-
     Tower tower;
     tower.createTower(window,{40.0f, 130.0f}, {10.f, 10.f});
 
     WaveHandler waves;
+
+    CollisionHandler collision;
     
     waves.StartNextWave(window);
+
+    sf::Sprite background;
+    sf::Texture backgroundTexture;
+    if(!backgroundTexture.loadFromFile("Sprites/Background.png"))
+    {
+        std::cerr <<"Error opening background texture!" << std::endl;
+        return -1;
+    }
+    background.setTexture(backgroundTexture);
+    background.setScale(window.getSize().x / (backgroundTexture.getSize().x-50.f), window.getSize().y / (backgroundTexture.getSize().y-30.f));
 
     sf::Clock clock;
 
@@ -68,20 +72,16 @@ int main()
 
         tower.update(window, deltaTime);
         tower.updateAttack(window, deltaTime);
-        // entityhandler.UpdateEntities(window);
-        // Juvenile.update(window);
-        // matured.update(window);
-        // warden.update(window);
-
         waves.Update(window, deltaTime);
 
+        collision.checkBulletEnemyCollision(tower.getAttacks(), waves);
+        collision.checkEnemyTowerCollision(waves, tower);
+
         window.clear(sf::Color::Black);
+        window.draw(background);
         window.draw(tower);
         tower.drawAttack(window);
         waves.DrawEntities(window, sf::RenderStates::Default);
-        // window.draw(Juvenile);
-        // window.draw(matured);
-        // window.draw(warden);
         window.display();
     }
 
