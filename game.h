@@ -12,18 +12,27 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
 #include "Handlers/WaveHandler/WaveHandler.h"
+#include <iostream>
+#include "GUI-Components/menu.h"
 #include "Entities/Entities.h"
+#include "Handlers/EntityHandler/EntityHandler.h"
+#include "Handlers/WaveHandler/WaveHandler.h"
+#include "Handlers/CollisionHandler/CollisionHandler.h"
+#include "Handlers/InputHandler/InputHandler.h"
+#include "SkillTree/SkillTree.h"
 
 class Game
 {
 public:
-    Game(){};
-    ~Game(){};
-    void playGame();
-    void activateHandlers();
-    void activateInputHandler();
-    void activateEntityHandler();
-    void activateWaveHandler();
+    Game();
+    ~Game() = default;
+
+    // Game class should not be copyable
+    Game(const Game&) = delete;
+    Game& operator=(const Game&) = delete;
+
+    void run();
+
 private:
     enum class State { Menu, Playing, Paused };
     enum class Difficulty { None, Easy, Medium, Hard };
@@ -40,6 +49,10 @@ private:
 
     Tower mTower;
     WaveHandler mWaves;
+    CollisionHandler mCollisionHandler;
+    EntityHandler mEntityHandler;
+    InputHandler mInputHandler;
+
 
     sf::Music mMusic;
 };
