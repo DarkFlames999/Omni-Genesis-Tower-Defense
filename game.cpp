@@ -21,12 +21,16 @@ Game::Game()
     mTower.createTower(mWindow, {40.0f, 130.0f}, {10.f, 10.f});
     mWaves.StartNextWave(mWindow);
 
+    //Tower extra controls don't touch fr
+    mTowerKeyBindingHandler.ImplementHeldKey(sf::Keyboard::Num1, 0.5f);
     // Background music
-    if (!mMusic.openFromFile("music/background.ogg"))
+    if (mMusic.openFromFile("music/background.ogg")) {
+        mMusic.setLoop(true);
+        mMusic.setVolume(50.f);
+        mMusic.play();
+    } else {
         std::cerr << "Warning: failed to load background music\n";
-    mMusic.setLoop(true);
-    mMusic.setVolume(50.f);
-    mMusic.play();
+    }
 }
 
 /**
@@ -62,9 +66,6 @@ void Game::processEvents()
             event.key.code == sf::Keyboard::Escape)
             mWindow.close();
 
-        if (event.type == sf::Event::MouseButtonPressed &&
-            event.mouseButton.button == sf::Mouse::Left)
-            mTower.shoot(mWindow);
     }
 }
 
@@ -81,8 +82,31 @@ void Game::update(float deltaTime)
     mCollisionHandler.checkBulletEnemyCollision(mTower.getAttacks(), mWaves);
     mCollisionHandler.checkEnemyTowerCollision(mWaves, mTower);
 
+    //Fires The towers attacks, without being dependant on an evvent, allows for holding
+    if(sf::Mouse::isButtonPressed(sf::Mouse::Left))
+    {
+        mTower.shoot(mWindow);
+    }
+
+    for(auto& enemy : mEntityHandler.getEnemies()) //Grants our lil tower XP upon any enemy's death, taking their XP value and adding it to our tower's total XP points
+    {
+        Enemies* enemies = dynamic_cast<Enemies*>(enemy.get());
+        if(enemies->isDead())
+        {
+            enemies->giveXP(mTower);
+            std::cout << "Tower XP: " << mTower.getXPPoints() << std::endl;
+        }
+    }
+
+    if(mTower.getHealth() <= 0) //Lose condition for later
+    {
+
+    }
+
     if (mWaves.IsWaveComplete())
+    {
         mWaves.StartNextWave(mWindow);
+    }
 }
 
 /**

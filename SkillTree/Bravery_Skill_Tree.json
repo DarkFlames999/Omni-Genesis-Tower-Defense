@@ -4,20 +4,20 @@
             "id": "bravery.skill1.unlock",
             "name": "Bravery Skill 1",
             "description": "A skill that introduces fire damage to your attacks. - Skill Tree Test",
-            "cost" : 1,
+            "cost" : 100,
             "magic" : "Bravery",
             "kind" : "Offensive",
-            "categoryPath": ["ThermalEnergyManipulation", "FireManipulation"],
+            "skillpathway": ["ThermalEnergyManipulation", "FireManipulation"],
             "prerequisites": []
         },
         {
             "id": "bravery.skill2.unlock",
             "name": "Bravery Skill 2",
             "description": "A skill that introduces electric damage to your attacks. - Skill Tree Test",
-            "cost" : 1,
+            "cost" : 120,
             "magic" : "Bravery",
             "kind" : "Offensive",
-            "categoryPath": ["ThermalEnergyManipulation", "ElectricManipulation"],
+            "skillpathway": ["ThermalEnergyManipulation", "ElectricManipulation"],
             "prerequisites": ["bravery.skill1.unlock"]
         }
     ]

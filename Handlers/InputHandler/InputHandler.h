@@ -34,7 +34,7 @@ public:
     bool isHeldKey(HeldKeyBinding& binding, sf::Event event);
     bool isDoubleTap(DoubleTapBinding& binding, sf::Event event);
     void ImplementHeldKey(sf::Keyboard::Key Key, float TimeToHold);
-    void ImplementDoubleTap(sf::Keyboard::Key Key, float TimeToDoubleTap);
+    void ImplementDoubleTap(sf::Keyboard::Key Key, float TimeToDoubleTap);;
     void update(sf::Event event);
     
     std::vector<HeldKeyBinding> mHeldKeyBindings;

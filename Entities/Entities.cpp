@@ -200,6 +200,7 @@ bool Juvenile::createJuvenile(sf::RenderWindow& window, sf::Vector2f position, s
     mSpeed = 100;
     mHealth = 50;
     mDamage = 10;
+    mXPValue = 10;
     loadTextureFromFile("Sprites/J_Walking.png", mJuveniles);
 
     mSprite.setTexture(mJuveniles);
@@ -253,6 +254,7 @@ bool Matured::createMatured(sf::RenderWindow& window, sf::Vector2f position, sf:
     mSpeed = 20;
     mHealth = 100;
     mDamage = 20;
+    mXPValue = 25;
     loadTextureFromFile("Sprites/M_Walking.png", mMatured);
 
     mSprite.setTexture(mMatured);
@@ -298,6 +300,7 @@ bool Warden::createWarden(sf::RenderWindow& window, sf::Vector2f position, sf::V
     mSpeed = 10;
     mHealth = 200;
     mDamage = 40;
+    mXPValue = 50;
     loadTextureFromFile("Sprites/W_Walking.png", mWarden);
 
     mSprite.setTexture(mWarden);
@@ -346,12 +349,15 @@ void Enemies::draw(sf::RenderTarget& target, sf::RenderStates states) const
 void Enemies::update(sf::RenderWindow& window, float deltaTime)
 {
     //All enemy walking animations
-    // Guard 1 - null texture check
-    if(!mSprite.getTexture()) return;
+    if(!mSprite.getTexture()) 
+    {
+        return;
+    }
+    if(deltaTime > 0.05f) 
+    {
+        deltaTime = 0.05f;
+    }
 
-    if(deltaTime > 0.05f) deltaTime = 0.05f;
-
-    // Guard 2 - use passed deltaTime instead of restarting mMovement every frame
     sf::Vector2u textureSize = mSprite.getTexture()->getSize();
     int frameWidth  = textureSize.x / mFrameCount;
     int frameHeight = textureSize.y;
@@ -376,8 +382,14 @@ void Enemies::update(sf::RenderWindow& window, float deltaTime)
     }
 
     //Remove the enemies from the vector if their health is below 1
-    if(!mSprite.getTexture()) return;
-    if(isDead()) return;
+    if(!mSprite.getTexture()) 
+    {
+        return;
+    }
+    if(isDead()) 
+    {
+        return;
+    }
 }
 
 //ALL BULLET/MAGIC FUNCTIONS 

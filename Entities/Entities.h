@@ -48,7 +48,7 @@ class Attack: public Entity
 
     protected:
         float mDamage; //Classic Damage
-        float mSpeed  = 400.f;
+        float mSpeed  = 700.f;
         bool  mAlive  = true;
 
         sf::Vector2f mDirection;
@@ -91,6 +91,9 @@ class Tower: public Entity
         float getHealth() const { return mHP; }
         bool towerDestroyed(sf::RenderWindow& window);
         std::vector<std::unique_ptr<Attack>>& getAttacks() { return mAttack; }
+        int getXPPoints() const { return mXPPoints; }
+
+        friend class Enemies;
 
     protected:
         sf::Sprite mCannon;
@@ -99,7 +102,8 @@ class Tower: public Entity
 
         float mHP = 100.f;
         float mDamageMultiplier = 1.0f;
-        float mFireRate = 1.0f; //How many shots per second the tower can fire
+        float mFireRate = 1.5f; //How many shots per second the tower can fire
+        int mXPPoints = 0; //Experience points for leveling up the tower and unlocking skills in the skill tree
         std::vector<std::unique_ptr<Attack>> mAttack;
 };
 
@@ -118,6 +122,10 @@ class Enemies: public Entity
         void takeDamage(float damage) { mHealth -= damage; }
         int getHealth() const { return mHealth; }
         bool isDead() const { return mHealth <= 0; }
+        int getXPValue() const { return mXPValue; }
+        void giveXP(Tower& tower) { tower.mXPPoints += mXPValue; }
+
+        friend class Tower;
 
     protected:
         sf::Texture mJuveniles;
@@ -132,6 +140,7 @@ class Enemies: public Entity
         int mSpeed;
         int mHealth;
         int mDamage;
+        int mXPValue;
     
 };
 
@@ -145,6 +154,7 @@ class Juvenile: public Enemies
         void juvenileAttack(sf::RenderWindow& window);
 
     protected:
+
 };
 
 class Matured: public Enemies
