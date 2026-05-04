@@ -11,8 +11,147 @@ SkillTree::SkillTree(std::string filename) {
     // Load skill nodes from a JSON file
     loadFromJson(filename); //Upon initialization, loads the particular skill tree from a JSON file
 
-    skillNodeShape.setSize(sf::Vector2f(50, 50)); // Set the size of each skill node shape
-    skillNodeShape.setFillColor(sf::Color(255,165,0)); // Set the color of the skill node shape
+    // for (SkillNode& node : skillNodes) {
+    //      node.skillNodeShape.setSize(sf::Vector2f(50, 50)); // Set the size of each skill node shape
+    //      switch(node.magicType)
+    //      {
+    //         case Magic::Determination:
+    //             node.skillNodeShape.setOutlineColor(sf::Color(255,0,0)); // Set the color of the skill node shape
+    //             break;
+    //          case Magic::Bravery:
+    //              node.skillNodeShape.setOutlineColor(sf::Color(255,165,0)); // Set the color of the skill node shape
+    //              break;
+    //         case Magic::Justice:
+    //             node.skillNodeShape.setOutlineColor(sf::Color(255,255,0)); // To Yellow
+    //             break;
+    //         case Magic::Kindness:
+    //             node.skillNodeShape.setOutlineColor(sf::Color(0,255,0)); // To Green
+    //             break;
+    //         case Magic::Patience:
+    //             node.skillNodeShape.setOutlineColor(sf::Color(0,255,255)); // To Cyan
+    //             break;
+    //         case Magic::Integrity:
+    //             node.skillNodeShape.setOutlineColor(sf::Color(0,0,255)); // To Blue
+    //             break;
+    //         case Magic::Perseverance:
+    //             node.skillNodeShape.setOutlineColor(sf::Color(255,0,255)); // To Magenta
+    //             break;
+    //         case Magic::Apathy:
+    //             node.skillNodeShape.setOutlineColor(sf::Color(100,0,0)); // To Dark Red
+    //             break;
+    //         case Magic::Fear:
+    //             node.skillNodeShape.setOutlineColor(sf::Color(255,140,0)); // To Dark Orange
+    //             break;
+    //         case Magic::Chaos:
+    //             node.skillNodeShape.setOutlineColor(sf::Color(100,75,0)); // To Dark Yellow
+    //             break;
+    //         case Magic::Wrath:
+    //             node.skillNodeShape.setOutlineColor(sf::Color(0,100,0)); // To Dark Green
+    //             break;
+    //         case Magic::Nihilistic:
+    //             node.skillNodeShape.setOutlineColor(sf::Color(0,100,100)); // To Dark Cyan
+    //             break;
+    //         case Magic::Deceit:
+    //             node.skillNodeShape.setOutlineColor(sf::Color(0,0,100)); // To Dark Blue
+    //             break;
+    //         case Magic::Irresolution:
+    //             node.skillNodeShape.setOutlineColor(sf::Color(100,0,100)); // To Dark Magenta
+    //             break;
+    //      }
+    // }
+
+
+}
+Magic SkillTree::parseMagic(const std::string& magictype)
+{
+    std::string upperMagictype = magictype;
+    std::transform(upperMagictype.begin(), upperMagictype.end(), upperMagictype.begin(), ::toupper);
+
+    if (upperMagictype == "DETERMINATION")
+    {
+        return Magic::Determination;
+    }
+    else if (upperMagictype == "BRAVERY")
+    {
+        return Magic::Bravery;
+    }
+    else if (upperMagictype == "JUSTICE")
+    {
+        return Magic::Justice;
+    }
+    else if (upperMagictype == "KINDNESS")
+    {
+        return Magic::Kindness;
+    }
+    else if (upperMagictype == "PATIENCE")
+    {
+        return Magic::Patience;
+    }
+    else if (upperMagictype == "INTEGRITY")
+    {
+        return Magic::Integrity;
+    }
+    else if (upperMagictype == "PERSEVERANCE")
+    {
+        return Magic::Perseverance;
+    }
+    else if (upperMagictype == "APATHY")
+    {
+        return Magic::Apathy;
+    }
+    else if (upperMagictype == "FEAR")
+    {
+        return Magic::Fear;
+    }
+    else if (upperMagictype == "CHAOS")
+    {
+        return Magic::Chaos;
+    }
+    else if (upperMagictype == "WRATH")
+    {
+        return Magic::Wrath;
+    }
+    else if (upperMagictype == "NIHILISTIC")
+    {
+        return Magic::Nihilistic;
+    }
+    else if (upperMagictype == "DECEIT")
+    {
+        return Magic::Deceit;
+    }   
+    else if (upperMagictype == "IRRESOLUTION")
+    {
+        return Magic::Irresolution;
+    }
+    else
+    {
+        std::cout << "Invalid magic type: " << magictype << std::endl;
+        exit(1);
+    }
+}
+
+UpgradeKind SkillTree::parseUpgradeKind(const std::string& upgradekind)
+{
+    std::string upperUpgradekind = upgradekind;
+    std::transform(upperUpgradekind.begin(), upperUpgradekind.end(), upperUpgradekind.begin(), ::toupper);
+
+    if (upperUpgradekind == "OFFENSIVE")
+    {
+        return UpgradeKind::Offensive;
+    }
+    else if (upperUpgradekind == "DEFENSIVE")
+    {
+        return UpgradeKind::Defensive;
+    }
+    else if (upperUpgradekind == "UTILITY")
+    {
+        return UpgradeKind::Utility;
+    }
+    else
+    {
+        std::cout << "Invalid upgrade kind: " << upgradekind << std::endl;
+        exit(1);
+    }
 }
 
 void SkillTree::addSkillNode(const SkillNode& node) {
@@ -28,16 +167,16 @@ void SkillTree::loadFromJson(const std::string& filename) {
         std::cerr << "Could not open file: " << filename << std::endl;
     }
 
-    nlohmann::json skills = nlohmann::json::parse(file);
+    nlohmann::json data = nlohmann::json::parse(file);
 
-    for (const auto& skill : skills) {
+    for (const auto& skill : data["skills"]) {
         SkillNode node;
         node.id = skill["id"].get<std::string>(); //explicitely telling it to get a string for this id value!
         node.name = skill["name"].get<std::string>();
         node.description = skill["description"].get<std::string>();
         node.cost = skill["cost"].get<int>();
-        node.magicType = static_cast<Magic>(skill["magic"].get<int>()); //Getting an integar, then casting it to the Magic enum
-        node.upgradeType = static_cast<UpgradeKind>(skill["kind"].get<int>()); // Cast the integer to the UpgradeKind enum
+        node.magicType = parseMagic(skill["magic"].get<std::string>()); //Getting a string, then casting it to the Magic enum
+        node.upgradeType = parseUpgradeKind(skill["kind"].get<std::string>()); // Cast the string to the UpgradeKind enum
         node.skillpathway = skill["skillpathway"].get<std::vector<std::string>>(); // Get the skill pathway as a vector of strings
         node.prerequisites = skill["prerequisites"].get<std::vector<std::string>>(); // Get the prerequisites as a vector of strings
         addSkillNode(node); // Add the skill node to the skill tree vector
@@ -66,19 +205,18 @@ void SkillTree::loadFromJson(const std::string& filename) {
 
     bool SkillTree::canUnlockSkill(const std::string& skillId)
     {
-        for (SkillNode& node : skillNodes){
-            //Lets me iterate through ALL of the prerequisates within the vector, specifically by the string value of their id's
-            if(node.id == skillId && !node.isUnlocked && std::all_of(node.prerequisites.begin(), node.prerequisites.end(), [this](const std::string& prereq) 
-            //Lets me check if all the prerequisates for a given skill node are unlocked, by iterating through the skill tree vector and checking if the prerequisate id's match any of the skill node id's, and if they do, checking if they are unlocked
-            {auto it = std::find_if(skillNodes.begin(), skillNodes.end(), [prereq](const SkillNode& node) { return node.id == prereq; }); 
-            return it != skillNodes.end() && it->isUnlocked;})) //Will add tower Xp cost check here later...
-            {
-                return true;
-            }
-            else
+        auto it = std::find_if(skillNodes.begin(), skillNodes.end(), [&skillId] (const SkillNode& node) { return node.id == skillId; });
+        //Searches within the SkillNodes vector for the skill with the ID that matches the skillId parameter
+
+            //If already unlocked or skill isn't found within the vector
+            if (it == skillNodes.end() || it->isUnlocked) 
             {
                 return false;
             }
-        }
+            
+            //Returns all of the prerequisites for the skill, checking if they are unlocked. This is only true is all prerequiresites are unlocked, otherwise it returns false. If there are no prerequisites, this will return true.
+            return std::all_of(it->prerequisites.begin(), it->prerequisites.end(),[this](const std::string& prereq) 
+            {auto prerequisiteIt = std::find_if(skillNodes.begin(), skillNodes.end(), [&](const SkillNode& prerequitenode) { return prerequitenode.id == prereq; }); return (prerequisiteIt != skillNodes.end() && prerequisiteIt->isUnlocked);});
+
         return false; 
     }
