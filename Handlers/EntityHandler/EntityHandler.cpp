@@ -26,12 +26,12 @@ void EntityHandler::SpawnEntity(const std::string& type, sf::RenderWindow& windo
     else if(type == "Matured")
     {
         Matured* m = dynamic_cast<Matured*>(entity.get());
-        if(m) m->createMatured(window, {window.getSize().x/2 + 1200.f, 830.0f}, {40.f, 130.f}, {70.f, 175.f});
+        if(m) m->createMatured(window, {window.getSize().x/2 + 1200.f, 770.0f}, {60.f, 150.f}, {80.f, 200.f});
     }
     else if(type == "Warden")
     {
         Warden* w = dynamic_cast<Warden*>(entity.get());
-        if(w) w->createWarden(window, {window.getSize().x/2 + 1200.f, 830.0f}, {40.f, 130.f}, {70.f, 175.f});
+        if(w) w->createWarden(window, {window.getSize().x/2 + 1200.f, 770.0f}, {100.f, 100.f}, {70.f, 175.f});
     }
 
     mEnemies.push_back(std::move(entity));

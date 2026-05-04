@@ -15,7 +15,7 @@
 #include "../Entities/Entities.h"
 #include <nlohmann/json.hpp> // For my json file handling... reminder to ask others to install it
 #include <SFML/Graphics.hpp>
-// #include "../GUI-Components/menu.h"
+#include "../GUI-Components/menu.h"
 
 enum class Magic{ //To help us decide what skill tree it goes under
     Determination, Bravery, Justice, Kindness, Patience, Integrity, Perseverance,
