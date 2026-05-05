@@ -14,15 +14,7 @@
  * @date 2026-4-15
  * @copyright Copyright (c) 2022
  */
-#include <SFML/Graphics.hpp>
-#include "Handlers/InputHandler/InputHandler.h"
-#include <iostream>
-#include "GUI-Components/menu.h"
-#include "Entities/Entities.h"
-#include "Handlers/EntityHandler/EntityHandler.h"
-#include "Handlers/WaveHandler/WaveHandler.h"
-#include "Handlers/CollisionHandler/CollisionHandler.h"
-#include "SkillTree/SkillTree.h"
+
 #include "game.h"
 
 int main()
