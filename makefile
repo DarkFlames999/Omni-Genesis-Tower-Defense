@@ -5,10 +5,13 @@ LIBS = -lsfml-graphics -lsfml-window -lsfml-system -lsfml-audio
 run: game
 	./game
 
-game: entities.o hurtbox.o hitbox.o main.o InputHandler.o EntityHandler.o WaveHandler.o CollisionHandler.o SkillTree.o game.o menu.o
+game: entities.o hurtbox.o hitbox.o main.o InputHandler.o EntityHandler.o WaveHandler.o CollisionHandler.o SkillTree.o game.o menu.o MagicSelection.o
 	$(CC) $(FLAGS) $^ -o game $(LIBS)
 
 menu.o: GUI-Components/menu.cpp GUI-Components/menu.h
+	$(CC) $(FLAGS) -c $< -o $@
+
+MagicSelection.o: GUI-Components/MagicSelection.cpp GUI-Components/MagicSelection.h
 	$(CC) $(FLAGS) -c $< -o $@
 
 entities.o: Entities/Entities.cpp Entities/Entities.h
