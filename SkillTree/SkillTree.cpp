@@ -12,50 +12,49 @@ SkillTree::SkillTree(std::string filename) {
     loadFromJson(filename); //Upon initialization, loads the particular skill tree from a JSON file
 
     // for (SkillNode& node : skillNodes) {
-    //      node.skillNodeShape.setSize(sf::Vector2f(50, 50)); // Set the size of each skill node shape
     //      switch(node.magicType)
     //      {
     //         case Magic::Determination:
-    //             node.skillNodeShape.setOutlineColor(sf::Color(255,0,0)); // Set the color of the skill node shape
+    //             node.skillNodeShape.setColorButtonClick(sf::Color(255,0,0)); // Set the color of the skill node shape
     //             break;
     //          case Magic::Bravery:
-    //              node.skillNodeShape.setOutlineColor(sf::Color(255,165,0)); // Set the color of the skill node shape
+    //              node.skillNodeShape.setColorButtonClick(sf::Color(255,165,0)); // Set the color of the skill node shape
     //              break;
     //         case Magic::Justice:
-    //             node.skillNodeShape.setOutlineColor(sf::Color(255,255,0)); // To Yellow
+    //             node.skillNodeShape.setColorButtonClick(sf::Color(255,255,0)); // To Yellow
     //             break;
     //         case Magic::Kindness:
-    //             node.skillNodeShape.setOutlineColor(sf::Color(0,255,0)); // To Green
+    //             node.skillNodeShape.setColorButtonClick(sf::Color(0,255,0)); // To Green
     //             break;
     //         case Magic::Patience:
-    //             node.skillNodeShape.setOutlineColor(sf::Color(0,255,255)); // To Cyan
+    //             node.skillNodeShape.setColorButtonClick(sf::Color(0,255,255)); // To Cyan
     //             break;
     //         case Magic::Integrity:
-    //             node.skillNodeShape.setOutlineColor(sf::Color(0,0,255)); // To Blue
+    //             node.skillNodeShape.setColorButtonClick(sf::Color(0,0,255)); // To Blue
     //             break;
     //         case Magic::Perseverance:
-    //             node.skillNodeShape.setOutlineColor(sf::Color(255,0,255)); // To Magenta
+    //             node.skillNodeShape.setColorButtonClick(sf::Color(255,0,255)); // To Magenta
     //             break;
     //         case Magic::Apathy:
-    //             node.skillNodeShape.setOutlineColor(sf::Color(100,0,0)); // To Dark Red
+    //             node.skillNodeShape.setColorButtonClick(sf::Color(100,0,0)); // To Dark Red
     //             break;
     //         case Magic::Fear:
-    //             node.skillNodeShape.setOutlineColor(sf::Color(255,140,0)); // To Dark Orange
+    //             node.skillNodeShape.setColorButtonClick(sf::Color(255,140,0)); // To Dark Orange
     //             break;
     //         case Magic::Chaos:
-    //             node.skillNodeShape.setOutlineColor(sf::Color(100,75,0)); // To Dark Yellow
+    //             node.skillNodeShape.setColorButtonClick(sf::Color(100,75,0)); // To Dark Yellow
     //             break;
     //         case Magic::Wrath:
-    //             node.skillNodeShape.setOutlineColor(sf::Color(0,100,0)); // To Dark Green
+    //             node.skillNodeShape.setColorButtonClick(sf::Color(0,100,0)); // To Dark Green
     //             break;
     //         case Magic::Nihilistic:
-    //             node.skillNodeShape.setOutlineColor(sf::Color(0,100,100)); // To Dark Cyan
+    //             node.skillNodeShape.setColorButtonClick(sf::Color(0,100,100)); // To Dark Cyan
     //             break;
     //         case Magic::Deceit:
-    //             node.skillNodeShape.setOutlineColor(sf::Color(0,0,100)); // To Dark Blue
+    //             node.skillNodeShape.setColorButtonClick(sf::Color(0,0,100)); // To Dark Blue
     //             break;
     //         case Magic::Irresolution:
-    //             node.skillNodeShape.setOutlineColor(sf::Color(100,0,100)); // To Dark Magenta
+    //             node.skillNodeShape.setColorButtonClick(sf::Color(100,0,100)); // To Dark Magenta
     //             break;
     //      }
     // }

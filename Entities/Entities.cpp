@@ -251,7 +251,7 @@ bool Juvenile::createJuvenile(sf::RenderWindow& window, sf::Vector2f position, s
 bool Matured::createMatured(sf::RenderWindow& window, sf::Vector2f position, sf::Vector2f size, sf::Vector2f spriteSize)
 {
     mFrameCount = 8;
-    mSpeed = 20;
+    mSpeed = 120;
     mHealth = 100;
     mDamage = 20;
     mXPValue = 25;
@@ -259,20 +259,22 @@ bool Matured::createMatured(sf::RenderWindow& window, sf::Vector2f position, sf:
 
     mSprite.setTexture(mMatured);
     sf::Vector2u textureSize = mMatured.getSize();
-    float frameWidth  = static_cast<float>(textureSize.x) / mFrameCount;
-    float frameHeight = static_cast<float>(textureSize.y);
+    float frameWidth  = textureSize.x / mFrameCount;
+    float frameHeight = textureSize.y;
 
     float scaleX = spriteSize.x / frameWidth;
     float scaleY = spriteSize.y / frameHeight;
+
     mSprite.setScale(scaleX*3, scaleY);
 
+    // Position in bottom right
+    mPosition = position;
     mSprite.setPosition(mPosition);
 
+    mSize = {(size.x/2)+180.f, (size.y/2)-20.f};
+    mOrigin = {(size.x/2.f)-20.f, (size.y/2.f)-150.f};
 
-    mSize = {(size.x/2)+60.f, (size.y/2)-40.f};
-    mOrigin = {(size.x/2.f)-20.f, (size.y/2.f)-130.f};
-
-    //Matured Hurtbox
+    //Juvenile Hurtbox
     mHurtbox.setSize(mSize.x, mSize.y);
     mHurtbox.setOrigin(mOrigin.x, mOrigin.y);
     mHurtbox.setPosition(mPosition.x, mPosition.y);
@@ -297,7 +299,7 @@ bool Matured::createMatured(sf::RenderWindow& window, sf::Vector2f position, sf:
 bool Warden::createWarden(sf::RenderWindow& window, sf::Vector2f position, sf::Vector2f size, sf::Vector2f spriteSize)
 {
     mFrameCount = 7;
-    mSpeed = 10;
+    mSpeed = 140;
     mHealth = 200;
     mDamage = 40;
     mXPValue = 50;
@@ -305,26 +307,29 @@ bool Warden::createWarden(sf::RenderWindow& window, sf::Vector2f position, sf::V
 
     mSprite.setTexture(mWarden);
     sf::Vector2u textureSize = mWarden.getSize();
-    float frameWidth  = static_cast<float>(textureSize.x) / mFrameCount;
-    float frameHeight = static_cast<float>(textureSize.y);
+    float frameWidth  = textureSize.x / mFrameCount;
+    float frameHeight = textureSize.y;
 
     float scaleX = spriteSize.x / frameWidth;
     float scaleY = spriteSize.y / frameHeight;
-    mSprite.setScale(scaleX*3, scaleY);
 
+    mSprite.setScale(scaleX*3*(-1), scaleY); //Must fix
+
+    // Position in bottom right
+    mPosition = position;
     mSprite.setPosition(mPosition);
 
+    mSize = {(size.x/2)+180.f, (size.y/2)-20.f};
+    mOrigin = {(size.x/2.f)-20.f, (size.y/2.f)-150.f};
 
-    mSize = {(size.x/2)+60.f, (size.y/2)-40.f};
-    mOrigin = {(size.x/2.f)-20.f, (size.y/2.f)-130.f};
-
-    //Warden Hurtbox
+    //Juvenile Hurtbox
     mHurtbox.setSize(mSize.x, mSize.y);
     mHurtbox.setOrigin(mOrigin.x, mOrigin.y);
     mHurtbox.setPosition(mPosition.x, mPosition.y);
     mHurtbox.setFillColor(sf::Color::Transparent);
     mHurtbox.setOutlineColor(sf::Color::Red);
     mHurtbox.setOutlineThickness(1.f);
+
 
     return true;
 }
