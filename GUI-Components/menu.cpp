@@ -11,7 +11,7 @@
  */
 Button::Button(std::string s, sf::Vector2f position, sf::Vector2f size, sf::Color color)
 {
-    if (!mTexture.loadFromFile("Sprites/Button-Textures/ButtonS.png"))
+    if (!mTexture.loadFromFile("Sprites/ButtonS.png"))
     {
         std::cerr<<"Error opening file\n";
         exit(1);
@@ -113,7 +113,7 @@ void Button::setColorButtonFade() const
 {
     if (mFading && mColorIndex < rainbow.size()-1)
     {
-        mFadingProgress += 0.01f;  // adjust for fade speed
+        mFadingProgress += 0.25f;  // adjust for fade speed
 
         if(mFadingProgress >= 1.0f)
         {
@@ -143,7 +143,7 @@ void starAnimation(sf::RenderWindow& window)
 {
     //Loading the star texture
     sf::Texture star;
-    if(!star.loadFromFile("Sprites/Menu-Textures/Star.png"))
+    if(!star.loadFromFile("Sprites/Star.png"))
     {
         std::cerr<<"Error opening \"Star.png\" file" << std::endl;
         exit(1);

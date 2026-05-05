@@ -16,7 +16,6 @@ public:
     //change button color to color (what else needs to be changed?)
     void setColorButtonNormal(sf::Color buttonNormalColor){mButtonNormal = buttonNormalColor;};
     void setColorButtonClick(sf::Color buttonClickColor){mButtonClick = buttonClickColor;};
-    void setSize(sf::Vector2f size){mButton.setScale(size.x/mTexture.getSize().x, size.y/mTexture.getSize().y);};
 
     sf::Vector2f getPosition(){return mPosition;};
     sf::Vector2f getDimensions(){return sf::Vector2f(mButton.getGlobalBounds().width, mButton.getGlobalBounds().height);};
