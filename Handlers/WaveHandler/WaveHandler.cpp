@@ -61,6 +61,16 @@ WaveHandler::WaveHandler() : EntityHandler()
 }
 
 /**
+ * @brief Sets the current wave
+ * 
+ * @param wave 
+ */
+void WaveHandler::SetWave(int wave)
+{
+    mCurrentWave = wave;
+}
+
+/**
  * @brief Starts next wave and recomputes values
  * 
  * @param window 
@@ -152,8 +162,7 @@ int WaveHandler::ComputeEnemyCount(int wave) const
  */
 void WaveHandler::BuildSpawnQueue(int wave)
 {
-    while(!mSpawnQueue.empty())
-    {
+    while (!mSpawnQueue.empty()) {
         mSpawnQueue.pop();
     }
 
@@ -164,13 +173,27 @@ void WaveHandler::BuildSpawnQueue(int wave)
     const int maturedCount = static_cast<int>(std::round(total * tier.maturedRatio));
     const int wardenCount = total - juvenileCount - maturedCount;
 
-    for (int i = 0; i < wardenCount; i++) {
-        mSpawnQueue.push("Warden");
-    }
-    for (int i = 0; i < maturedCount; i++) {
-        mSpawnQueue.push("Matured");
-    }
+    std::vector<std::string> enemies;
+    enemies.reserve(total);
+
     for (int i = 0; i < juvenileCount; i++) {
-        mSpawnQueue.push("Juvenile");
+        enemies.push_back("Juvenile");
+    }
+    for (int i = 0; i < maturedCount;  i++) {
+        enemies.push_back("Matured");
+    }
+    for (int i = 0; i < wardenCount;   i++) {
+        enemies.push_back("Warden");
+    }
+
+    // Fisher-Yates random shuffle
+    for (int i = static_cast<int>(enemies.size()) - 1; i > 0; i--)
+    {
+        int j = std::rand() % (i + 1);
+        std::swap(enemies[i], enemies[j]);
+    }
+
+    for (const auto& e : enemies){
+        mSpawnQueue.push(e);
     }
 }

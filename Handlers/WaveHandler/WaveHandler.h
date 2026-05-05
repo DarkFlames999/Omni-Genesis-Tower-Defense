@@ -23,6 +23,7 @@ public:
 
     void Update(sf::RenderWindow& window, float deltaTime);
 
+    void SetWave(int wave);
     void StartNextWave(sf::RenderWindow& window);
 
     bool IsWaveComplete() const;
