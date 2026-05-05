@@ -18,12 +18,16 @@ Game::Game()
 {
     mWindow.setFramerateLimit(60);
 
-    //Tower extra controls don't touch fr
-    mTowerKeyBindingHandler.ImplementHeldKey(sf::Keyboard::Num1, 0.5f);
+    //Skill Tree Loading
+    mBraverySkillTree = SkillTree("SkillTree/Bravery_Skill_Tree.json");
+    std::cout << "Loaded " << mBraverySkillTree.getSkillTreeSize() << " skills\n";
+
     // Background music
-    if (!mMusic.openFromFile("music/background.ogg")) {
+    if (!mMusic.openFromFile("music/background.ogg")) 
+    {
         std::cerr << "Warning: failed to load background music\n";
     }
+
     mMusic.setLoop(true);
     mMusic.setVolume(50.f);
     mMusic.play();
@@ -70,6 +74,10 @@ void Game::processEvents()
             if (mState == State::Playing || mState == State::Paused) {
                 mState = State::Menu;
                 initMenu();
+            } else if (mState == State::MagicSelection) {
+                mState = State::Playing;
+            } else if (mState == State::SkillTreeView) {
+                mState = State::MagicSelection;
             } else {
                 mWindow.close();
             }
@@ -88,7 +96,31 @@ void Game::processEvents()
                 {
                     mTower.shoot(mWindow);
                 }
+                if ((e.type == sf::Event::KeyPressed && e.key.code == sf::Keyboard::E))
+                {
+                    initMagicSelection();
+                    mState = State::MagicSelection;
+                    std::cout << "Entered Magic Selection\n";
+                }
                 break;
+
+            case State::MagicSelection:
+                std::cout << "[render dispatch] state is MagicSelection\n";
+                if (e.type == sf::Event::KeyPressed && e.key.code == sf::Keyboard::Escape)
+                {
+                    mState = State::Playing; //Unpauses the game back to the main game, exiting the magic menu
+                    std::cout << "Exited Magic Selection\n";
+                    break;
+                }
+                updateMagicSelection(e);
+                break;
+            case State::SkillTreeView:
+                if (e.type == sf::Event::KeyPressed && e.key.code == sf::Keyboard::Escape) //Allows us to exit the menu back
+                {
+                    mState = State::MagicSelection;
+                    std::cout << "Exited Skill Tree View\n";
+                    break;
+                }
             default:
                 break;
         }
@@ -137,6 +169,12 @@ void Game::render()
         case State::Playing:
             renderPlaying();
             break;
+        case State::MagicSelection:
+            renderMagicSelection();
+            break;
+        case State::SkillTreeView:
+            renderSkillTreeView();
+            break;
         default:
             break;
     }
@@ -175,18 +213,18 @@ void Game::renderIntro()
 void Game::initMenu()
 {
     sf::Vector2u ws = mWindow.getSize();
-    float cx = ws.x / 2.0f;
-    float cy = ws.y / 2.0f;
+    float centerx = ws.x / 2.0f;
+    float centery = ws.y / 2.0f;
 
     mPlayBtn = std::make_unique<Button>(
         "Play",
-        sf::Vector2f(cx, cy - 60.f),
+        sf::Vector2f(centerx, centery - 60.f),
         sf::Vector2f(300.f, 80.f),
         sf::Color(180, 20, 20, 255));
 
     mQuitBtn = std::make_unique<Button>(
         "Quit",
-        sf::Vector2f(cx, cy + 60.f),
+        sf::Vector2f(centerx, centery + 60.f),
         sf::Vector2f(300.f, 80.f),
         sf::Color(80, 80, 80, 255));
 }
@@ -232,27 +270,113 @@ void Game::renderMenu()
  */
 void Game::initDifficultySelect()
 {
-    sf::Vector2u ws = mWindow.getSize();
-    float cx = ws.x / 2.0f;
-    float cy = ws.y / 2.0f;
+    sf::Vector2u windowsize = mWindow.getSize();
+    float centerx = windowsize.x / 2.0f;
+    float centery = windowsize.y / 2.0f;
 
     mEasyBtn = std::make_unique<Button>(
         "Easy",
-        sf::Vector2f(cx, cy - 100.f),
+        sf::Vector2f(centerx, centery - 100.f),
         sf::Vector2f(300.f, 80.f),
         sf::Color(30, 160, 30, 255));
 
     mMediumBtn = std::make_unique<Button>(
         "Medium",
-        sf::Vector2f(cx, cy),
+        sf::Vector2f(centerx, centery),
         sf::Vector2f(300.f, 80.f),
         sf::Color(200, 150, 0, 255));
 
     mHardBtn = std::make_unique<Button>(
         "Hard",
-        sf::Vector2f(cx, cy + 100.f),
+        sf::Vector2f(centerx, centery + 100.f),
         sf::Vector2f(300.f, 80.f),
         sf::Color(180, 20, 20, 255));
+
+    mAreyousureBtn = std::make_unique<Button>(
+        "Are you sure?",
+        sf::Vector2f(centerx, centery + 200.f),
+        sf::Vector2f(300.f, 80.f),
+        sf::Color(180, 20, 20, 255));
+}
+
+void Game::initMagicSelection()
+{
+    // Placeholder for magic selection initialization
+        std::cout << "[initMagicSelection] called\n";
+}
+
+void Game::updateMagicSelection(sf::Event& e)
+{
+    // Placeholder for magic selection update logic
+    //Just for testing before I add buttons for the magic selection
+    if (e.type == sf::Event::KeyPressed && e.key.code == sf::Keyboard::B)
+    {
+        mActiveMagic = Magic::Bravery;
+        initSkillTreeView();
+        mState = State::SkillTreeView;
+    }
+}
+
+void Game::renderMagicSelection()
+{
+    // Placeholder for magic selection rendering
+        // Dim background
+            std::cout << "[renderMagicSelection] called\n";
+    sf::RectangleShape dimbg(sf::Vector2f(mWindow.getSize()));
+    dimbg.setFillColor(sf::Color(0, 0, 0, 0));
+    dimbg.setTexture(&mSkillTreeBgTexture);
+    mWindow.draw(dimbg);
+    sf::RectangleShape dimfg(sf::Vector2f(mWindow.getSize()));
+    dimfg.setFillColor(sf::Color(255, 255, 255, 0));
+    dimfg.setTexture(&mSkillTreeFgTexture);
+    mWindow.draw(dimfg);
+    sf::Font mUIFont;
+    if(!mUIFont.loadFromFile("Fonts/Norse.ttf"))
+    {
+        std::cerr << "Warning: failed to load UI font\n";
+    }
+    sf::Text text("MAGIC SELECTION (press B for Bravery, E to close)", mUIFont, 36);
+    text.setFillColor(sf::Color::Yellow);
+    sf::FloatRect b = text.getLocalBounds();
+    text.setOrigin(b.width / 2.f, b.height / 2.f);
+    text.setPosition(mWindow.getSize().x / 2.f, mWindow.getSize().y / 2.f);
+    mWindow.draw(text);
+}
+
+void Game::initSkillTreeView()
+{
+    // Placeholder for skill tree view initialization
+}
+
+void Game::updateSkillTreeView(sf::Event& e)
+{
+    // Placeholder for skill tree view update logic
+}
+
+void Game::renderSkillTreeView()
+{
+    // Placeholder for skill tree view rendering
+    // Dim background
+    sf::RectangleShape dimbg(sf::Vector2f(mWindow.getSize()));
+    dimbg.setFillColor(sf::Color(0, 0, 0, 0));
+    dimbg.setTexture(&mSkillTreeBgTexture);
+    mWindow.draw(dimbg);
+    sf::RectangleShape dimfg(sf::Vector2f(mWindow.getSize()));
+    dimfg.setFillColor(sf::Color(255, 255, 255, 0));
+    dimfg.setTexture(&mSkillTreeFgTexture);
+    mWindow.draw(dimfg);
+
+    sf::Font mUIFont;
+    if(!mUIFont.loadFromFile("Fonts/Norse.ttf"))
+    {
+        std::cerr << "Warning: failed to load UI font\n";
+    }
+    sf::Text text("SKILL TREE VIEW (press E to close)", mUIFont, 36);
+    text.setFillColor(sf::Color::White);
+    sf::FloatRect b = text.getLocalBounds();
+    text.setOrigin(b.width / 2.f, b.height / 2.f);
+    text.setPosition(mWindow.getSize().x / 2.f, mWindow.getSize().y / 2.f);
+    mWindow.draw(text);
 }
 
 /**
@@ -265,6 +389,7 @@ void Game::updateDifficultySelect(sf::Event& e)
     mEasyBtn->update(e, mWindow);
     mMediumBtn->update(e, mWindow);
     mHardBtn->update(e, mWindow);
+    mAreyousureBtn->update(e, mWindow);
 
     auto chosen = [&](Button& btn, Difficulty d)
     {
@@ -279,6 +404,7 @@ void Game::updateDifficultySelect(sf::Event& e)
     chosen(*mEasyBtn, Difficulty::Easy);
     chosen(*mMediumBtn, Difficulty::Medium);
     chosen(*mHardBtn, Difficulty::Hard);
+    chosen(*mAreyousureBtn, Difficulty::Areyousure);
 }
 
 /**
@@ -303,6 +429,7 @@ void Game::renderDifficultySelect()
     mWindow.draw(*mEasyBtn);
     mWindow.draw(*mMediumBtn);
     mWindow.draw(*mHardBtn);
+    mWindow.draw(*mAreyousureBtn);
 }
 
 /**
@@ -324,6 +451,9 @@ void Game::startGame()
             break;
         case Difficulty::Hard:
             startWave = 20;
+            break;
+        case Difficulty::Areyousure:
+            startWave = 30;
             break;
         default:
             startWave = 0;
@@ -397,6 +527,9 @@ void Game::renderPlaying()
             break;
         case Difficulty::Hard:
             diffStr = "Hard";
+            break;
+        case Difficulty::Areyousure:
+            diffStr = "Are you sure?";
             break;
         default:
             diffStr = "";

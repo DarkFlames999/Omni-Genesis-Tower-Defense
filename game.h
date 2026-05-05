@@ -27,8 +27,8 @@ public:
     void run();
 
 private:
-    enum class State       { Intro, Menu, DifficultySelect, Playing, Paused };
-    enum class Difficulty  { None, Easy, Medium, Hard };
+    enum class State       { Intro, Menu, DifficultySelect, Playing, MagicSelection, SkillTreeView, Paused };
+    enum class Difficulty  { None, Easy, Medium, Hard, Areyousure };
 
     void processEvents();
     void update(float dt);
@@ -65,17 +65,29 @@ private:
     std::unique_ptr<Button> mEasyBtn;
     std::unique_ptr<Button> mMediumBtn;
     std::unique_ptr<Button> mHardBtn;
+    std::unique_ptr<Button> mAreyousureBtn;
 
     // Decorative star background for menu screens
     sf::Texture mStarTexture;
     sf::Sprite mStarBg;
+    sf::Texture mSkillTreeBgTexture;
+    sf::Texture mSkillTreeFgTexture;
 
     Tower mTower;
     WaveHandler mWaves;
     CollisionHandler mCollisionHandler;
     EntityHandler mEntityHandler;
     InputHandler mTowerKeyBindingHandler;
+    SkillTree mBraverySkillTree;
+    Magic mActiveMagic { Magic::Bravery };
 
+    void initMagicSelection();
+    void updateMagicSelection(sf::Event& e);
+    void renderMagicSelection();
+
+    void initSkillTreeView();
+    void updateSkillTreeView(sf::Event& e);
+    void renderSkillTreeView();
 
     sf::Music mMusic;
 };

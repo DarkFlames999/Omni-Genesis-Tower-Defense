@@ -26,6 +26,13 @@ static constexpr WaveTier WAVE_TIERS[] = {
     { 5,  0.60f, 0.40f }, // waves  5–9:  60% Juvenile, 40% Matured
     { 10, 0.40f, 0.40f }, // waves 10–19: 40 / 40 / 20 split
     { 20, 0.20f, 0.50f }, // waves 20+:   20 / 50 / 30 split
+    { 30, 0.10f, 0.50f }, // waves 30+:   10 / 50 / 40 split
+    { 40, 0.00f, 0.50f }, // waves 40+:   0 / 50 / 50 split
+    { 50, 0.00f, 0.40f }, // waves 50+:   0 / 40 / 60 split
+    { 60, 0.00f, 0.30f }, // waves 60+:   0 / 30 / 70 split
+    { 70, 0.00f, 0.20f }, // waves 70+:   0 / 20 / 80 split
+    { 80, 0.00f, 0.10f }, // waves 80+:   0 / 10 / 90 split
+    { 90, 0.00f, 0.00f }, // waves 90+:   ALL WARDENS - You are fucked
 };
 
 /**
