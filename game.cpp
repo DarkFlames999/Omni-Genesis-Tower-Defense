@@ -335,7 +335,7 @@ void Game::startGame()
 }
 
 /**
- * @brief Update playing state
+ * @brief Update gameplay
  * 
  * @param dt 
  */
@@ -346,10 +346,32 @@ void Game::updatePlaying(float dt)
     mWaves.Update(mWindow, dt);
     mCollisionHandler.checkBulletEnemyCollision(mTower.getAttacks(), mWaves);
     mCollisionHandler.checkEnemyTowerCollision(mWaves, mTower);
+
+    // Allows holding mouse to fire continuously
+    if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
+        mTower.shoot(mWindow);
+
+    // Grant XP for kills
+    for (auto& enemy : mEntityHandler.getEnemies())
+    {
+        Enemies* enemies = dynamic_cast<Enemies*>(enemy.get());
+        if (enemies->isDead())
+        {
+            enemies->giveXP(mTower);
+            std::cout << "Tower XP: " << mTower.getXPPoints() << std::endl;
+        }
+    }
+
+    if (mTower.getHealth() <= 0)
+    {
+        // Lose condition for later
+    }
+
     if (mWaves.IsWaveComplete()) {
         mWaves.StartNextWave(mWindow);
     }
 }
+
 
 /**
  * @brief Render playing state
