@@ -74,7 +74,9 @@ private:
     WaveHandler mWaves;
     CollisionHandler mCollisionHandler;
     EntityHandler mEntityHandler;
-    InputHandler mInputHandler;
+    InputHandler mTowerKeyBindingHandler;
+
+
     sf::Music mMusic;
 };
 

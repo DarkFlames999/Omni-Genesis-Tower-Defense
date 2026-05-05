@@ -28,6 +28,7 @@ bool InputHandler::isHeldKey(HeldKeyBinding& binding, sf::Event event)
     }
     return false;
 }
+
 bool InputHandler::isDoubleTap(DoubleTapBinding& binding, sf::Event event)
 {
     if (event.type == sf::Event::KeyPressed && event.key.code == binding.key)

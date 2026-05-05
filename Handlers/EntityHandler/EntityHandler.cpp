@@ -52,13 +52,15 @@ void EntityHandler::UpdateEntities(sf::RenderWindow& window, float deltaTime)
         if(!enemies) continue;
         enemies->update(window, deltaTime);
     }
-    
+
     mEnemies.erase(
         std::remove_if(mEnemies.begin(), mEnemies.end(),
-            [](const std::unique_ptr<Entity>& e)
+            [](const std::unique_ptr<Entity>& Entity)
             {
-                Enemies* enemy = dynamic_cast<Enemies*>(e.get());
+                Enemies* enemy = dynamic_cast<Enemies*>(Entity.get());
                 return enemy && enemy->isDead();
             }),
         mEnemies.end());
+
+
 }

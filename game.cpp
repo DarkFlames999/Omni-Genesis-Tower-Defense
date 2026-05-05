@@ -18,6 +18,8 @@ Game::Game()
 {
     mWindow.setFramerateLimit(60);
 
+    //Tower extra controls don't touch fr
+    mTowerKeyBindingHandler.ImplementHeldKey(sf::Keyboard::Num1, 0.5f);
     // Background music
     if (!mMusic.openFromFile("music/background.ogg")) {
         std::cerr << "Warning: failed to load background music\n";

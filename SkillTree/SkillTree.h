@@ -15,6 +15,7 @@
 #include "../Entities/Entities.h"
 #include <nlohmann/json.hpp> // For my json file handling... reminder to ask others to install it
 #include <SFML/Graphics.hpp>
+// #include "../GUI-Components/menu.h"
 
 enum class Magic{ //To help us decide what skill tree it goes under
     Determination, Bravery, Justice, Kindness, Patience, Integrity, Perseverance,
@@ -35,6 +36,8 @@ struct SkillNode {
     int cost = 1;
     std::vector<std::string> skillpathway; // I.E. "Thermal Energy Manipulation" -> "Fire Manipulation"
     std::vector<std::string> prerequisites; // List of skill node IDs that are prerequisites
+
+    // Button skillNodeShape; // For the visual representation of the skill node in the skill tree UI
 };
 
 class SkillTree {
@@ -47,7 +50,9 @@ public:
     void unlockSkill(const std::string& skillId);
     bool canUnlockSkill(const std::string& skillId);
 
-    sf::RectangleShape skillNodeShape; // For drawing the skill tree, each node will be represented as a rectangle shape
+    //helper function for JSON conversation
+    Magic parseMagic(const std::string& magictype);
+    UpgradeKind parseUpgradeKind(const std::string& upgradekind);
 
 protected:
     std::vector <SkillNode> skillNodes;

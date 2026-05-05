@@ -38,6 +38,8 @@ class EntityHandler
         void UpdateEntities(sf::RenderWindow& window, float deltaTime);
         std::vector<std::unique_ptr<Entity>>& getEnemies() { return mEnemies; }
 
+        friend class Tower;
+
     protected:
         std::vector<std::unique_ptr<Entity>> mEnemies;
         std::map<std::string, EntitySpawning> mEnemyTypeMapping;
