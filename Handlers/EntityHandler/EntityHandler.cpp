@@ -71,7 +71,7 @@ void EntityHandler::UpdateEntities(sf::RenderWindow& window, float deltaTime, sf
         if(!enemy) continue;
 
         Enemies* enemies = dynamic_cast<Enemies*>(enemy.get());
-        if(enemies) enemies->setTowerBounds(towerBounds); // set before update
+        if(enemies) enemies->setTowerBounds(towerBounds);
 
         enemies->update(window, deltaTime);
     }

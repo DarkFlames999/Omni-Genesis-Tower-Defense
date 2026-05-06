@@ -22,7 +22,6 @@ void CollisionHandler::checkBulletEnemyCollision(std::vector<std::unique_ptr<Att
             Enemies* e = dynamic_cast<Enemies*>(enemy.get());
             if(!e) continue;
 
-            // Hitbox vs Hurtbox — bullet's hitbox hits enemy's hurtbox
             if(bullet->getHitboxBounds().intersects(e->getHurtboxBounds()))
             {
                 bullet->setAlive(false);
@@ -52,7 +51,7 @@ void CollisionHandler::checkEnemyTowerCollision(EntityHandler& entities, Tower& 
 
         if (enemies->getHurtboxBounds().intersects(tower.getHurtboxBounds()))
         {
-            enemies->tryAttack(tower);   // handles cooldown, animation, damage
+            enemies->tryAttack(tower);
         }
     }
 }
