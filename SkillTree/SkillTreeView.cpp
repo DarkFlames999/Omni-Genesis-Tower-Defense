@@ -247,7 +247,7 @@ void SkillTreeView::drawTooltip(sf::RenderWindow& window) const {
     window.setView(mTreeView);
 }
 
-void SkillTreeView::drawHUD(sf::RenderWindow& window, int playerXP) const {
+void SkillTreeView::drawHUD(sf::RenderWindow& window, int playerXP) const { //The heads up display
     window.setView(window.getDefaultView());
     
     if (!mFont) return;

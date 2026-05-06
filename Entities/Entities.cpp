@@ -75,8 +75,8 @@ bool Tower::createTower(sf::RenderWindow& window, sf::Vector2f size, sf::Vector2
     mHurtbox.setOrigin(size.x/2+40.f, size.y/2);
     mHurtbox.setPosition(window.getSize().x/2.13f, (window.getSize().y/2.f)+350.f);
     mHurtbox.setFillColor(sf::Color::Transparent);
-    mHurtbox.setOutlineColor(sf::Color::Red);
-    mHurtbox.setOutlineThickness(1.f);
+    // mHurtbox.setOutlineColor(sf::Color::Red);
+    // mHurtbox.setOutlineThickness(1.f);
 
     //Health bar attributes
     const sf::Vector2f frameSize = {500.f, 80.f}; 
@@ -179,7 +179,7 @@ void Tower::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
     target.draw(mCannon, states);
     target.draw(mSprite, states);
-    mHurtbox.draw(target, states); //Uncomment to see the hurtbox of the tower
+    mHurtbox.draw(target, states);
     target.draw(mStabilityFill, states);
     target.draw(mHealthFill, states);
     target.draw(mHealthBar, states);
@@ -196,22 +196,26 @@ void Tower::update(sf::RenderWindow& window, float deltaTime)
     sf::Vector2f mouseWorld = window.mapPixelToCoords(mousePixel); //Where the mouse is in the world, not just the window, which is important for aiming and shooting projectiles towards the mouse position
     aim(mouseWorld);
 
-    //Health bar update
-    float maxHPBarWidth = mHealthFill.getSize().x;
+ 
     float healthRatio = std::max(0.f, mHP / mMaxHP);
-    mHealthFill.setSize({maxHPBarWidth * healthRatio, 20.f});
+    mHealthFill.setSize({mMaxHealthBarWidth * healthRatio, 20.f});
 
     if(healthRatio > 0.5f)
-        mHealthFill.setFillColor(sf::Color::Red);
+    {
+        mHealthFill.setFillColor(sf::Color::Green);
+    }
     else if(healthRatio > 0.25f)
+    {
         mHealthFill.setFillColor(sf::Color::Yellow);
+    }
     else
-        mHealthFill.setFillColor(sf::Color::Black);
+    {
+        mHealthFill.setFillColor(sf::Color::Red);
+    }
 
     //Stability bar update
-    float maxStabilityBarWidth = mStabilityFill.getSize().x;
     float stabilityRatio = std::max(0.f, mStability / mMaxStability);
-    mStabilityFill.setSize({maxStabilityBarWidth * stabilityRatio, 20.f});
+    mStabilityFill.setSize({mMaxStabilityBarWidth * stabilityRatio, 20.f});
 }
 
 /**
@@ -230,8 +234,6 @@ void Tower::updateAttack(sf::RenderWindow& window, float deltaTime)
         std::remove_if(mAttack.begin(), mAttack.end(),
             [](const std::unique_ptr<Attack>& a){ return !a->isAlive(); }),
         mAttack.end());
-
-    
 }
 
 /**
@@ -313,12 +315,25 @@ void Attack::setSpriteTexture(const sf::Texture* tex) {
  */
 bool Juvenile::createJuvenile(sf::RenderWindow& window, sf::Vector2f position, sf::Vector2f size, sf::Vector2f spriteSize)
 {
+
     mFrameCount = 12;
+    mAttackFrameCount = 5;
     mSpeed = 100.f;
     mHealth = 50.f;
     mDamage = 10.f;
     mXPValue = 10.f;
+
     loadTextureFromFile("Sprites/J_Walking.png", mJuveniles);
+    mWalkTextureRef = &mJuveniles;
+
+    if (mAttackTexture.loadFromFile("Sprites/JuvenileAttack.png"))
+    {
+        mHasAttackSprite = true;
+    }
+    else
+    {
+        std::cerr << "Warning: failed to load JuvenileAttack.png\n";
+    }
 
     mSprite.setTexture(mJuveniles);
     
@@ -343,8 +358,8 @@ bool Juvenile::createJuvenile(sf::RenderWindow& window, sf::Vector2f position, s
     mHurtbox.setOrigin(mOrigin.x, mOrigin.y);
     mHurtbox.setPosition(mPosition.x, mPosition.y);
     mHurtbox.setFillColor(sf::Color::Transparent);
-    mHurtbox.setOutlineColor(sf::Color::Red);
-    mHurtbox.setOutlineThickness(1.f);
+    // mHurtbox.setOutlineColor(sf::Color::Red);
+    // mHurtbox.setOutlineThickness(1.f);
 
     return true;
 }
@@ -368,11 +383,23 @@ bool Juvenile::createJuvenile(sf::RenderWindow& window, sf::Vector2f position, s
 bool Matured::createMatured(sf::RenderWindow& window, sf::Vector2f position, sf::Vector2f size, sf::Vector2f spriteSize)
 {
     mFrameCount = 8;
+    mAttackFrameCount = 5;
     mSpeed = 120.f;
     mHealth = 100.f;
     mDamage = 20.f;
     mXPValue = 25.f;
+
     loadTextureFromFile("Sprites/M_Walking.png", mMatured);
+    mWalkTextureRef = &mMatured;
+
+    if (mAttackTexture.loadFromFile("Sprites/MaturedAttack.png"))
+    {
+        mHasAttackSprite = true;
+    }
+    else
+    {
+        std::cerr << "Warning: failed to load MaturedAttack.png\n";
+    }
 
     mSprite.setTexture(mMatured);
     sf::Vector2u textureSize = mMatured.getSize();
@@ -396,8 +423,8 @@ bool Matured::createMatured(sf::RenderWindow& window, sf::Vector2f position, sf:
     mHurtbox.setOrigin(mOrigin.x, mOrigin.y);
     mHurtbox.setPosition(mPosition.x, mPosition.y);
     mHurtbox.setFillColor(sf::Color::Transparent);
-    mHurtbox.setOutlineColor(sf::Color::Red);
-    mHurtbox.setOutlineThickness(1.f);
+    // mHurtbox.setOutlineColor(sf::Color::Red);
+    // mHurtbox.setOutlineThickness(1.f);
 
     return true;
 }
@@ -416,11 +443,14 @@ bool Matured::createMatured(sf::RenderWindow& window, sf::Vector2f position, sf:
 bool Warden::createWarden(sf::RenderWindow& window, sf::Vector2f position, sf::Vector2f size, sf::Vector2f spriteSize)
 {
     mFrameCount = 7;
+    // mHasAttackSprite = 5; not done yet!
     mSpeed = 140.f;
     mHealth = 200.f;
     mDamage = 40.f;
     mXPValue = 50.f;
+
     loadTextureFromFile("Sprites/W_Walking.png", mWarden);
+    mWalkTextureRef = &mWarden;
 
     mSprite.setTexture(mWarden);
     sf::Vector2u textureSize = mWarden.getSize();
@@ -436,7 +466,7 @@ bool Warden::createWarden(sf::RenderWindow& window, sf::Vector2f position, sf::V
     mPosition = position;
     mSprite.setPosition(mPosition);
 
-    mSize = {(size.x/2)+180.f, (size.y/2)-20.f};
+    mSize = {(size.x/2)+40.f, (size.y/2)+80.f};
     mOrigin = {(size.x/2.f)-20.f, (size.y/2.f)-150.f};
 
     //Juvenile Hurtbox
@@ -444,8 +474,8 @@ bool Warden::createWarden(sf::RenderWindow& window, sf::Vector2f position, sf::V
     mHurtbox.setOrigin(mOrigin.x, mOrigin.y);
     mHurtbox.setPosition(mPosition.x, mPosition.y);
     mHurtbox.setFillColor(sf::Color::Transparent);
-    mHurtbox.setOutlineColor(sf::Color::Red);
-    mHurtbox.setOutlineThickness(1.f);
+    // mHurtbox.setOutlineColor(sf::Color::Red);
+    // mHurtbox.setOutlineThickness(1.f);
 
 
     return true;
@@ -470,44 +500,132 @@ void Enemies::draw(sf::RenderTarget& target, sf::RenderStates states) const
  */
 void Enemies::update(sf::RenderWindow& window, float deltaTime)
 {
+
     if(!mSprite.getTexture()) return;
     if(deltaTime > 0.05f) deltaTime = 0.05f;
 
+    if (mIsAttacking &&
+        mAttackAnimTimer.getElapsedTime().asSeconds() >= Attackanimationduration)
+    {
+        mIsAttacking = false;
+        if (mHasAttackSprite)
+            swapToWalkTexture();
+        mCurrentFrame = 0;
+        mAnimClock.restart();
+    }
+
+
+    int activeFrameCount =
+        (mIsAttacking && mHasAttackSprite) ? mAttackFrameCount : mFrameCount;
+    if (activeFrameCount <= 0) activeFrameCount = 1;
+
     sf::Vector2u textureSize = mSprite.getTexture()->getSize();
-    int frameWidth = textureSize.x / mFrameCount;
+    int frameWidth  = textureSize.x / activeFrameCount;
     int frameHeight = textureSize.y;
 
     if(mAnimClock.getElapsedTime().asSeconds() >= mFrameTime)
     {
-        mCurrentFrame = (mCurrentFrame + 1) % mFrameCount;
+        mCurrentFrame = (mCurrentFrame + 1) % activeFrameCount;
         mSprite.setTextureRect(sf::IntRect(mCurrentFrame * frameWidth, 0, frameWidth, frameHeight));
         mAnimClock.restart();
     }
 
-    // Move toward the tower from whichever side we spawned on
-    if(mSpawnedLeft)
-        mPosition.x += mSpeed * deltaTime; // left side: move right
-    else
-        mPosition.x -= mSpeed * deltaTime; // right side: move left
+    if (!mIsAttacking)
+    {
+        if(mSpawnedLeft)
+            mPosition.x += mSpeed * deltaTime;
+        else
+            mPosition.x -= mSpeed * deltaTime;
+    }
 
     mSprite.setPosition(mPosition.x, mPosition.y);
     mHurtbox.setPosition(mPosition.x, mPosition.y);
 
-    // Stop at the tower bounds depending on which side
-    if(mSpawnedLeft && mPosition.x >= (window.getSize().x / 2.f) - 100.f)
+    float enemySpriteWidth = mHurtbox.getGlobalBounds().width - 5.f;
+
+    if(!mSpawnedLeft && mPosition.x <= mTowerBounds.left + mTowerBounds.width)
     {
-        mPosition.x = (window.getSize().x / 2.f) - 100.f;
+        mPosition.x = mTowerBounds.left + mTowerBounds.width - 5;
         mSprite.setPosition(mPosition.x, mPosition.y);
         mHurtbox.setPosition(mPosition.x, mPosition.y);
     }
-    else if(!mSpawnedLeft && mPosition.x <= (window.getSize().x / 2.f) + 100.f)
+    if(mSpawnedLeft && mPosition.x + enemySpriteWidth >= mTowerBounds.left)
     {
-        mPosition.x = (window.getSize().x / 2.f) + 100.f;
+        mPosition.x = mTowerBounds.left - enemySpriteWidth;
         mSprite.setPosition(mPosition.x, mPosition.y);
         mHurtbox.setPosition(mPosition.x, mPosition.y);
     }
 
     if(isDead()) return;
+}
+
+/**
+ * @brief Attempts a bite attack on the tower. Respects the 2s cooldown
+ * and triggers attack animation if the enemy has an attack sprite.
+ */
+void Enemies::tryAttack(Tower& tower)
+{
+    if (mIsAttacking) return;
+
+    // Cooldown gate
+    if (mAttackCooldown.getElapsedTime().asSeconds() < Attackcooldown) return;
+
+    mIsAttacking = true;
+    mCurrentFrame = 0;
+    mAnimClock.restart();
+    mAttackAnimTimer.restart();
+    mAttackCooldown.restart();
+
+    if (mHasAttackSprite)
+        swapToAttackTexture();
+
+    tower.takeDamage(mDamage);
+    std::cout << "Bite! Tower health: " << tower.getHealth() << std::endl;
+}
+
+void Enemies::swapToAttackTexture()
+{
+    if (!mHasAttackSprite) return;
+
+    sf::Vector2f currentScale = mSprite.getScale();
+    mSprite.setTexture(mAttackTexture, true);
+
+    sf::Vector2u texSize = mAttackTexture.getSize();
+    if (mAttackFrameCount <= 0) return;
+    int frameWidth  = static_cast<int>(texSize.x) / mAttackFrameCount;
+    int frameHeight = static_cast<int>(texSize.y);
+
+    mSprite.setTextureRect(sf::IntRect(0, 0, frameWidth, frameHeight));
+
+    // Maintain flip-by-origin behavior set up in setSpawnSide
+    if (mSpawnedLeft)
+        mSprite.setOrigin(static_cast<float>(frameWidth), 0.f);
+    else
+        mSprite.setOrigin(0.f, 0.f);
+
+    mSprite.setScale(currentScale);
+}
+
+void Enemies::swapToWalkTexture()
+{
+    if (!mWalkTextureRef) return;
+
+    sf::Vector2f currentScale = mSprite.getScale();
+    mSprite.setTexture(*mWalkTextureRef, true);
+
+    sf::Vector2u texSize = mWalkTextureRef->getSize();
+    if (mFrameCount <= 0) return;
+    int frameWidth  = static_cast<int>(texSize.x) / mFrameCount;
+    int frameHeight = static_cast<int>(texSize.y);
+
+    mSprite.setTextureRect(sf::IntRect(0, 0, frameWidth, frameHeight));
+
+    if (mSpawnedLeft)
+        mSprite.setOrigin(static_cast<float>(frameWidth), 0.f);
+    else
+        mSprite.setOrigin(0.f, 0.f);
+
+    mSprite.setScale(currentScale);
 }
 
 /**
@@ -517,6 +635,7 @@ void Enemies::update(sf::RenderWindow& window, float deltaTime)
  */
 void Enemies::setSpawnSide(bool spawnedLeft)
 {
+
     mSpawnedLeft = spawnedLeft;
 
     sf::Vector2f scale = mSprite.getScale();
@@ -567,8 +686,8 @@ bool Attack::createAttack(sf::Vector2f position, sf::Vector2f direction)
     mHitbox.setOrigin({10.f, 10.f});
     mHitbox.setPosition(mPosition);
     mHitbox.setFillColor(sf::Color::Transparent);;
-    mHitbox.setOutlineColor(sf::Color::Blue);
-    mHitbox.setOutlineThickness(2.f);
+    // mHitbox.setOutlineColor(sf::Color::Blue);
+    // mHitbox.setOutlineThickness(2.f);
 
     return true;
 }
@@ -614,3 +733,16 @@ void Attack::draw(sf::RenderTarget& target, sf::RenderStates states) const
     mHitbox.draw(target, states);
 }
 
+void Tower::reset()
+{
+    mHP = mMaxHP;
+    mStability = mMaxStability;
+    mDamageMultiplier = 1.0f;
+    mBulletDamage = 15.f;
+    mBulletSpeed = 700.f;
+    mFireRate = 1.5f;
+    mBulletColor = sf::Color::White;
+    mBulletTexturePtr = nullptr;
+    mXPPoints = 0;
+    mAttack.clear();
+}

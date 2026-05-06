@@ -14,6 +14,7 @@
 
 void EntityHandler::SpawnEntity(const std::string& type, sf::RenderWindow& window)
 {
+
     auto iteration = mEnemyTypeMapping.find(type);
     if(iteration == mEnemyTypeMapping.end()) return;
     auto entity = iteration->second();
@@ -63,11 +64,15 @@ void EntityHandler::DrawEntities(sf::RenderWindow& window, sf::RenderStates stat
     }
 }
 
-void EntityHandler::UpdateEntities(sf::RenderWindow& window, float deltaTime)
+void EntityHandler::UpdateEntities(sf::RenderWindow& window, float deltaTime, sf::FloatRect towerBounds)
 {
-    for(auto& enemies : mEnemies)
+    for(auto& enemy : mEnemies)
     {
-        if(!enemies) continue;
+        if(!enemy) continue;
+
+        Enemies* enemies = dynamic_cast<Enemies*>(enemy.get());
+        if(enemies) enemies->setTowerBounds(towerBounds); // set before update
+
         enemies->update(window, deltaTime);
     }
     mEnemies.erase(
