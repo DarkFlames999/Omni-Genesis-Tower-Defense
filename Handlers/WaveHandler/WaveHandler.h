@@ -21,7 +21,7 @@ public:
     WaveHandler();
     ~WaveHandler() = default;
 
-    void Update(sf::RenderWindow& window, float deltaTime);
+    void Update(sf::RenderWindow& window, float deltaTime, sf::FloatRect towerBounds);
 
     void SetWave(int wave);
     void StartNextWave(sf::RenderWindow& window);
@@ -33,21 +33,17 @@ public:
     int GetCurrentWave() const { return mCurrentWave; }
     int GetTotalEnemiesThisWave() const { return mTotalEnemiesToSpawn; }
     int GetEnemiesRemainingToSpawn() const { return mEnemiesRemainingToSpawn; }
+    void reset();
 
 private:
     int ComputeEnemyCount(int wave) const;
-
     void BuildSpawnQueue(int wave);
-
     int mCurrentWave;
     int mTotalEnemiesToSpawn;
     int mEnemiesRemainingToSpawn;
-
     float mSpawnInterval;
     float mSpawnTimer;
-
     std::queue<std::string> mSpawnQueue;
-
     bool mAllSpawned;
 };
 

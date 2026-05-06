@@ -227,3 +227,11 @@ void SkillTree::loadFromJson(const std::string& filename) {
     }
     return nullptr;
 }
+
+void SkillTree::reset()
+{
+    for (auto& node : skillNodes) 
+    {
+        node.isUnlocked = false;
+    }
+}

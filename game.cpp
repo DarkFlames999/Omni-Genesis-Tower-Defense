@@ -23,10 +23,6 @@ Game::Game()
     {
         std::cerr << "Error opening Norse.ttf" << std::endl;
     }
-    if(!mSkillTreeFont.loadFromFile("Fonts/Magic.ttf"))
-    {
-        std::cerr << "Error opening Magic.ttf" << std::endl;
-    }
     if(!mTextBackground1.loadFromFile("Sprites/Background.png"))
     {
         std::cerr << "Error opening Background.png" << std::endl;
@@ -54,7 +50,6 @@ Game::Game()
 
     //Skill Tree Loading
     mBraverySkillTree = SkillTree("SkillTree/Bravery_Skill_Tree.json");
-    std::cout << "Loaded " << mBraverySkillTree.getSkillTreeSize() << " skills\n";
 
     // Background music
     if (!mMusicBuffer.loadFromFile("music/background.ogg")) {
@@ -68,9 +63,9 @@ Game::Game()
         std::cerr << "Warning: failed to load UI font\n";
     }
 
-    // mMusic.setLoop(true);
-    // mMusic.setVolume(50.f);
-    // mMusic.play();
+    mMusic.setLoop(true);
+    mMusic.setVolume(50.f);
+    mMusic.play();
 
     // The intro runs first
     mTitle = std::make_unique<Title>("Omni-Genesis/Tower Defense");
@@ -163,6 +158,9 @@ void Game::processEvents()
                 }
                 updateSkillTreeView(e);
                 break;
+            case State::GameOver:
+                updateGameOver(e);
+                break;
             default:
                 break;
         }
@@ -183,6 +181,8 @@ void Game::update(float dt)
             break;
         case State::Playing:
             updatePlaying(dt);
+            break;
+        case State::GameOver:
             break;
         default:
             break;
@@ -216,6 +216,9 @@ void Game::render()
             break;
         case State::SkillTreeView:
             renderSkillTreeView();
+            break;
+        case State::GameOver:
+            renderGameOver();
             break;
         default:
             break;
@@ -383,7 +386,7 @@ std::string clickedId = mSkillTreeView.handleEvent(e, mWindow);
     SkillNode* node = mBraverySkillTree.findSkill(clickedId);
     if (!node) 
     {
-         std::cout << "[GAME] findSkill returned null for: " << clickedId << "\n";
+         std::cout << "findSkill returned null for: " << clickedId << "\n";
         return;
     }
     
@@ -475,6 +478,10 @@ void Game::renderDifficultySelect()
  */
 void Game::startGame()
 {
+    mTower.reset();
+    mWaves.reset();
+    mBraverySkillTree.reset();
+
     mTower.createTower(mWindow, {40.0f, 130.0f}, {10.f, 10.f});
 
     int startWave = 0;
@@ -508,17 +515,16 @@ void Game::startGame()
  */
 void Game::updatePlaying(float dt)
 {
+    sf::FloatRect TowerHurtboxBounds = mTower.getHurtboxBounds();
     mTower.update(mWindow, dt);
     mTower.updateAttack(mWindow, dt);
-    mWaves.Update(mWindow, dt);
+    mWaves.Update(mWindow, dt, TowerHurtboxBounds);
     mCollisionHandler.checkBulletEnemyCollision(mTower.getAttacks(), mWaves);
     mCollisionHandler.checkEnemyTowerCollision(mWaves, mTower);
 
     // Allows holding mouse to fire continuously
     if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
         mTower.shoot(mWindow);
-
-    // Grant XP for kills
 
     for (auto& enemy : mWaves.getEnemies())
     {
@@ -532,7 +538,8 @@ void Game::updatePlaying(float dt)
     }
     if (mTower.getHealth() <= 0)
     {
-        // Lose condition for later
+        initGameOver();
+        mState = State::GameOver;
     }
 
     if (mWaves.IsWaveComplete()) {
@@ -549,11 +556,9 @@ void Game::renderPlaying()
 {
     mWindow.draw(mBackground1);
     mWindow.draw(mForeground1);
-    mWindow.draw(mTower);
     mTower.drawAttack(mWindow);
+    mWindow.draw(mTower);
     mWaves.DrawEntities(mWindow, sf::RenderStates::Default);
-
-    // show current difficulty in top-right
     std::string diffStr;
     switch (mDifficulty)
     {
@@ -583,7 +588,7 @@ void Game::applySkillEffect(const std::string& skillId)
 {
     if (skillId == "bravery.fire_manip1.unlock")
     {
-        mTower.setDamageMultiplier(1.50f);
+        mTower.setDamageMultiplier(1.125f);
         mTower.setBulletDamage(20.f);
         mTower.setBulletSpeed(750.f);
         mTower.setBulletTexture(&mTower.getFireBulletTexture());
@@ -591,7 +596,7 @@ void Game::applySkillEffect(const std::string& skillId)
     }
     else if (skillId == "bravery.fire_manip2.unlock")
     {
-        mTower.setDamageMultiplier(1.75f);
+        mTower.setDamageMultiplier(1.25f);
         mTower.setBulletDamage(30.f);
         mTower.setBulletSpeed(850.f);
         mTower.setBulletTexture(&mTower.getFireBulletTexture());
@@ -599,17 +604,74 @@ void Game::applySkillEffect(const std::string& skillId)
     }
     else if (skillId == "bravery.fire_manip3.unlock")
     {
-        mTower.setDamageMultiplier(2.00f);
+        mTower.setDamageMultiplier(1.50f);
         mTower.setBulletDamage(40.f);
         mTower.setBulletSpeed(950.f);
         mTower.setBulletTexture(&mTower.getFireBulletTexture());
     }
     else if (skillId == "bravery.fire_manip4.unlock")
     {
-        mTower.setDamageMultiplier(2.25f);
+        mTower.setDamageMultiplier(1.75f);
         mTower.setBulletDamage(50.f);
         mTower.setBulletSpeed(1050.f);
-        mTower.setFireRate(4.0f); // 2 shots per second
+        mTower.setFireRate(4.0f);
         mTower.setBulletTexture(&mTower.getFireBulletTexture());
     }
+}
+
+void Game::initGameOver()
+{
+    sf::Vector2u windowsize = mWindow.getSize();
+    float centerx = windowsize.x / 2.f;
+    float centery = windowsize.y / 2.f;
+
+    mRestartBtn = std::make_unique<Button>(
+        "Restart",
+        sf::Vector2f(centerx, centery + 60.f),
+        sf::Vector2f(300.f, 80.f),
+        sf::Color(180, 20, 20, 255));
+
+    mMainMenuBtn = std::make_unique<Button>(
+        "Main Menu",
+        sf::Vector2f(centerx, centery + 160.f),
+        sf::Vector2f(300.f, 80.f),
+        sf::Color(80, 80, 80, 255));
+}
+
+void Game::updateGameOver(sf::Event& e)
+{
+    mRestartBtn->update(e, mWindow);
+    mMainMenuBtn->update(e, mWindow);
+
+    if(mRestartBtn->mFading && 
+       mRestartBtn->mColorIndex >= mRestartBtn->rainbow.size() - 1)
+    {
+        startGame();
+        mState = State::Playing;
+    }
+
+    if(mMainMenuBtn->mFading && 
+       mMainMenuBtn->mColorIndex >= mMainMenuBtn->rainbow.size() - 1)
+    {
+        initMenu();
+        mState = State::Menu;
+    }
+}
+
+void Game::renderGameOver()
+{
+    mWindow.draw(mBackground1);
+    mWindow.draw(mForeground1);
+    sf::Text gameOverText("GAME OVER", mUIFont, 120);
+    gameOverText.setFillColor(sf::Color::Red);
+    sf::FloatRect bounds = gameOverText.getLocalBounds();
+    gameOverText.setOrigin(bounds.width / 2.f, bounds.height / 2.f);
+    gameOverText.setPosition(
+        mWindow.getSize().x / 2.f,
+        mWindow.getSize().y / 2.f - 100.f
+    );
+    mWindow.draw(gameOverText);
+
+    mWindow.draw(*mRestartBtn);
+    mWindow.draw(*mMainMenuBtn);
 }

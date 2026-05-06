@@ -100,7 +100,7 @@ void WaveHandler::StartNextWave(sf::RenderWindow& window)
  * @param window 
  * @param deltaTime 
  */
-void WaveHandler::Update(sf::RenderWindow& window, float deltaTime)
+void WaveHandler::Update(sf::RenderWindow& window, float deltaTime, sf::FloatRect towerBounds)
 {
     if (!mAllSpawned)
     {
@@ -123,7 +123,7 @@ void WaveHandler::Update(sf::RenderWindow& window, float deltaTime)
         }
     }
 
-    UpdateEntities(window, deltaTime);
+    UpdateEntities(window, deltaTime, towerBounds);
 }
 
 /**
@@ -202,5 +202,19 @@ void WaveHandler::BuildSpawnQueue(int wave)
 
     for (const auto& e : enemies){
         mSpawnQueue.push(e);
+    }
+}
+
+void WaveHandler::reset()
+{
+    mEnemies.clear();
+    mCurrentWave = 0;
+    mTotalEnemiesToSpawn = 0;
+    mEnemiesRemainingToSpawn = 0;
+    mSpawnTimer = 0.f;
+    mAllSpawned = false;
+    while (!mSpawnQueue.empty()) 
+    {
+        mSpawnQueue.pop();
     }
 }
