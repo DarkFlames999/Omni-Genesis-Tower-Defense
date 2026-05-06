@@ -125,7 +125,7 @@ void WaveHandler::Update(sf::RenderWindow& window, float deltaTime, Tower& tower
         }
     }
 
-    UpdateEntities(window, deltaTime, tower);
+    UpdateEntities(window, deltaTime);
 }
 
 /**

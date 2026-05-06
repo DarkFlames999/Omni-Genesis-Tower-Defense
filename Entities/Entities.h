@@ -103,6 +103,7 @@ class Tower: public Entity
         std::vector<std::unique_ptr<Attack>>& getAttacks() { return mAttack; }
         int getXPPoints() const { return mXPPoints; }
         bool spendXP(int amount);
+        void reset();
 
         //Cool Stats Getter/Setters for Skill tree bullcrap
         float getDamageMultiplier() const { return mDamageMultiplier; }
@@ -159,6 +160,8 @@ class Tower: public Entity
         float mBulletSpeed = 700.f;
         float mFireRate = 1.5f; //How many shots per second the tower can fire
         int mXPPoints = 0; //Experience points for leveling up the tower and unlocking skills in the skill tree
+        float mMaxHealthBarWidth = 400.f;
+        float mMaxStabilityBarWidth = 360.f;
         std::vector<std::unique_ptr<Attack>> mAttack;
 };
 
@@ -172,7 +175,7 @@ class Enemies: public Entity
 
         void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
         void update(sf::RenderWindow& window, float deltaTime) override;
-        // sf::FloatRect getHurtboxBounds() const { return mHurtbox.getGlobalBounds(); }
+        sf::FloatRect getHurtboxBounds() const { return mHurtbox.getGlobalBounds(); }
         int getDamage() { return mDamage; }
         void takeDamage(int damage) { mHealth -= damage; }
         int getHealth() const { return mHealth; }
@@ -187,15 +190,29 @@ class Enemies: public Entity
         void attackTower(Tower& tower, float deltaTime);
 
     protected:
+
+        sf::Texture mAttackTexture;
+        const sf::Texture* mWalkTextureRef = nullptr;
+
         sf::Texture mJuveniles;
         sf::Texture mMatured;
         sf::Texture mWarden;
+        sf::FloatRect mTowerBounds;
         sf::Clock mAnimClock;
         int mCurrentFrame = 0;
         int mFrameCount = 0;
+        int mAttackFrameCount = 0;
         float mFrameTime = 0.1f;
         bool mSpawnedLeft = false;
         bool mXPGiven = false;
+
+
+        bool mIsAttacking = false;
+        bool mHasAttackSprite = false;
+        sf::Clock mAttackCooldown;
+        sf::Clock mAttackAnimTimer;
+        static constexpr float Attackcooldown = 2.0f;
+        static constexpr float Attackanimationduration = 0.6f;
 
         //Enemy stats like movement and health
         float mSpeed = 0.f;
