@@ -126,6 +126,9 @@ void Game::processEvents()
             case State::DifficultySelect:
                 updateDifficultySelect(e);
                 break;
+            case State::Controls:
+                updateControls(e);
+                break;
             case State::Playing:
                 if (e.type == sf::Event::MouseButtonPressed && e.mouseButton.button == sf::Mouse::Left)
                 {
@@ -208,6 +211,9 @@ void Game::render()
         case State::DifficultySelect:
             renderDifficultySelect();
             break;
+        case State::Controls:
+            renderControls();
+            break;
         case State::Playing:
             renderPlaying();
             break;
@@ -263,13 +269,19 @@ void Game::initMenu()
 
     mPlayBtn = std::make_unique<Button>(
         "Play",
-        sf::Vector2f(centerx, centery - 60.f),
+        sf::Vector2f(centerx, centery - 90.f),
         sf::Vector2f(300.f, 80.f),
         sf::Color(180, 20, 20, 255));
 
+    mControlsBtn = std::make_unique<Button>(
+        "Controls",
+        sf::Vector2f(centerx, centery + 10.f),
+        sf::Vector2f(300.f, 80.f),
+        sf::Color(30, 80, 160, 255));
+
     mQuitBtn = std::make_unique<Button>(
         "Quit",
-        sf::Vector2f(centerx, centery + 60.f),
+        sf::Vector2f(centerx, centery + 110.f),
         sf::Vector2f(300.f, 80.f),
         sf::Color(80, 80, 80, 255));
 }
@@ -282,6 +294,7 @@ void Game::initMenu()
 void Game::updateMenu(sf::Event& e)
 {
     mPlayBtn->update(e, mWindow);
+    mControlsBtn->update(e, mWindow);
     mQuitBtn->update(e, mWindow);
 
     // Transition to difficulty select when the Play button's rainbow completes
@@ -289,6 +302,14 @@ void Game::updateMenu(sf::Event& e)
     {
         initDifficultySelect();
         mState = State::DifficultySelect;
+        return;
+    }
+
+    // Transition to Controls screen
+    if (mControlsBtn->mFading && mControlsBtn->mColorIndex >= mControlsBtn->rainbow.size() - 1)
+    {
+        initControls();
+        mState = State::Controls;
         return;
     }
 
@@ -306,6 +327,7 @@ void Game::renderMenu()
 {
     mTitle->draw(mWindow);
     mWindow.draw(*mPlayBtn);
+    mWindow.draw(*mControlsBtn);
     mWindow.draw(*mQuitBtn);
 }
 
@@ -674,4 +696,117 @@ void Game::renderGameOver()
 
     mWindow.draw(*mRestartBtn);
     mWindow.draw(*mMainMenuBtn);
+}
+
+void Game::initControls()
+{
+    sf::Vector2u ws = mWindow.getSize();
+    mControlsBackBtn = std::make_unique<Button>(
+        "Back",
+        sf::Vector2f(ws.x / 2.0f, ws.y - 80.f),
+        sf::Vector2f(200.f, 60.f),
+        sf::Color(80, 80, 80, 255));
+}
+
+/**
+ * @brief Check for control page updates
+ * 
+ * @param e 
+ */
+void Game::updateControls(sf::Event& e)
+{
+    mControlsBackBtn->update(e, mWindow);
+
+    if (mControlsBackBtn->mFading && mControlsBackBtn->mColorIndex >= mControlsBackBtn->rainbow.size() - 1)
+    {
+        initMenu();
+        mState = State::Menu;
+    }
+}
+
+/**
+ * @brief Render the controls page
+ * 
+ */
+void Game::renderControls()
+{
+    sf::Vector2u windowsize = mWindow.getSize();
+    float centerx = windowsize.x / 2.0f;
+
+    // title
+    sf::Text title("Controls", mUIFont, 48);
+    title.setFillColor(sf::Color::White);
+    title.setStyle(sf::Text::Bold);
+    sf::FloatRect tb = title.getLocalBounds();
+    title.setOrigin(tb.width / 2.f, tb.height / 2.f);
+    title.setPosition(centerx, 80.f);
+    mWindow.draw(title);
+
+    struct Row { std::string input; std::string action; };
+    const std::vector<Row> rows =
+    {
+        { "Left Click",     "Fire cannon (hold to fire continuously)" },
+        { "Mouse Movement", "Aim cannon"                              },
+        { "E",              "Open / Close Magic Selection menu"       },
+        { "Escape",         "Back / Return to Main Menu"              },
+    };
+
+    const float margin = windowsize.x * 0.08f;
+    const float tableLeft = margin;
+    const float tableWidth = windowsize.x - margin * 2.f;
+    const float inputColW = tableWidth * 0.28f;
+    const float colLeft = tableLeft;
+    const float colRight = tableLeft + inputColW;
+    const float rowStart = 200.f;
+    const float rowStep = 65.f;
+    const unsigned int fontSize = 28;
+
+    auto makeHeader = [&](const std::string& s, float x)
+    {
+        sf::Text t(s, mUIFont, fontSize + 4);
+        t.setFillColor(sf::Color(255, 200, 50, 255));
+        t.setStyle(sf::Text::Bold | sf::Text::Underlined);
+        t.setPosition(x, rowStart - 55.f);
+        mWindow.draw(t);
+    };
+    makeHeader("Input",  colLeft);
+    makeHeader("Action", colRight);
+
+
+    sf::RectangleShape seperator(sf::Vector2f(tableWidth, 2.f));
+    seperator.setFillColor(sf::Color(255, 255, 255, 80));
+    seperator.setPosition(tableLeft, rowStart - 12.f);
+    mWindow.draw(seperator);
+
+    for (std::size_t i = 0; i < rows.size(); ++i)
+    {
+        float y = rowStart + i * rowStep;
+
+        if (i % 2 == 0)
+        {
+            sf::RectangleShape strip(sf::Vector2f(tableWidth, rowStep - 4.f));
+            strip.setFillColor(sf::Color(255, 255, 255, 18));
+            strip.setPosition(tableLeft, y + 2.f);
+            mWindow.draw(strip);
+        }
+
+        sf::Text tInput(rows[i].input, mUIFont, fontSize);
+        tInput.setFillColor(sf::Color(180, 220, 255, 255));
+        tInput.setStyle(sf::Text::Bold);
+        tInput.setPosition(colLeft, y + 10.f);
+        mWindow.draw(tInput);
+
+        sf::Text tAction(rows[i].action, mUIFont, fontSize);
+        tAction.setFillColor(sf::Color::White);
+        tAction.setPosition(colRight, y + 10.f);
+        mWindow.draw(tAction);
+    }
+
+
+    sf::RectangleShape seperator2(sf::Vector2f(tableWidth, 2.f));
+    seperator2.setFillColor(sf::Color(255, 255, 255, 80));
+    seperator2.setPosition(tableLeft, rowStart + rows.size() * rowStep);
+    mWindow.draw(seperator2);
+
+    mWindow.draw(*mControlsBackBtn);
 }
