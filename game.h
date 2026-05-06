@@ -68,6 +68,16 @@ private:
     std::unique_ptr<Button> mHardBtn;
     std::unique_ptr<Button> mAreyousureBtn;
 
+        //Fonts
+    sf::Font hudFont;
+
+    //Backgound and foreground
+    sf::Sprite mBg1;
+    sf::Texture mTextBg1;
+    sf::Sprite mFg1;
+    sf::Texture mTextFg1;
+
+
     // Decorative star background for menu screens
     sf::Texture mStarTexture;
     sf::Sprite mStarBg;

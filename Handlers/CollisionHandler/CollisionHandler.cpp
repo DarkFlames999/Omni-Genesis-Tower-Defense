@@ -47,13 +47,13 @@ void CollisionHandler::checkEnemyTowerCollision(EntityHandler& entities, Tower& 
     {
         if(!enemy) continue;
 
-        Enemies* e = dynamic_cast<Enemies*>(enemy.get());
-        if(!e) continue;
+        Enemies* enemies = dynamic_cast<Enemies*>(enemy.get());
+        if(!enemies) continue;
 
         // Enemy hurtbox vs tower hurtbox
-        if(e->getHitboxBounds().intersects(tower.getHurtboxBounds()))
+        if(enemies->getHitboxBounds().intersects(tower.getHurtboxBounds()))
         {
-            tower.takeDamage(e->getDamage());
+            tower.takeDamage(enemies->getDamage());
             std::cout << "Tower health: " << tower.getHealth() << std::endl;
         }
     }

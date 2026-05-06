@@ -51,22 +51,22 @@ void MagicSelection::init(const sf::RenderWindow& window, const sf::Font& font) 
     };
 
     // This is the grid layout
-    const int cols = 7;
-    const int rows = 2;
+    const int columncount = 7;
+    const int rowcount = 2;
     const float iconSize = 128.f;       
     const float horizontalSpacing = 40.f;
     const float verticalSpacing = 80.f;  
     const float labelOffset = 80.f;
 
-    float gridWidth  = cols * iconSize + (cols - 1) * horizontalSpacing;
-    float gridHeight = rows * iconSize + (rows - 1) * verticalSpacing;
+    float gridWidth  = columncount * iconSize + (columncount - 1) * horizontalSpacing;
+    float gridHeight = rowcount * iconSize + (rowcount - 1) * verticalSpacing;
 
     float startX = (window.getSize().x - gridWidth) / 2.f + iconSize / 2.f;
     float startY = (window.getSize().y - gridHeight) / 2.f + iconSize / 2.f;
 
     for (size_t i = 0; i < entries.size(); ++i) {
-        int col = i % cols;
-        int row = i / cols;
+        int col = i % columncount;
+        int row = i / columncount;
 
         MagicIcon icon;
         icon.magicType = entries[i].m;
