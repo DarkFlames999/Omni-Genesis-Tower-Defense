@@ -75,7 +75,7 @@ bool Tower::createTower(sf::RenderWindow& window, sf::Vector2f size, sf::Vector2
     mHurtbox.setOrigin(size.x/2+40.f, size.y/2);
     mHurtbox.setPosition(window.getSize().x/2.13f, (window.getSize().y/2.f)+350.f);
     mHurtbox.setFillColor(sf::Color::Transparent);
-    mHurtbox.setOutlineColor(sf::Color::Red);
+    mHurtbox.setOutlineColor(sf::Color::Transparent);
     mHurtbox.setOutlineThickness(1.f);
 
     //Health bar attributes
@@ -342,7 +342,7 @@ bool Juvenile::createJuvenile(sf::RenderWindow& window, sf::Vector2f position, s
     mHurtbox.setOrigin(mOrigin.x, mOrigin.y);
     mHurtbox.setPosition(mPosition.x, mPosition.y);
     mHurtbox.setFillColor(sf::Color::Transparent);
-    mHurtbox.setOutlineColor(sf::Color::Red);
+    mHurtbox.setOutlineColor(sf::Color::Transparent);
     mHurtbox.setOutlineThickness(1.f);
 
     return true;
@@ -396,7 +396,7 @@ bool Matured::createMatured(sf::RenderWindow& window, sf::Vector2f position, sf:
     mHurtbox.setOrigin(mOrigin.x, mOrigin.y);
     mHurtbox.setPosition(mPosition.x, mPosition.y);
     mHurtbox.setFillColor(sf::Color::Transparent);
-    mHurtbox.setOutlineColor(sf::Color::Red);
+    mHurtbox.setOutlineColor(sf::Color::Transparent);
     mHurtbox.setOutlineThickness(1.f);
 
     return true;
@@ -445,7 +445,7 @@ bool Warden::createWarden(sf::RenderWindow& window, sf::Vector2f position, sf::V
     mHurtbox.setOrigin(mOrigin.x, mOrigin.y);
     mHurtbox.setPosition(mPosition.x, mPosition.y);
     mHurtbox.setFillColor(sf::Color::Transparent);
-    mHurtbox.setOutlineColor(sf::Color::Red);
+    mHurtbox.setOutlineColor(sf::Color::Transparent);
     mHurtbox.setOutlineThickness(1.f);
 
 
@@ -600,8 +600,8 @@ bool Attack::createAttack(sf::Vector2f position, sf::Vector2f direction)
     mHitbox.setSize({20.f, 20.f});
     mHitbox.setOrigin({10.f, 10.f});
     mHitbox.setPosition(mPosition);
-    mHitbox.setFillColor(sf::Color::Transparent);;
-    mHitbox.setOutlineColor(sf::Color::Blue);
+    mHitbox.setFillColor(sf::Color::Transparent);
+    mHitbox.setOutlineColor(sf::Color::Transparent);
     mHitbox.setOutlineThickness(2.f);
 
     return true;
