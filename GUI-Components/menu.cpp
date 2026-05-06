@@ -180,6 +180,7 @@ void starAnimation(sf::RenderWindow& window)
         window.clear(sf::Color::Black);
         window.draw(starSprite);
         window.display();
+        sf::sleep(sf::milliseconds(16));
     }
 
     // Keep the star displayed for a pre-determined amount of time after the animation is complete
@@ -215,6 +216,7 @@ void starAnimation(sf::RenderWindow& window)
         window.draw(starSprite);
         window.draw(whiteOverlay);
         window.display();
+        sf::sleep(sf::milliseconds(16));
     }
 }
 
