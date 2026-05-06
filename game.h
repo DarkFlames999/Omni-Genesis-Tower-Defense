@@ -29,8 +29,10 @@ public:
     void run();
 
 private:
-    enum class State       { Intro, Menu, DifficultySelect, Playing, MagicSelection, SkillTreeView, Paused, Controls, GameOver };
-    enum class Difficulty  { None, Easy, Medium, Hard, Areyousure };
+    enum class State { Intro, Menu, DifficultySelect, Playing, MagicSelection, SkillTreeView, Paused, Controls };
+
+    enum class Difficulty { None, Easy, Medium, Hard, Areyousure };
+
     void processEvents();
     void update(float dt);
     void render();
@@ -42,6 +44,11 @@ private:
     void initDifficultySelect();
     void updateDifficultySelect(sf::Event& e);
     void renderDifficultySelect();
+
+    void initControls();
+    void updateControls(sf::Event& e);
+    void renderControls();
+
     void startGame();
     void updatePlaying(float dt);
     void renderPlaying();
@@ -65,7 +72,6 @@ private:
     std::unique_ptr<Button> mHardBtn;
     std::unique_ptr<Button> mAreyousureBtn;
 
-    // Control buttons
     std::unique_ptr<Button> mControlsBtn;
     std::unique_ptr<Button> mControlsBackBtn;
 
