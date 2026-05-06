@@ -112,7 +112,7 @@ void Game::processEvents()
 
             case State::MagicSelection:
                 std::cout << "[render dispatch] state is MagicSelection\n";
-                if (e.type == sf::Event::KeyPressed && e.key.code == sf::Keyboard::Escape)
+                if ((e.type == sf::Event::KeyPressed && e.key.code == sf::Keyboard::E))
                 {
                     mState = State::Playing; //Unpauses the game back to the main game, exiting the magic menu
                     std::cout << "Exited Magic Selection\n";
@@ -121,7 +121,7 @@ void Game::processEvents()
                 updateMagicSelection(e);
                 break;
             case State::SkillTreeView:
-                if (e.type == sf::Event::KeyPressed && e.key.code == sf::Keyboard::Escape) //Allows us to exit the menu back
+                if ((e.type == sf::Event::KeyPressed && e.key.code == sf::Keyboard::E)) //Allows us to exit the menu back
                 {
                     mState = State::MagicSelection;
                     std::cout << "Exited Skill Tree View\n";
@@ -307,17 +307,21 @@ void Game::initDifficultySelect()
 
 void Game::initMagicSelection()
 {
-    // Placeholder for magic selection initialization
-        std::cout << "[initMagicSelection] called\n";
+    if (!mUIFont.loadFromFile("Fonts/Norse.ttf")) {
+    std::cerr << "Failed to load Fonts/Norse.ttf\n";
+    } else {
+        std::cerr << "[FONT] Loaded successfully\n";
+    }
+
+    mMagicSelection.init(mWindow, mUIFont);
 }
 
 void Game::updateMagicSelection(sf::Event& e)
 {
-    // Placeholder for magic selection update logic
-    //Just for testing before I add buttons for the magic selection
-    if (e.type == sf::Event::KeyPressed && e.key.code == sf::Keyboard::B)
+    Magic clicked;
+    if (mMagicSelection.handleEvent(e, mWindow, clicked))
     {
-        mActiveMagic = Magic::Bravery;
+        mActiveMagic = clicked;
         initSkillTreeView();
         mState = State::SkillTreeView;
     }
@@ -325,23 +329,7 @@ void Game::updateMagicSelection(sf::Event& e)
 
 void Game::renderMagicSelection()
 {
-    // Placeholder for magic selection rendering
-        // Dim background
-            std::cout << "[renderMagicSelection] called\n";
-    sf::RectangleShape dimbg(sf::Vector2f(mWindow.getSize()));
-    dimbg.setFillColor(sf::Color(0, 0, 0, 0));
-    dimbg.setTexture(&mSkillTreeBgTexture);
-    mWindow.draw(dimbg);
-    sf::RectangleShape dimfg(sf::Vector2f(mWindow.getSize()));
-    dimfg.setFillColor(sf::Color(255, 255, 255, 0));
-    dimfg.setTexture(&mSkillTreeFgTexture);
-    mWindow.draw(dimfg);
-    sf::Text text("MAGIC SELECTION (press B for Bravery, E to close)", mUIFont, 36);
-    text.setFillColor(sf::Color::Yellow);
-    sf::FloatRect b = text.getLocalBounds();
-    text.setOrigin(b.width / 2.f, b.height / 2.f);
-    text.setPosition(mWindow.getSize().x / 2.f, mWindow.getSize().y / 2.f);
-    mWindow.draw(text);
+    mMagicSelection.draw(mWindow);
 }
 
 void Game::initSkillTreeView()

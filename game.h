@@ -15,6 +15,7 @@
 #include "Handlers/CollisionHandler/CollisionHandler.h"
 #include "Handlers/InputHandler/InputHandler.h"
 #include "SkillTree/SkillTree.h"
+#include "GUI-Components/MagicSelection.h"
 #include <memory>
 
 class Game
@@ -72,6 +73,8 @@ private:
     sf::Sprite mStarBg;
     sf::Texture mSkillTreeBgTexture;
     sf::Texture mSkillTreeFgTexture;
+    sf::Font mUIFont;
+
 
     Tower mTower;
     WaveHandler mWaves;
@@ -80,7 +83,8 @@ private:
     InputHandler mTowerKeyBindingHandler;
     SkillTree mBraverySkillTree;
     Magic mActiveMagic { Magic::Bravery };
-
+    MagicSelection mMagicSelection;
+    
     void initMagicSelection();
     void updateMagicSelection(sf::Event& e);
     void renderMagicSelection();
