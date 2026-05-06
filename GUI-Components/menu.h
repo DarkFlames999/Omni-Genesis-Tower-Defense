@@ -1,3 +1,14 @@
+/**
+ * @file menu.h
+ * @author Isaiah Watkins, Konner Knoll, and Keali Lake
+ * @brief Menu declarations - buttons, titles, animations, etc.
+ * @version 0.1
+ * @date 2026-05-05
+ * 
+ * @copyright Copyright (c) 2026
+ * 
+ */
+
 #ifndef MENU_H
 #define MENU_H
 #include <SFML/Graphics.hpp>
@@ -74,7 +85,7 @@ struct Title
     bool startPosition = false;
     
     Title(const std::string title);
-    void update(sf::RenderWindow& window);
+    void update(sf::RenderWindow& window, float dt);
     void draw(sf::RenderWindow& window);
 };
 

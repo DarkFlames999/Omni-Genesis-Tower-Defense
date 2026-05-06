@@ -119,13 +119,15 @@ class Enemies: public Entity
         void update(sf::RenderWindow& window, float deltaTime) override;
         // sf::FloatRect getHurtboxBounds() const { return mHurtbox.getGlobalBounds(); }
         int getDamage() { return mDamage; }
-        void takeDamage(float damage) { mHealth -= damage; }
+        void takeDamage(int damage) { mHealth -= damage; }
         int getHealth() const { return mHealth; }
         bool isDead() const { return mHealth <= 0; }
         int getXPValue() const { return mXPValue; }
         void giveXP(Tower& tower) { tower.mXPPoints += mXPValue; }
 
         friend class Tower;
+
+        void setSpawnSide(bool spawnedLeft);
 
     protected:
         sf::Texture mJuveniles;
@@ -135,11 +137,12 @@ class Enemies: public Entity
         int mCurrentFrame = 0;
         int mFrameCount = 0;
         float mFrameTime = 0.1f;
+        bool mSpawnedLeft = false;
 
         //Enemy stats like movement and health
-        int mSpeed;
-        int mHealth;
-        int mDamage;
+        float mSpeed;
+        int mHealth = 0;
+        int mDamage = 0;
         int mXPValue;
     
 };

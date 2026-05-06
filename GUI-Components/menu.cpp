@@ -1,3 +1,14 @@
+/**
+ * @file menu.cpp
+ * @author Isaiah Watkins, Konner Knoll, and Keali Lake
+ * @brief Menu definitions - buttons, titles, animations, etc.
+ * @version 0.1
+ * @date 2026-05-05
+ * 
+ * @copyright Copyright (c) 2026
+ * 
+ */
+
 #include "menu.h"
 #include <sstream>
 
@@ -247,54 +258,42 @@ Title::Title(const std::string title)
  * @brief Update the Title's appearance
  * 
  */
-void Title::update(sf::RenderWindow& window)
+void Title::update(sf::RenderWindow& window, float dt)
 {
-    //Display the Title character by character every 100 milliseconds
-    if(!titleComplete && textClock.getElapsedTime().asMilliseconds() >= 100)
+    if (!titleComplete && textClock.getElapsedTime().asMilliseconds() >= 100)
     {
-        if (displayedFirst.size() < parts[0].size())
+        if (displayedFirst.size() < parts[0].size()) {
             displayedFirst += parts[0][displayedFirst.size()];
-        else if(displayedSecond.size() < parts[1].size())
+        } else if (displayedSecond.size() < parts[1].size()) {
             displayedSecond += parts[1][displayedSecond.size()];
-        else
+        } else {
             titleComplete = true;
+        }
         textClock.restart();
     }
 
-    //Shrink and move the Title.png Sprite at the same rate until it reaches a certain
-    //size and position, which should be the top left corner of the window.
-    if(titleComplete && shrinkClock.getElapsedTime().asMilliseconds() >= 100)
+    if (titleComplete)
     {
-        if(!startPosition)
+        if (!startPosition)
         {
-            sf::Vector2u windowSize = window.getSize();
-            titleX = windowSize.x / 2.0f;
-            titleY = windowSize.y / 2.0f;
+            titleX = window.getSize().x / 2.0f;
+            titleY = window.getSize().y / 2.0f;
             startPosition = true;
         }
-        
-        float targetX  = 100.0f;
-        float targetY = 40.0f;
 
-        float distX = titleX - targetX;
-        float distY = titleY - targetY;
+        const float targetX = 100.0f;
+        const float targetY = 40.0f;
+        const float targetSize = 20.0f;
+        const float speed = 5.0f;
 
-        if(titleX > targetX)
-        titleX -= distX * 0.08f;
-        if(titleY > targetY)
-        titleY -= distY * 0.08f;
+        titleX += (targetX - titleX) * speed * dt;
+        titleY += (targetY - titleY) * speed * dt;
+        titleSize += (targetSize - titleSize) * speed * dt;
 
-        if(titleX < targetX + 1.0f)
-            titleX = targetX;
-        if(titleY < targetY + 1.0f)
-            titleY = targetY;
-
-        if(titleSize > 20.0f)
-            titleSize -= (titleSize-20.0f) * 0.08f;
-        if(titleSize < 21.0f)
-            titleSize = 20.0f;
-
-        shrinkClock.restart();
+        // Snap to target when close enough
+        if (std::abs(titleX - targetX) < 0.5f) titleX = targetX;
+        if (std::abs(titleY - targetY) < 0.5f) titleY = targetY;
+        if (std::abs(titleSize - targetSize) < 0.1f) titleSize = targetSize;
     }
 }
 
@@ -305,12 +304,12 @@ void Title::update(sf::RenderWindow& window)
  */
 void Title::draw(sf::RenderWindow& window)
 {
-    if(titleComplete)
+    if (titleComplete)
     {
         sf::Sprite titleSprite;
         titleSprite.setTexture(titleTexture);
         titleSprite.setOrigin(titleTexture.getSize().x / 2.0f, titleTexture.getSize().y / 2.0f);
-        titleSprite.setPosition(titleX-2, titleY);
+        titleSprite.setPosition(titleX, titleY);
         titleSprite.setScale(titleSize / 50.0f, titleSize / 50.0f);
         window.draw(titleSprite);
     }
@@ -321,17 +320,28 @@ void Title::draw(sf::RenderWindow& window)
         text1.setFont(font);
         text1.setCharacterSize(50);
         text1.setString(displayedFirst);
-        text1.setPosition(170, 170);
         text1.setFillColor(sf::Color::White);
-        window.draw(text1);
 
         sf::Text text2;
         text2.setStyle(sf::Text::Bold);
         text2.setFont(font);
         text2.setCharacterSize(50);
         text2.setString(displayedSecond);
-        text2.setPosition(170, 250);
         text2.setFillColor(sf::Color::White);
+
+        // Center both lines horizontally, stack them vertically
+        sf::FloatRect b1 = text1.getLocalBounds();
+        sf::FloatRect b2 = text2.getLocalBounds();
+        float cx = window.getSize().x / 2.0f;
+        float cy = window.getSize().y / 2.0f;
+
+        text1.setOrigin(b1.width / 2.0f, b1.height / 2.0f);
+        text1.setPosition(cx, cy - 40.0f);
+
+        text2.setOrigin(b2.width / 2.0f, b2.height / 2.0f);
+        text2.setPosition(cx, cy + 40.0f);
+
+        window.draw(text1);
         window.draw(text2);
     }
 }

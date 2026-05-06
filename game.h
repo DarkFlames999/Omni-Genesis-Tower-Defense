@@ -34,7 +34,7 @@ private:
     void update(float dt);
     void render();
 
-    void updateIntro();
+    void updateIntro(float dt);
     void renderIntro();
 
     void initMenu();
@@ -89,7 +89,9 @@ private:
     void updateSkillTreeView(sf::Event& e);
     void renderSkillTreeView();
 
-    sf::Music mMusic;
+    sf::SoundBuffer mMusicBuffer;
+    sf::Sound mMusic;
+    sf::Font mUIFont;
 };
 
 #endif

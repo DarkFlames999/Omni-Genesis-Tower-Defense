@@ -23,14 +23,20 @@ Game::Game()
     std::cout << "Loaded " << mBraverySkillTree.getSkillTreeSize() << " skills\n";
 
     // Background music
-    if (!mMusic.openFromFile("music/background.ogg")) 
-    {
+    if (!mMusicBuffer.loadFromFile("music/background.ogg")) {
         std::cerr << "Warning: failed to load background music\n";
     }
+    mMusic.setBuffer(mMusicBuffer);
 
-    mMusic.setLoop(true);
-    mMusic.setVolume(50.f);
-    mMusic.play();
+    // Font
+    if (!mUIFont.loadFromFile("Fonts/Norse.ttf"))
+    {
+        std::cerr << "Warning: failed to load UI font\n";
+    }
+
+    //mMusic.setLoop(true);
+    //mMusic.setVolume(50.f);
+    //mMusic.play();
 
     // The intro runs first
     mTitle = std::make_unique<Title>("Omni-Genesis/Tower Defense");
@@ -137,7 +143,7 @@ void Game::update(float dt)
     switch (mState)
     {
         case State::Intro:
-            updateIntro();
+            updateIntro(dt);
             break;
         case State::Playing:
             updatePlaying(dt);
@@ -186,9 +192,9 @@ void Game::render()
  * @brief Intro state
  * 
  */
-void Game::updateIntro()
+void Game::updateIntro(float dt)
 {
-    mTitle->update(mWindow);
+    mTitle->update(mWindow, dt);
 
     if (mTitle->titleComplete && mTitle->titleSize <= 20.0f)
     {
@@ -330,11 +336,6 @@ void Game::renderMagicSelection()
     dimfg.setFillColor(sf::Color(255, 255, 255, 0));
     dimfg.setTexture(&mSkillTreeFgTexture);
     mWindow.draw(dimfg);
-    sf::Font mUIFont;
-    if(!mUIFont.loadFromFile("Fonts/Norse.ttf"))
-    {
-        std::cerr << "Warning: failed to load UI font\n";
-    }
     sf::Text text("MAGIC SELECTION (press B for Bravery, E to close)", mUIFont, 36);
     text.setFillColor(sf::Color::Yellow);
     sf::FloatRect b = text.getLocalBounds();
@@ -366,11 +367,6 @@ void Game::renderSkillTreeView()
     dimfg.setTexture(&mSkillTreeFgTexture);
     mWindow.draw(dimfg);
 
-    sf::Font mUIFont;
-    if(!mUIFont.loadFromFile("Fonts/Norse.ttf"))
-    {
-        std::cerr << "Warning: failed to load UI font\n";
-    }
     sf::Text text("SKILL TREE VIEW (press E to close)", mUIFont, 36);
     text.setFillColor(sf::Color::White);
     sf::FloatRect b = text.getLocalBounds();
@@ -416,9 +412,7 @@ void Game::renderDifficultySelect()
     mTitle->draw(mWindow);
 
     // "Select Difficulty" label
-    sf::Font labelFont;
-    labelFont.loadFromFile("Fonts/Norse.ttf");
-    sf::Text label("Select Difficulty", labelFont, 36);
+    sf::Text label("Select Difficulty", mUIFont, 36);
     label.setFillColor(sf::Color::White);
     sf::FloatRect lb = label.getLocalBounds();
     label.setOrigin(lb.width / 2.f, lb.height / 2.f);
@@ -514,8 +508,6 @@ void Game::renderPlaying()
     mWaves.DrawEntities(mWindow, sf::RenderStates::Default);
 
     // show current difficulty in top-right
-    sf::Font hudFont;
-    hudFont.loadFromFile("Fonts/Norse.ttf");
     std::string diffStr;
     switch (mDifficulty)
     {
@@ -535,7 +527,7 @@ void Game::renderPlaying()
             diffStr = "";
             break;
     }
-    sf::Text hudText("Difficulty: " + diffStr, hudFont, 22);
+    sf::Text hudText("Difficulty: " + diffStr, mUIFont, 22);
     hudText.setFillColor(sf::Color::White);
     hudText.setPosition(mWindow.getSize().x - 220.f, 10.f);
     mWindow.draw(hudText);

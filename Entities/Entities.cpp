@@ -1,3 +1,14 @@
+/**
+ * @file Entities.cpp
+ * @author your name (you@domain.com)
+ * @brief 
+ * @version 0.1
+ * @date 2026-05-05
+ * 
+ * @copyright Copyright (c) 2026
+ * 
+ */
+
 #include "Entities.h"
 #include <iostream>
 #include <cmath>
@@ -353,18 +364,11 @@ void Enemies::draw(sf::RenderTarget& target, sf::RenderStates states) const
  */
 void Enemies::update(sf::RenderWindow& window, float deltaTime)
 {
-    //All enemy walking animations
-    if(!mSprite.getTexture()) 
-    {
-        return;
-    }
-    if(deltaTime > 0.05f) 
-    {
-        deltaTime = 0.05f;
-    }
+    if(!mSprite.getTexture()) return;
+    if(deltaTime > 0.05f) deltaTime = 0.05f;
 
     sf::Vector2u textureSize = mSprite.getTexture()->getSize();
-    int frameWidth  = textureSize.x / mFrameCount;
+    int frameWidth = textureSize.x / mFrameCount;
     int frameHeight = textureSize.y;
 
     if(mAnimClock.getElapsedTime().asSeconds() >= mFrameTime)
@@ -374,26 +378,57 @@ void Enemies::update(sf::RenderWindow& window, float deltaTime)
         mAnimClock.restart();
     }
 
-    // Stop the enemy and the hurt and hitboxes when it hits the tower bounds
-    mPosition.x -= mSpeed * deltaTime;
+    // Move toward the tower from whichever side we spawned on
+    if(mSpawnedLeft)
+        mPosition.x += mSpeed * deltaTime; // left side: move right
+    else
+        mPosition.x -= mSpeed * deltaTime; // right side: move left
+
     mSprite.setPosition(mPosition.x, mPosition.y);
     mHurtbox.setPosition(mPosition.x, mPosition.y);
 
-    if(mPosition.x <= (window.getSize().x/2.f) + 100.f)
+    // Stop at the tower bounds depending on which side
+    if(mSpawnedLeft && mPosition.x >= (window.getSize().x / 2.f) - 100.f)
     {
-        mPosition.x = (window.getSize().x/2.f) + 100.f;
+        mPosition.x = (window.getSize().x / 2.f) - 100.f;
+        mSprite.setPosition(mPosition.x, mPosition.y);
+        mHurtbox.setPosition(mPosition.x, mPosition.y);
+    }
+    else if(!mSpawnedLeft && mPosition.x <= (window.getSize().x / 2.f) + 100.f)
+    {
+        mPosition.x = (window.getSize().x / 2.f) + 100.f;
         mSprite.setPosition(mPosition.x, mPosition.y);
         mHurtbox.setPosition(mPosition.x, mPosition.y);
     }
 
-    //Remove the enemies from the vector if their health is below 1
-    if(!mSprite.getTexture()) 
+    if(isDead()) return;
+}
+
+/**
+ * @brief Set the side the enemies spawn on
+ * 
+ * @param spawnedLeft 
+ */
+void Enemies::setSpawnSide(bool spawnedLeft)
+{
+    mSpawnedLeft = spawnedLeft;
+
+    sf::Vector2f scale = mSprite.getScale();
+
+    if(mSpawnedLeft)
     {
-        return;
+        // Get the current frame width to offset the flip anchor
+        sf::Vector2u textureSize = mSprite.getTexture()->getSize();
+        float frameWidth = static_cast<float>(textureSize.x) / mFrameCount;
+
+        // Move origin to right edge of the frame so negating scaleX flips in place
+        mSprite.setOrigin(frameWidth, 0.f);
+        mSprite.setScale(-std::abs(scale.x), scale.y);
     }
-    if(isDead()) 
+    else
     {
-        return;
+        mSprite.setOrigin(0.f, 0.f);
+        mSprite.setScale(std::abs(scale.x), scale.y);
     }
 }
 
