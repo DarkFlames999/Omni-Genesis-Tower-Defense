@@ -123,14 +123,15 @@ class Enemies: public Entity
         ~Enemies() = default;
 
         void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
-        void update(sf::RenderWindow& window, float deltaTime) override;
-        // sf::FloatRect getHurtboxBounds() const { return mHurtbox.getGlobalBounds(); }
+        void update(sf::RenderWindow& window, float deltaTime);
+        sf::FloatRect getHurtboxBounds() const { return mHurtbox.getGlobalBounds(); }
         int getDamage() { return mDamage; }
         void takeDamage(int damage) { mHealth -= damage; }
         int getHealth() const { return mHealth; }
         bool isDead() const { return mHealth <= 0; }
         int getXPValue() const { return mXPValue; }
         void giveXP(Tower& tower) { tower.mXPPoints += mXPValue; }
+        void setTowerBounds(sf::FloatRect bounds) { mTowerBounds = bounds; }
 
         friend class Tower;
 
@@ -140,11 +141,15 @@ class Enemies: public Entity
         sf::Texture mJuveniles;
         sf::Texture mMatured;
         sf::Texture mWarden;
+        sf::FloatRect mTowerBounds;
         sf::Clock mAnimClock;
+        sf::Clock mCooldown;
+        float mAttackCooldown = 1.f;
         int mCurrentFrame = 0;
         int mFrameCount = 0;
         float mFrameTime = 0.1f;
         bool mSpawnedLeft = false;
+        bool mInRange = false; // reset each frame
 
         //Enemy stats like movement and health
         float mSpeed = 0.f;

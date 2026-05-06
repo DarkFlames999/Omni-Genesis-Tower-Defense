@@ -21,7 +21,7 @@ public:
     WaveHandler();
     ~WaveHandler() = default;
 
-    void Update(sf::RenderWindow& window, float deltaTime);
+    void Update(sf::RenderWindow& window, float deltaTime, sf::FloatRect towerBounds);
 
     void SetWave(int wave);
     void StartNextWave(sf::RenderWindow& window);

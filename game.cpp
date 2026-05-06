@@ -46,7 +46,7 @@ Game::Game()
     std::cout << "Loaded " << mBraverySkillTree.getSkillTreeSize() << " skills\n";
 
     // Background music
-    if (!mMusicBuffer.loadFromFile("music/background.ogg")) {
+    if (!mMusicBuffer.loadFromFile("music/ToAshesAndBlood.mp3")) {
         std::cerr << "Warning: failed to load background music\n";
     }
     mMusic.setBuffer(mMusicBuffer);
@@ -71,7 +71,7 @@ Game::Game()
  */
 void Game::run()
 {
-    starAnimation(mWindow);
+    // starAnimation(mWindow);
 
     while (mWindow.isOpen())
     {
@@ -152,6 +152,9 @@ void Game::processEvents()
                 }
                 updateSkillTreeView(e);
                 break;
+            case State::GameOver:
+                updateGameOver(e);
+                break;
             default:
                 break;
         }
@@ -172,6 +175,8 @@ void Game::update(float dt)
             break;
         case State::Playing:
             updatePlaying(dt);
+            break;
+        case State::GameOver:
             break;
         default:
             break;
@@ -205,6 +210,9 @@ void Game::render()
             break;
         case State::SkillTreeView:
             renderSkillTreeView();
+            break;
+        case State::GameOver:
+            renderGameOver();
             break;
         default:
             break;
@@ -463,17 +471,16 @@ void Game::startGame()
  */
 void Game::updatePlaying(float dt)
 {
+    sf::FloatRect TowerHurtboxBounds = mTower.getHurtboxBounds();
     mTower.update(mWindow, dt);
     mTower.updateAttack(mWindow, dt);
-    mWaves.Update(mWindow, dt);
+    mWaves.Update(mWindow, dt, TowerHurtboxBounds);
     mCollisionHandler.checkBulletEnemyCollision(mTower.getAttacks(), mWaves);
     mCollisionHandler.checkEnemyTowerCollision(mWaves, mTower);
 
     // Allows holding mouse to fire continuously
     if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
         mTower.shoot(mWindow);
-
-    // Grant XP for kills
 
     for (auto& enemy : mWaves.getEnemies())
     {
@@ -487,7 +494,8 @@ void Game::updatePlaying(float dt)
     }
     if (mTower.getHealth() <= 0)
     {
-        // Lose condition for later
+        initGameOver();
+        mState = State::GameOver;
     }
 
     if (mWaves.IsWaveComplete()) {
@@ -504,8 +512,8 @@ void Game::renderPlaying()
 {
     mWindow.draw(mBg1);
     mWindow.draw(mFg1);
-    mWindow.draw(mTower);
     mTower.drawAttack(mWindow);
+    mWindow.draw(mTower);
     mWaves.DrawEntities(mWindow, sf::RenderStates::Default);
 
     // show current difficulty in top-right
@@ -532,4 +540,66 @@ void Game::renderPlaying()
     hudText.setFillColor(sf::Color::White);
     hudText.setPosition(mWindow.getSize().x - 220.f, 10.f);
     mWindow.draw(hudText);
+}
+
+void Game::initGameOver()
+{
+    sf::Vector2u ws = mWindow.getSize();
+    float cx = ws.x / 2.f;
+    float cy = ws.y / 2.f;
+
+    mRestartBtn = std::make_unique<Button>(
+        "Restart",
+        sf::Vector2f(cx, cy + 60.f),
+        sf::Vector2f(300.f, 80.f),
+        sf::Color(180, 20, 20, 255));
+
+    mMainMenuBtn = std::make_unique<Button>(
+        "Main Menu",
+        sf::Vector2f(cx, cy + 160.f),
+        sf::Vector2f(300.f, 80.f),
+        sf::Color(80, 80, 80, 255));
+}
+
+void Game::updateGameOver(sf::Event& e)
+{
+    mRestartBtn->update(e, mWindow);
+    mMainMenuBtn->update(e, mWindow);
+
+    // Restart — reuses startGame() you already have
+    if(mRestartBtn->mFading && 
+       mRestartBtn->mColorIndex >= mRestartBtn->rainbow.size() - 1)
+    {
+        startGame();
+        mState = State::Playing;
+    }
+
+    // Main menu — reuses initMenu() you already have
+    if(mMainMenuBtn->mFading && 
+       mMainMenuBtn->mColorIndex >= mMainMenuBtn->rainbow.size() - 1)
+    {
+        initMenu();
+        mState = State::Menu;
+    }
+}
+
+void Game::renderGameOver()
+{
+    // Just draw the background sprites
+    mWindow.draw(mBg1);
+    mWindow.draw(mFg1);
+
+    // Game Over text using mUIFont
+    sf::Text gameOverText("GAME OVER", mUIFont, 120);
+    gameOverText.setFillColor(sf::Color::Red);
+    sf::FloatRect bounds = gameOverText.getLocalBounds();
+    gameOverText.setOrigin(bounds.width / 2.f, bounds.height / 2.f);
+    gameOverText.setPosition(
+        mWindow.getSize().x / 2.f,
+        mWindow.getSize().y / 2.f - 100.f
+    );
+    mWindow.draw(gameOverText);
+
+    mWindow.draw(*mRestartBtn);
+    mWindow.draw(*mMainMenuBtn);
 }

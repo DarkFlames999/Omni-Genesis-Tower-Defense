@@ -100,7 +100,7 @@ void WaveHandler::StartNextWave(sf::RenderWindow& window)
  * @param window 
  * @param deltaTime 
  */
-void WaveHandler::Update(sf::RenderWindow& window, float deltaTime)
+void WaveHandler::Update(sf::RenderWindow& window, float deltaTime, sf::FloatRect towerBounds)
 {
     if (!mAllSpawned)
     {
@@ -123,7 +123,7 @@ void WaveHandler::Update(sf::RenderWindow& window, float deltaTime)
         }
     }
 
-    UpdateEntities(window, deltaTime);
+    UpdateEntities(window, deltaTime, towerBounds);
 }
 
 /**
@@ -193,7 +193,7 @@ void WaveHandler::BuildSpawnQueue(int wave)
         enemies.push_back("Warden");
     }
 
-    // Fisher-Yates random shuffle
+    // Random shuffle
     for (int i = static_cast<int>(enemies.size()) - 1; i > 0; i--)
     {
         int j = std::rand() % (i + 1);

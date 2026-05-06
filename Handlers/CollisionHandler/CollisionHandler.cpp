@@ -11,7 +11,7 @@
 
 void CollisionHandler::checkBulletEnemyCollision(std::vector<std::unique_ptr<Attack>>& attacks, EntityHandler& entities)
 {
-    for(auto& bullet : attacks)
+        for(auto& bullet : attacks)
     {
         if(!bullet->isAlive()) continue;
 
@@ -21,13 +21,14 @@ void CollisionHandler::checkBulletEnemyCollision(std::vector<std::unique_ptr<Att
 
             Enemies* e = dynamic_cast<Enemies*>(enemy.get());
             if(!e) continue;
+            if(e->isDead()) continue; // skip already dead enemies
 
-            // Hitbox vs Hurtbox — bullet's hitbox hits enemy's hurtbox
-            if(bullet->getHitboxBounds().intersects(e->getHurtboxBounds()))
+            if(bullet->getCircleBounds().intersects(e->getHurtboxBounds()))
             {
-                bullet->setAlive(false);
                 e->takeDamage(bullet->getDamage());
+                bullet->setAlive(false); 
                 std::cout << "Hit! Enemy health: " << e->getHealth() << std::endl;
+                break;
             }
         }
     }
@@ -43,15 +44,15 @@ void CollisionHandler::checkBulletEnemyCollision(std::vector<std::unique_ptr<Att
  */
 void CollisionHandler::checkEnemyTowerCollision(EntityHandler& entities, Tower& tower)
 {
-    for(auto& enemy : entities.getEnemies())
+        for (auto& enemy : entities.getEnemies())
     {
-        if(!enemy) continue;
+        if (!enemy) continue;
 
         Enemies* enemies = dynamic_cast<Enemies*>(enemy.get());
-        if(!enemies) continue;
+        if (!enemies) continue;
 
         // Enemy hurtbox vs tower hurtbox
-        if(enemies->getHitboxBounds().intersects(tower.getHurtboxBounds()))
+        if (enemies->getHurtboxBounds().intersects(tower.getHurtboxBounds()))
         {
             tower.takeDamage(enemies->getDamage());
             std::cout << "Tower health: " << tower.getHealth() << std::endl;

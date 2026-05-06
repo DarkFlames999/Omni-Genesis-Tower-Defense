@@ -99,10 +99,10 @@ bool Tower::createTower(sf::RenderWindow& window, sf::Vector2f size, sf::Vector2
     // Setup the frame sprite
     mHealthBar.setTexture(mHealthTexture);
     // Scale the frame to the desired size
-    sf::Vector2u texSize = mHealthTexture.getSize(); // Get original texture size
-    float scaleX = frameSize.x / texSize.x;          // Scale factor for width
-    float scaleY = frameSize.y / texSize.y;          // Scale factor for height
-    mHealthBar.setScale(scaleX, scaleY);             // Apply scaling
+    sf::Vector2u texSize = mHealthTexture.getSize();
+    float scaleX = frameSize.x / texSize.x;
+    float scaleY = frameSize.y / texSize.y;
+    mHealthBar.setScale(scaleX, scaleY); 
     mHealthBar.setPosition(framePosition);
 
     // Setup health fill (red part that decreases)
@@ -239,21 +239,6 @@ void Tower::drawAttack(sf::RenderTarget& target) const
         target.draw(*attack);
 }
 
-// bool Tower::towerDestroyed(sf::RenderWindow& window)
-// {
-//     if(mHP <= 10)
-//     {
-//         loadTextureFromFile("Sprites/Destroyed.png", mTexture);
-//     if(!mTexture.loadFromFile("Fonts/Norse.ttf"))
-//     {
-//         std::cerr<<"Error opening \"Magic.ttf\" file" << std::endl;
-//         exit(1);
-//     }
-//         return true;
-//     }
-//     return false;
-// }
-
 //ALL ENEMY FUNCTIONS
 /**
  * @brief Loads the sprite sheet texture and hardcodes the Juvenile enemy with the 
@@ -274,10 +259,13 @@ bool Juvenile::createJuvenile(sf::RenderWindow& window, sf::Vector2f position, s
     loadTextureFromFile("Sprites/J_Walking.png", mJuveniles);
 
     mSprite.setTexture(mJuveniles);
+ 
     
     sf::Vector2u textureSize = mJuveniles.getSize();
     float frameWidth  = textureSize.x / mFrameCount;
     float frameHeight = textureSize.y;
+
+    mSprite.setTextureRect(sf::IntRect(0, 0, frameWidth, frameHeight));
 
     float scaleX = spriteSize.x / frameWidth;
     float scaleY = spriteSize.y / frameHeight;
@@ -301,11 +289,6 @@ bool Juvenile::createJuvenile(sf::RenderWindow& window, sf::Vector2f position, s
 
     return true;
 }
-
-// void Juvenile::juvenileAttack(sf::RenderWindow& window)
-// {
-//
-// }
 
 /**
  * @brief Loads the sprite sheet texture and hardcodes the Matured enemy with the 
@@ -331,6 +314,8 @@ bool Matured::createMatured(sf::RenderWindow& window, sf::Vector2f position, sf:
     sf::Vector2u textureSize = mMatured.getSize();
     float frameWidth  = textureSize.x / mFrameCount;
     float frameHeight = textureSize.y;
+
+    mSprite.setTextureRect(sf::IntRect(0, 0, frameWidth, frameHeight));
 
     float scaleX = spriteSize.x / frameWidth;
     float scaleY = spriteSize.y / frameHeight;
@@ -380,6 +365,8 @@ bool Warden::createWarden(sf::RenderWindow& window, sf::Vector2f position, sf::V
     float frameWidth  = textureSize.x / mFrameCount;
     float frameHeight = textureSize.y;
 
+    mSprite.setTextureRect(sf::IntRect(0, 0, frameWidth, frameHeight));
+
     float scaleX = spriteSize.x / frameWidth;
     float scaleY = spriteSize.y / frameHeight;
 
@@ -423,13 +410,14 @@ void Enemies::draw(sf::RenderTarget& target, sf::RenderStates states) const
  */
 void Enemies::update(sf::RenderWindow& window, float deltaTime)
 {
-    if(!mSprite.getTexture()) return;
+     if(!mSprite.getTexture()) return;
     if(deltaTime > 0.05f) deltaTime = 0.05f;
 
     sf::Vector2u textureSize = mSprite.getTexture()->getSize();
-    int frameWidth = textureSize.x / mFrameCount;
+    int frameWidth  = textureSize.x / mFrameCount;
     int frameHeight = textureSize.y;
 
+    //Plays the animations frame-by-frame from the sprte sheets
     if(mAnimClock.getElapsedTime().asSeconds() >= mFrameTime)
     {
         mCurrentFrame = (mCurrentFrame + 1) % mFrameCount;
@@ -437,28 +425,30 @@ void Enemies::update(sf::RenderWindow& window, float deltaTime)
         mAnimClock.restart();
     }
 
-    // Move toward the tower from whichever side we spawned on
     if(mSpawnedLeft)
-        mPosition.x += mSpeed * deltaTime; // left side: move right
+        mPosition.x += mSpeed * deltaTime;
     else
-        mPosition.x -= mSpeed * deltaTime; // right side: move left
+        mPosition.x -= mSpeed * deltaTime;
 
     mSprite.setPosition(mPosition.x, mPosition.y);
     mHurtbox.setPosition(mPosition.x, mPosition.y);
 
-    // Stop at the tower bounds depending on which side
-    if(mSpawnedLeft && mPosition.x >= (window.getSize().x / 2.f) - 100.f)
+    //Uses the tower bounds to detect the hurtboxes
+    float enemySpriteWidth = mHurtbox.getGlobalBounds().width - 5.f;
+
+    if(!mSpawnedLeft && mPosition.x <= mTowerBounds.left + mTowerBounds.width)
     {
-        mPosition.x = (window.getSize().x / 2.f) - 100.f;
+        mPosition.x = mTowerBounds.left + mTowerBounds.width;
         mSprite.setPosition(mPosition.x, mPosition.y);
         mHurtbox.setPosition(mPosition.x, mPosition.y);
     }
-    else if(!mSpawnedLeft && mPosition.x <= (window.getSize().x / 2.f) + 100.f)
+    if(mSpawnedLeft && mPosition.x + enemySpriteWidth >= mTowerBounds.left)
     {
-        mPosition.x = (window.getSize().x / 2.f) + 100.f;
+        mPosition.x = mTowerBounds.left - enemySpriteWidth;
         mSprite.setPosition(mPosition.x, mPosition.y);
         mHurtbox.setPosition(mPosition.x, mPosition.y);
     }
+    
 
     if(isDead()) return;
 }

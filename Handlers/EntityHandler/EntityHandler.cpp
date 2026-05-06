@@ -63,18 +63,23 @@ void EntityHandler::DrawEntities(sf::RenderWindow& window, sf::RenderStates stat
     }
 }
 
-void EntityHandler::UpdateEntities(sf::RenderWindow& window, float deltaTime)
+void EntityHandler::UpdateEntities(sf::RenderWindow& window, float deltaTime, sf::FloatRect towerBounds)
 {
-    for(auto& enemies : mEnemies)
+    for(auto& enemy : mEnemies)
     {
-        if(!enemies) continue;
-        enemies->update(window, deltaTime);
+        if(!enemy) continue;
+        
+        Enemies* enemies = dynamic_cast<Enemies*>(enemy.get());
+        if(enemies) enemies->setTowerBounds(towerBounds); // set before update
+
+        enemy->update(window, deltaTime);
     }
+
     mEnemies.erase(
         std::remove_if(mEnemies.begin(), mEnemies.end(),
-            [](const std::unique_ptr<Entity>& Entity)
+            [](const std::unique_ptr<Entity>& e)
             {
-                Enemies* enemy = dynamic_cast<Enemies*>(Entity.get());
+                Enemies* enemy = dynamic_cast<Enemies*>(e.get());
                 return enemy && enemy->isDead();
             }),
         mEnemies.end());
