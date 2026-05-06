@@ -73,7 +73,6 @@ private:
     sf::Sprite mStarBg;
     sf::Texture mSkillTreeBgTexture;
     sf::Texture mSkillTreeFgTexture;
-    sf::Font mUIFont;
 
 
     Tower mTower;
