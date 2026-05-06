@@ -12,7 +12,7 @@
 #include <iostream>
 
 // Seconds between each enemy spawn within a wave.
-static constexpr float SPAWN_INTERVAL_SECONDS = 2.0f;
+static constexpr float SPAWN_INTERVAL_SECONDS = 2.5f;
 
 struct WaveTier
 {

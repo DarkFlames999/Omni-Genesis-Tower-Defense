@@ -18,6 +18,29 @@ Game::Game()
 {
     mWindow.setFramerateLimit(60);
 
+    //Load the Font once
+    if(!hudFont.loadFromFile("Fonts/Norse.ttf"))
+        std::cerr << "Error opening Norse.ttf" << std::endl;
+    if(!mTextBg1.loadFromFile("Sprites/Background.png"))
+        std::cerr << "Error opening Background.png" << std::endl;
+    mBg1.setTexture(mTextBg1);
+    if(!mTextFg1.loadFromFile("Sprites/foreground.png"))
+        std::cerr << "Error opening foreground.png" << std::endl;
+    mFg1.setTexture(mTextFg1);
+
+    sf::Vector2u windowSize  = mWindow.getSize();
+    sf::Vector2u bgtextureSize = mTextBg1.getSize();
+    mBg1.setScale(
+        static_cast<float>(windowSize.x) / bgtextureSize.x,
+        static_cast<float>(windowSize.y) / bgtextureSize.y
+    );
+
+    sf::Vector2u fgtextureSize = mTextFg1.getSize();
+    mFg1.setScale(
+        static_cast<float>(windowSize.x) / fgtextureSize.x,
+        static_cast<float>(windowSize.y) / fgtextureSize.y
+    );
+
     //Tower extra controls don't touch fr
     mTowerKeyBindingHandler.ImplementHeldKey(sf::Keyboard::Num1, 0.5f);
     // Background music
@@ -38,7 +61,7 @@ Game::Game()
  */
 void Game::run()
 {
-    starAnimation(mWindow);
+    // starAnimation(mWindow);
 
     while (mWindow.isOpen())
     {
@@ -311,6 +334,7 @@ void Game::renderDifficultySelect()
  */
 void Game::startGame()
 {
+    
     mTower.createTower(mWindow, {40.0f, 130.0f}, {10.f, 10.f});
 
     int startWave = 0;
@@ -352,9 +376,10 @@ void Game::updatePlaying(float dt)
         mTower.shoot(mWindow);
 
     // Grant XP for kills
-    for (auto& enemy : mEntityHandler.getEnemies())
+    for (auto& enemy : mWaves.getEnemies())
     {
         Enemies* enemies = dynamic_cast<Enemies*>(enemy.get());
+        if(!enemies) continue;
         if (enemies->isDead())
         {
             enemies->giveXP(mTower);
@@ -379,13 +404,13 @@ void Game::updatePlaying(float dt)
  */
 void Game::renderPlaying()
 {
+    mWindow.draw(mBg1);
+    mWindow.draw(mFg1);
     mWindow.draw(mTower);
     mTower.drawAttack(mWindow);
     mWaves.DrawEntities(mWindow, sf::RenderStates::Default);
 
     // show current difficulty in top-right
-    sf::Font hudFont;
-    hudFont.loadFromFile("Fonts/Norse.ttf");
     std::string diffStr;
     switch (mDifficulty)
     {
