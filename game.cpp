@@ -297,7 +297,6 @@ void Game::updateMenu(sf::Event& e)
     mControlsBtn->update(e, mWindow);
     mQuitBtn->update(e, mWindow);
 
-    // Transition to difficulty select when the Play button's rainbow completes
     if (mPlayBtn->mFading && mPlayBtn->mColorIndex >= mPlayBtn->rainbow.size() - 1)
     {
         initDifficultySelect();
@@ -313,7 +312,14 @@ void Game::updateMenu(sf::Event& e)
         return;
     }
 
-    // Quit
+    // Transition to Controls screen
+    if (mControlsBtn->mFading && mControlsBtn->mColorIndex >= mControlsBtn->rainbow.size() - 1)
+    {
+        initControls();
+        mState = State::Controls;
+        return;
+    }
+
     if (mQuitBtn->mFading && mQuitBtn->mColorIndex >= mQuitBtn->rainbow.size() - 1) {
         mWindow.close();
     }
@@ -365,6 +371,7 @@ void Game::initDifficultySelect()
         sf::Vector2f(300.f, 80.f),
         sf::Color(180, 20, 20, 255));
 }
+
 
 void Game::initMagicSelection()
 {

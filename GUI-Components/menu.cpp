@@ -193,8 +193,8 @@ void starAnimation(sf::RenderWindow& window)
 
     //Set up a white rectangle overlay
     // After the display clock, set up a white overlay rectangle
-    sf::RectangleShape whiteOverlay(sf::Vector2f(star.getSize().x*2, star.getSize().y*2));
-    whiteOverlay.setOrigin(star.getSize().x / 2.0f, star.getSize().y / 2.0f);
+    sf::RectangleShape whiteOverlay(sf::Vector2f(star.getSize().x*150, star.getSize().y*150));
+    whiteOverlay.setOrigin(windowSize.x / 2.0f, windowSize.y / 2.0f);
     whiteOverlay.setPosition(windowSize.x / 2.0f, windowSize.y / 2.0f);
     whiteOverlay.setFillColor(sf::Color(255, 255, 255, 0)); // start transparent
 
