@@ -48,6 +48,7 @@ bool Tower::createTower(sf::RenderWindow& window, sf::Vector2f size, sf::Vector2
     //Loading textures for the cannon andthe tower spearately
     loadTextureFromFile("Sprites/TowerBase.png", mTexture);
     loadTextureFromFile("Sprites/Cannon.png", mCannonTexture);
+    loadTextureFromFile("Sprites/TowerStats.png", mHealthTexture);
 
     mSprite.setTexture(mTexture);
     sf::FloatRect baseBounds = mSprite.getLocalBounds();
@@ -75,6 +76,44 @@ bool Tower::createTower(sf::RenderWindow& window, sf::Vector2f size, sf::Vector2
     mHurtbox.setFillColor(sf::Color::Transparent);
     mHurtbox.setOutlineColor(sf::Color::Red);
     mHurtbox.setOutlineThickness(1.f);
+
+    //Health bar attributes
+    const sf::Vector2f frameSize = {500.f, 80.f}; 
+    const sf::Vector2f framePosition = {        
+        window.getSize().x / 2.f - frameSize.x / 2.f, 
+        window.getSize().y - frameSize.y - 10.f
+    };
+
+    const sf::Vector2f healthFillSize = {400.f, 10.f}; 
+    const sf::Vector2f healthFillPosition = {      
+        framePosition.x + 50.f,       
+        framePosition.y + 20.f      
+    };
+
+    const sf::Vector2f stabilityFillSize = {360.f, 10.f};
+    const sf::Vector2f stabilityFillPosition = {   
+        framePosition.x + 70.f,  
+        framePosition.y + 50.f                             
+    };
+
+    // Setup the frame sprite
+    mHealthBar.setTexture(mHealthTexture);
+    // Scale the frame to the desired size
+    sf::Vector2u texSize = mHealthTexture.getSize(); // Get original texture size
+    float scaleX = frameSize.x / texSize.x;          // Scale factor for width
+    float scaleY = frameSize.y / texSize.y;          // Scale factor for height
+    mHealthBar.setScale(scaleX, scaleY);             // Apply scaling
+    mHealthBar.setPosition(framePosition);
+
+    // Setup health fill (red part that decreases)
+    mHealthFill.setSize(healthFillSize);
+    mHealthFill.setFillColor(sf::Color::Red);
+    mHealthFill.setPosition(healthFillPosition);
+
+    // Setup stability fill (blue part)
+    mStabilityFill.setSize(stabilityFillSize);
+    mStabilityFill.setFillColor(sf::Color::Cyan);
+    mStabilityFill.setPosition(stabilityFillPosition);
 
     return true;    
 }
@@ -135,6 +174,9 @@ void Tower::draw(sf::RenderTarget& target, sf::RenderStates states) const
     target.draw(mCannon, states);
     target.draw(mSprite, states);
     mHurtbox.draw(target, states); //Uncomment to see the hurtbox of the tower
+    target.draw(mStabilityFill, states);
+    target.draw(mHealthFill, states);
+    target.draw(mHealthBar, states);
 }
 
 /**
@@ -147,6 +189,23 @@ void Tower::update(sf::RenderWindow& window, float deltaTime)
     sf::Vector2i mousePixel = sf::Mouse::getPosition(window); //Where the mouse is in pixel coordinates, which is important for checking if the mouse is hovering over the tower and for clicking on the tower to select it
     sf::Vector2f mouseWorld = window.mapPixelToCoords(mousePixel); //Where the mouse is in the world, not just the window, which is important for aiming and shooting projectiles towards the mouse position
     aim(mouseWorld);
+
+    //Health bar update
+    float maxHPBarWidth = mHealthFill.getSize().x;
+    float healthRatio = std::max(0.f, mHP / mMaxHP);
+    mHealthFill.setSize({maxHPBarWidth * healthRatio, 20.f});
+
+    if(healthRatio > 0.5f)
+        mHealthFill.setFillColor(sf::Color::Red);
+    else if(healthRatio > 0.25f)
+        mHealthFill.setFillColor(sf::Color::Yellow);
+    else
+        mHealthFill.setFillColor(sf::Color::Black);
+
+    //Stability bar update
+    float maxStabilityBarWidth = mStabilityFill.getSize().x;
+    float stabilityRatio = std::max(0.f, mStability / mMaxStability);
+    mStabilityFill.setSize({maxStabilityBarWidth * stabilityRatio, 20.f});
 }
 
 /**
@@ -208,10 +267,10 @@ void Tower::drawAttack(sf::RenderTarget& target) const
 bool Juvenile::createJuvenile(sf::RenderWindow& window, sf::Vector2f position, sf::Vector2f size, sf::Vector2f spriteSize)
 {
     mFrameCount = 12;
-    mSpeed = 100;
-    mHealth = 50;
-    mDamage = 10;
-    mXPValue = 10;
+    mSpeed = 100.f;
+    mHealth = 50.f;
+    mDamage = 10.f;
+    mXPValue = 10.f;
     loadTextureFromFile("Sprites/J_Walking.png", mJuveniles);
 
     mSprite.setTexture(mJuveniles);
@@ -262,10 +321,10 @@ bool Juvenile::createJuvenile(sf::RenderWindow& window, sf::Vector2f position, s
 bool Matured::createMatured(sf::RenderWindow& window, sf::Vector2f position, sf::Vector2f size, sf::Vector2f spriteSize)
 {
     mFrameCount = 8;
-    mSpeed = 120;
-    mHealth = 100;
-    mDamage = 20;
-    mXPValue = 25;
+    mSpeed = 120.f;
+    mHealth = 100.f;
+    mDamage = 20.f;
+    mXPValue = 25.f;
     loadTextureFromFile("Sprites/M_Walking.png", mMatured);
 
     mSprite.setTexture(mMatured);
@@ -310,10 +369,10 @@ bool Matured::createMatured(sf::RenderWindow& window, sf::Vector2f position, sf:
 bool Warden::createWarden(sf::RenderWindow& window, sf::Vector2f position, sf::Vector2f size, sf::Vector2f spriteSize)
 {
     mFrameCount = 7;
-    mSpeed = 140;
-    mHealth = 200;
-    mDamage = 40;
-    mXPValue = 50;
+    mSpeed = 140.f;
+    mHealth = 200.f;
+    mDamage = 40.f;
+    mXPValue = 50.f;
     loadTextureFromFile("Sprites/W_Walking.png", mWarden);
 
     mSprite.setTexture(mWarden);

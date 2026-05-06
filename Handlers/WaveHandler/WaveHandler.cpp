@@ -12,7 +12,7 @@
 #include <iostream>
 
 // Seconds between each enemy spawn within a wave.
-static constexpr float SPAWN_INTERVAL_SECONDS = 2.0f;
+static constexpr float SPAWN_INTERVAL_SECONDS = 3.0f;
 
 struct WaveTier
 {
@@ -110,7 +110,7 @@ void WaveHandler::Update(sf::RenderWindow& window, float deltaTime)
         {
             mSpawnTimer -= mSpawnInterval;
 
-            const std::string type = mSpawnQueue.back();
+            const std::string type = mSpawnQueue.front();
             mSpawnQueue.pop();
 
             SpawnEntity(type, window);

@@ -18,6 +18,29 @@ Game::Game()
 {
     mWindow.setFramerateLimit(60);
 
+    //Load the Font once
+    if(!hudFont.loadFromFile("Fonts/Norse.ttf"))
+        std::cerr << "Error opening Norse.ttf" << std::endl;
+    if(!mTextBg1.loadFromFile("Sprites/Background.png"))
+        std::cerr << "Error opening Background.png" << std::endl;
+    mBg1.setTexture(mTextBg1);
+    if(!mTextFg1.loadFromFile("Sprites/foreground.png"))
+        std::cerr << "Error opening foreground.png" << std::endl;
+    mFg1.setTexture(mTextFg1);
+
+    sf::Vector2u windowSize  = mWindow.getSize();
+    sf::Vector2u bgtextureSize = mTextBg1.getSize();
+    mBg1.setScale(
+        static_cast<float>(windowSize.x) / bgtextureSize.x,
+        static_cast<float>(windowSize.y) / bgtextureSize.y
+    );
+
+    sf::Vector2u fgtextureSize = mTextFg1.getSize();
+    mFg1.setScale(
+        static_cast<float>(windowSize.x) / fgtextureSize.x,
+        static_cast<float>(windowSize.y) / fgtextureSize.y
+    );
+
     //Skill Tree Loading
     mBraverySkillTree = SkillTree("SkillTree/Bravery_Skill_Tree.json");
     std::cout << "Loaded " << mBraverySkillTree.getSkillTreeSize() << " skills\n";
@@ -34,9 +57,9 @@ Game::Game()
         std::cerr << "Warning: failed to load UI font\n";
     }
 
-    //mMusic.setLoop(true);
-    //mMusic.setVolume(50.f);
-    //mMusic.play();
+    // mMusic.setLoop(true);
+    // mMusic.setVolume(50.f);
+    // mMusic.play();
 
     // The intro runs first
     mTitle = std::make_unique<Title>("Omni-Genesis/Tower Defense");
@@ -464,16 +487,17 @@ void Game::updatePlaying(float dt)
         mTower.shoot(mWindow);
 
     // Grant XP for kills
-    for (auto& enemy : mEntityHandler.getEnemies())
+
+    for (auto& enemy : mWaves.getEnemies())
     {
         Enemies* enemies = dynamic_cast<Enemies*>(enemy.get());
+        if(!enemies) continue;
         if (enemies->isDead())
         {
             enemies->giveXP(mTower);
             std::cout << "Tower XP: " << mTower.getXPPoints() << std::endl;
         }
     }
-
     if (mTower.getHealth() <= 0)
     {
         // Lose condition for later
@@ -491,6 +515,8 @@ void Game::updatePlaying(float dt)
  */
 void Game::renderPlaying()
 {
+    mWindow.draw(mBg1);
+    mWindow.draw(mFg1);
     mWindow.draw(mTower);
     mTower.drawAttack(mWindow);
     mWaves.DrawEntities(mWindow, sf::RenderStates::Default);

@@ -98,9 +98,16 @@ class Tower: public Entity
     protected:
         sf::Sprite mCannon;
         sf::Texture mCannonTexture;
+        sf::Sprite mHealthBar;
+        sf::Texture mHealthTexture;
+        sf::RectangleShape mHealthFill;
+        sf::RectangleShape mStabilityFill;
         sf::Clock mShootClock;
 
         float mHP = 100.f;
+        float mMaxHP = 100.f;
+        float mStability = 100.f;
+        float mMaxStability = 100.f;
         float mDamageMultiplier = 1.0f;
         float mFireRate = 1.5f; //How many shots per second the tower can fire
         int mXPPoints = 0; //Experience points for leveling up the tower and unlocking skills in the skill tree
@@ -140,10 +147,10 @@ class Enemies: public Entity
         bool mSpawnedLeft = false;
 
         //Enemy stats like movement and health
-        float mSpeed;
-        int mHealth = 0;
-        int mDamage = 0;
-        int mXPValue;
+        float mSpeed = 0.f;
+        float mHealth = 0.f;
+        float mDamage = 0.f;
+        float mXPValue = 0.f;
     
 };
 
