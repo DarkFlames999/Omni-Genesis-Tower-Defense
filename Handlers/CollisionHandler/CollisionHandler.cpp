@@ -43,18 +43,16 @@ void CollisionHandler::checkBulletEnemyCollision(std::vector<std::unique_ptr<Att
  */
 void CollisionHandler::checkEnemyTowerCollision(EntityHandler& entities, Tower& tower)
 {
-    for(auto& enemy : entities.getEnemies())
+    for (auto& enemy : entities.getEnemies())
     {
-        if(!enemy) continue;
+        if (!enemy) continue;
 
         Enemies* enemies = dynamic_cast<Enemies*>(enemy.get());
-        if(!enemies) continue;
+        if (!enemies) continue;
 
-        // Enemy hurtbox vs tower hurtbox
-        if(enemies->getHitboxBounds().intersects(tower.getHurtboxBounds()))
+        if (enemies->getHurtboxBounds().intersects(tower.getHurtboxBounds()))
         {
-            tower.takeDamage(enemies->getDamage());
-            std::cout << "Tower health: " << tower.getHealth() << std::endl;
+            enemies->tryAttack(tower);   // handles cooldown, animation, damage
         }
     }
 }

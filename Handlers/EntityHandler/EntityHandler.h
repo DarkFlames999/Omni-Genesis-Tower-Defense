@@ -35,7 +35,7 @@ class EntityHandler
         void SpawnEntity(const std::string& type, sf::RenderWindow& window);
         
         void DrawEntities(sf::RenderWindow& window, sf::RenderStates states); //For each entity 
-        void UpdateEntities(sf::RenderWindow& window, float deltaTime);
+        void UpdateEntities(sf::RenderWindow& window, float deltaTime, sf::FloatRect towerBounds);
         std::vector<std::unique_ptr<Entity>>& getEnemies() { return mEnemies; }
 
         friend class Tower;

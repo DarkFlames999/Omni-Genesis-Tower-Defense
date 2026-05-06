@@ -3,7 +3,7 @@
         {
             "id": "bravery.fire_manip1.unlock",
             "name": "Fire Manipulation",
-            "description": "A skill that introduces fire damage to your attacks. - Skill Tree Test",
+            "description": "A skill that introduces fire to your attacks.",
             "cost" : 100,
             "magic" : "Bravery",
             "kind" : "Offensive",
@@ -14,7 +14,7 @@
         {
             "id": "bravery.fire_manip2.unlock",
             "name": "Enlarged Flames",
-            "description": "A Slightly larger flame for firee",
+            "description": "A Slightly larger flame for fire with more damage and speed",
             "cost" : 120,
             "magic" : "Bravery",
             "kind" : "Offensive",
@@ -25,7 +25,7 @@
         {
             "id": "bravery.fire_manip3.unlock",
             "name": "Inferno Blast",
-            "description": "Even Bigger Flames that require the previous skill.",
+            "description": "Even Bigger Flames that require the previous skills.",
             "cost" : 150,
             "magic" : "Bravery",
             "kind" : "Offensive",

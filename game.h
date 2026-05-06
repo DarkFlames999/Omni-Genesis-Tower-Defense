@@ -61,6 +61,11 @@ private:
     // Main-menu buttons
     std::unique_ptr<Button> mPlayBtn;
     std::unique_ptr<Button> mQuitBtn;
+
+    //Game over options
+    std::unique_ptr<Button> mRestartBtn;
+    std::unique_ptr<Button> mMainMenuBtn;
+
     // Difficulty buttons
     std::unique_ptr<Button> mEasyBtn;
     std::unique_ptr<Button> mMediumBtn;
@@ -94,6 +99,15 @@ private:
     void initMagicSelection();
     void updateMagicSelection(sf::Event& e);
     void renderMagicSelection();
+
+    void initGameOver();
+    void updateGameOver(sf::Event& e);
+    void renderGameOver();
+
+    void initControls();
+    void updateControls(sf::Event& e);
+    void renderControls();
+
     void initSkillTreeView();
     void updateSkillTreeView(sf::Event& e);
     void renderSkillTreeView();
