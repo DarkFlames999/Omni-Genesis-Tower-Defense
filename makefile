@@ -5,6 +5,9 @@ LIBS = -lsfml-graphics -lsfml-window -lsfml-system -lsfml-audio
 run: game
 	./game
 
+tests: TESTS/test
+	./TESTS/test
+
 game: entities.o hurtbox.o hitbox.o main.o InputHandler.o EntityHandler.o WaveHandler.o CollisionHandler.o SkillTree.o game.o menu.o MagicSelection.o SkillTreeView.o
 	$(CC) $(FLAGS) $^ -o game $(LIBS)
 
@@ -46,6 +49,15 @@ SkillTree.o: SkillTree/SkillTree.cpp SkillTree/SkillTree.h
 
 SkillTreeView.o: SkillTree/SkillTreeView.cpp SkillTree/SkillTreeView.h
 	$(CC) $(FLAGS) -c $< -o $@
+
+TESTS/test.o: TESTS/test.cpp
+	$(CC) $(FLAGS) -c $< -o $@
+
+TESTS/catch_amalgamated.o: TESTS/catch_amalgamated.cpp
+	$(CC) $(FLAGS) -c $< -o $@
+
+TESTS/test: TESTS/test.o TESTS/catch_amalgamated.o entities.o hurtbox.o hitbox.o InputHandler.o EntityHandler.o WaveHandler.o CollisionHandler.o SkillTree.o SkillTreeView.o MagicSelection.o menu.o
+	$(CC) $(FLAGS) $^ -o $@ $(LIBS)
 
 clean:
 	rm -f *.o game

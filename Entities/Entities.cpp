@@ -196,7 +196,6 @@ void Tower::update(sf::RenderWindow& window, float deltaTime)
     sf::Vector2f mouseWorld = window.mapPixelToCoords(mousePixel); //Where the mouse is in the world, not just the window, which is important for aiming and shooting projectiles towards the mouse position
     aim(mouseWorld);
 
- 
     float healthRatio = std::max(0.f, mHP / mMaxHP);
     mHealthFill.setSize({mMaxHealthBarWidth * healthRatio, 20.f});
 
@@ -213,7 +212,6 @@ void Tower::update(sf::RenderWindow& window, float deltaTime)
         mHealthFill.setFillColor(sf::Color::Red);
     }
 
-    //Stability bar update
     float stabilityRatio = std::max(0.f, mStability / mMaxStability);
     mStabilityFill.setSize({mMaxStabilityBarWidth * stabilityRatio, 20.f});
 }
@@ -363,11 +361,6 @@ bool Juvenile::createJuvenile(sf::RenderWindow& window, sf::Vector2f position, s
 
     return true;
 }
-
-// void Juvenile::juvenileAttack(sf::RenderWindow& window)
-// {
-//
-// }
 
 /**
  * @brief Loads the sprite sheet texture and hardcodes the Matured enemy with the 
