@@ -109,9 +109,9 @@ make clean
 | Difficulty | Starting Wave | Description |
 |---|---|---|
 | Easy | Wave 1 | Start from the beginning |
-| Medium | Wave 11 | Skip the early waves |
-| Hard | Wave 21 | Jump into the thick of it |
-| Are you sure? | Wave 31 | Are you sure? |
+| Medium | Wave 6 | Skip the early waves |
+| Hard | Wave 11 | Jump into the thick of it |
+| Are you sure? | Wave 21 | Are you sure? |
 
 ---
 

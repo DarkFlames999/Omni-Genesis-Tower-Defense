@@ -187,6 +187,9 @@ void Game::update(float dt)
         case State::Playing:
             updatePlaying(dt);
             break;
+        case State::GameOver:
+            updateGameOver(dt);
+            break;
         default:
             break;
     }
@@ -222,6 +225,10 @@ void Game::render()
             break;
         case State::SkillTreeView:
             renderSkillTreeView();
+            break;
+        case State::GameOver:
+            renderPlaying();
+            renderGameOver();
             break;
         default:
             break;
@@ -573,6 +580,7 @@ void Game::updateDifficultySelect(sf::Event& e)
         if (btn.mFading && btn.mColorIndex >= btn.rainbow.size() - 1)
         {
             mDifficulty = d;
+            resetGame();
             startGame();
             mState = State::Playing;
         }
@@ -622,13 +630,13 @@ void Game::startGame()
             startWave = 0;
             break;
         case Difficulty::Medium:
-            startWave = 10;
+            startWave = 5;
             break;
         case Difficulty::Hard:
-            startWave = 20;
+            startWave = 10;
             break;
         case Difficulty::Areyousure:
-            startWave = 30;
+            startWave = 20;
             break;
         default:
             startWave = 0;
@@ -648,36 +656,32 @@ void Game::updatePlaying(float dt)
 {
     mTower.update(mWindow, dt);
     mTower.updateAttack(mWindow, dt);
-    mWaves.Update(mWindow, dt);
+    mWaves.Update(mWindow, dt, mTower);
     mCollisionHandler.checkBulletEnemyCollision(mTower.getAttacks(), mWaves);
     mCollisionHandler.checkEnemyTowerCollision(mWaves, mTower);
 
-    // Allows holding mouse to fire continuously
     if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
         mTower.shoot(mWindow);
 
     // Grant XP for kills
-
     for (auto& enemy : mWaves.getEnemies())
     {
         Enemies* enemies = dynamic_cast<Enemies*>(enemy.get());
-        if(!enemies) continue;
-        if (enemies->isDead())
-        {
-            enemies->giveXP(mTower);
-            std::cout << "Tower XP: " << mTower.getXPPoints() << std::endl;
-        }
+        if (!enemies || !enemies->isDead()) continue;
+        enemies->giveXP(mTower);
     }
+
+    if (mWaves.IsWaveComplete())
+        mWaves.StartNextWave(mWindow);
+
+    // Lose condition
     if (mTower.getHealth() <= 0)
     {
-        // Lose condition for later
-    }
-
-    if (mWaves.IsWaveComplete()) {
-        mWaves.StartNextWave(mWindow);
+        mFinalWave    = mWaves.getCurrentWave();
+        mState        = State::GameOver;
+        mGameOverTimerStarted = false;
     }
 }
-
 
 /**
  * @brief Render playing state
@@ -691,7 +695,6 @@ void Game::renderPlaying()
     mTower.drawAttack(mWindow);
     mWaves.DrawEntities(mWindow, sf::RenderStates::Default);
 
-    // show current difficulty in top-right
     std::string diffStr;
     switch (mDifficulty)
     {
@@ -711,10 +714,40 @@ void Game::renderPlaying()
             diffStr = "";
             break;
     }
+
     sf::Text hudText("Difficulty: " + diffStr, mUIFont, 22);
+    sf::Text waveText("Wave: " + std::to_string(mWaves.getCurrentWave()), mUIFont, 22);
+    sf::Text enemyText("Enemies: " + std::to_string(mWaves.getEnemies().size()), mUIFont, 22);
+
     hudText.setFillColor(sf::Color::White);
-    hudText.setPosition(mWindow.getSize().x - 220.f, 10.f);
+    waveText.setFillColor(sf::Color::White);
+    enemyText.setFillColor(sf::Color::White);
+
+    // Measure the widest line so the panel always fits
+    float maxWidth = std::max({ hudText.getLocalBounds().width,
+                                waveText.getLocalBounds().width,
+                                enemyText.getLocalBounds().width });
+
+    const float padding  = 10.f;
+    const float panelW = maxWidth + padding * 2.f;
+    const float panelH = 90.f;
+    const float panelX = mWindow.getSize().x - panelW - 8.f;
+    const float panelY = 8.f;
+
+    // Dark background panel
+    sf::RectangleShape panel(sf::Vector2f(panelW, panelH));
+    panel.setFillColor(sf::Color(0, 0, 0, 160));
+    panel.setPosition(panelX, panelY);
+    mWindow.draw(panel);
+
+    // Position text left-edge of panel with padding
+    hudText.setPosition(panelX + padding, panelY + 4.f);
+    waveText.setPosition(panelX + padding, panelY + 34.f);
+    enemyText.setPosition(panelX + padding, panelY + 64.f);
+
     mWindow.draw(hudText);
+    mWindow.draw(waveText);
+    mWindow.draw(enemyText);
 }
 
 void Game::applySkillEffect(const std::string& skillId)
@@ -750,4 +783,77 @@ void Game::applySkillEffect(const std::string& skillId)
         mTower.setFireRate(4.0f); // 2 shots per second
         mTower.setBulletTexture(&mTower.getFireBulletTexture());
     }
+}
+
+/**
+ * @brief Check game over screen for updates
+ * 
+ * @param dt 
+ */
+void Game::updateGameOver(float dt)
+{
+    if (!mGameOverTimerStarted)
+    {
+        mGameOverClock.restart();
+        mGameOverTimerStarted = true;
+    }
+
+    // After 4 seconds, return to main menu
+    if (mGameOverClock.getElapsedTime().asSeconds() >= 4.f)
+    {
+        initMenu();
+        mState = State::Menu;
+    }
+}
+
+/**
+ * @brief Render game over screen
+ * 
+ */
+void Game::renderGameOver()
+{
+    // Dim background
+    sf::RectangleShape overlay(sf::Vector2f(mWindow.getSize()));
+    overlay.setFillColor(sf::Color(0, 0, 0, 180));
+    mWindow.draw(overlay);
+
+    sf::Vector2u ws = mWindow.getSize();
+    float cx = ws.x / 2.f;
+    float cy = ws.y / 2.f;
+
+    sf::Text loseText("You Have Fallen", mUIFont, 72);
+    loseText.setFillColor(sf::Color(200, 30, 30));
+    loseText.setStyle(sf::Text::Bold);
+    sf::FloatRect lb = loseText.getLocalBounds();
+    loseText.setOrigin(lb.width / 2.f, lb.height / 2.f);
+    loseText.setPosition(cx, cy - 80.f);
+    mWindow.draw(loseText);
+
+    sf::Text waveText("Survived to Wave: " + std::to_string(mFinalWave), mUIFont, 42);
+    waveText.setFillColor(sf::Color::White);
+    sf::FloatRect wb = waveText.getLocalBounds();
+    waveText.setOrigin(wb.width / 2.f, wb.height / 2.f);
+    waveText.setPosition(cx, cy + 10.f);
+    mWindow.draw(waveText);
+
+    sf::Text returnText("Returning to menu...", mUIFont, 28);
+    returnText.setFillColor(sf::Color(180, 180, 180));
+    sf::FloatRect rb = returnText.getLocalBounds();
+    returnText.setOrigin(rb.width / 2.f, rb.height / 2.f);
+    returnText.setPosition(cx, cy + 80.f);
+    mWindow.draw(returnText);
+}
+
+/**
+ * @brief Reinitialize all the game stats
+ * 
+ */
+void Game::resetGame()
+{
+    mTower.reset();
+    mWaves.reset();
+    mBraverySkillTree = SkillTree("SkillTree/Bravery_Skill_Tree.json");
+    mActiveMagic = Magic();
+    mGameOverTimerStarted = false;
+    mFinalWave = 0;
 }

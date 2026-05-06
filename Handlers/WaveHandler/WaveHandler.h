@@ -21,7 +21,7 @@ public:
     WaveHandler();
     ~WaveHandler() = default;
 
-    void Update(sf::RenderWindow& window, float deltaTime);
+    void Update(sf::RenderWindow& window, float deltaTime, Tower& tower);
 
     void SetWave(int wave);
     void StartNextWave(sf::RenderWindow& window);
@@ -30,9 +30,11 @@ public:
 
     bool IsWaveActive() const;
 
-    int GetCurrentWave() const { return mCurrentWave; }
+    int getCurrentWave() const { return mCurrentWave; }
     int GetTotalEnemiesThisWave() const { return mTotalEnemiesToSpawn; }
     int GetEnemiesRemainingToSpawn() const { return mEnemiesRemainingToSpawn; }
+
+    void reset();
 
 private:
     int ComputeEnemyCount(int wave) const;

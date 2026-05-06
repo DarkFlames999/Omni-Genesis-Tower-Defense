@@ -197,21 +197,19 @@ void Tower::update(sf::RenderWindow& window, float deltaTime)
     aim(mouseWorld);
 
     //Health bar update
-    float maxHPBarWidth = mHealthFill.getSize().x;
     float healthRatio = std::max(0.f, mHP / mMaxHP);
-    mHealthFill.setSize({maxHPBarWidth * healthRatio, 20.f});
+    mHealthFill.setSize({mMaxHPBarWidth * healthRatio, 20.f});
 
-    if(healthRatio > 0.5f)
+    if (healthRatio > 0.5f)
         mHealthFill.setFillColor(sf::Color::Red);
-    else if(healthRatio > 0.25f)
+    else if (healthRatio > 0.25f)
         mHealthFill.setFillColor(sf::Color::Yellow);
     else
         mHealthFill.setFillColor(sf::Color::Black);
 
     //Stability bar update
-    float maxStabilityBarWidth = mStabilityFill.getSize().x;
     float stabilityRatio = std::max(0.f, mStability / mMaxStability);
-    mStabilityFill.setSize({maxStabilityBarWidth * stabilityRatio, 20.f});
+    mStabilityFill.setSize({mMaxStabilityBarWidth * stabilityRatio, 20.f});
 }
 
 /**
@@ -318,6 +316,7 @@ bool Juvenile::createJuvenile(sf::RenderWindow& window, sf::Vector2f position, s
     mHealth = 50.f;
     mDamage = 10.f;
     mXPValue = 10.f;
+    mAttackCooldown = 1.5f;
     loadTextureFromFile("Sprites/J_Walking.png", mJuveniles);
 
     mSprite.setTexture(mJuveniles);
@@ -372,6 +371,7 @@ bool Matured::createMatured(sf::RenderWindow& window, sf::Vector2f position, sf:
     mHealth = 100.f;
     mDamage = 20.f;
     mXPValue = 25.f;
+    mAttackCooldown = 1.2f;
     loadTextureFromFile("Sprites/M_Walking.png", mMatured);
 
     mSprite.setTexture(mMatured);
@@ -420,6 +420,7 @@ bool Warden::createWarden(sf::RenderWindow& window, sf::Vector2f position, sf::V
     mHealth = 200.f;
     mDamage = 40.f;
     mXPValue = 50.f;
+    mAttackCooldown = 0.8f;
     loadTextureFromFile("Sprites/W_Walking.png", mWarden);
 
     mSprite.setTexture(mWarden);
@@ -493,18 +494,21 @@ void Enemies::update(sf::RenderWindow& window, float deltaTime)
     mSprite.setPosition(mPosition.x, mPosition.y);
     mHurtbox.setPosition(mPosition.x, mPosition.y);
 
-    // Stop at the tower bounds depending on which side
-    if(mSpawnedLeft && mPosition.x >= (window.getSize().x / 2.f) - 100.f)
-    {
-        mPosition.x = (window.getSize().x / 2.f) - 100.f;
+    float towerLeft  = (window.getSize().x / 2.f) - 250.f;  // left base edge
+    float towerRight = (window.getSize().x / 2.f) + 150.f;  // right base edge
+
+    if (mSpawnedLeft && mPosition.x >= towerLeft) {
+        mPosition.x = towerLeft;
         mSprite.setPosition(mPosition.x, mPosition.y);
         mHurtbox.setPosition(mPosition.x, mPosition.y);
-    }
-    else if(!mSpawnedLeft && mPosition.x <= (window.getSize().x / 2.f) + 100.f)
-    {
-        mPosition.x = (window.getSize().x / 2.f) + 100.f;
+        mIsAttacking = true;
+    } else if (!mSpawnedLeft && mPosition.x <= towerRight) {
+        mPosition.x = towerRight;
         mSprite.setPosition(mPosition.x, mPosition.y);
         mHurtbox.setPosition(mPosition.x, mPosition.y);
+        mIsAttacking = true;
+    } else {
+        mIsAttacking = false;
     }
 
     if(isDead()) return;
@@ -536,6 +540,36 @@ void Enemies::setSpawnSide(bool spawnedLeft)
         mSprite.setOrigin(0.f, 0.f);
         mSprite.setScale(std::abs(scale.x), scale.y);
     }
+}
+
+/**
+ * @brief Enemies attack tower
+ * 
+ * @param tower 
+ * @param deltaTime 
+ */
+void Enemies::attackTower(Tower& tower, float deltaTime)
+{
+    if (mAttackClock.getElapsedTime().asSeconds() >= mAttackCooldown)
+    {
+        tower.takeDamage(mDamage);
+        std::cout << "Enemy attacked tower! Tower HP: " << tower.getHealth() << "\n";
+        mAttackClock.restart();
+    }
+}
+
+/**
+ * @brief Give XP to tower
+ * 
+ * @param tower 
+ */
+void Enemies::giveXP(Tower& tower) 
+{ 
+    if (!mXPGiven) 
+    { 
+        tower.mXPPoints += mXPValue; 
+        mXPGiven = true; 
+    } 
 }
 
 //ALL BULLET/MAGIC FUNCTIONS 
@@ -613,4 +647,3 @@ void Attack::draw(sf::RenderTarget& target, sf::RenderStates states) const
     }
     mHitbox.draw(target, states);
 }
-

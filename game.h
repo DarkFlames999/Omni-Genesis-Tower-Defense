@@ -29,7 +29,7 @@ public:
     void run();
 
 private:
-    enum class State { Intro, Menu, DifficultySelect, Playing, MagicSelection, SkillTreeView, Paused, Controls };
+    enum class State { Intro, Menu, DifficultySelect, Playing, MagicSelection, SkillTreeView, Paused, Controls, GameOver };
 
     enum class Difficulty { None, Easy, Medium, Hard, Areyousure };
 
@@ -49,9 +49,15 @@ private:
     void updateControls(sf::Event& e);
     void renderControls();
 
+    void updateGameOver(float dt);
+    void renderGameOver();
+
     void startGame();
     void updatePlaying(float dt);
     void renderPlaying();
+    
+    void resetGame();
+
     sf::RenderWindow mWindow;
     sf::Clock mClock;
     State mState { State::Intro };
@@ -101,6 +107,10 @@ private:
     sf::SoundBuffer mMusicBuffer;
     sf::Sound mMusic;
     sf::Font mUIFont;
+
+    sf::Clock mGameOverClock;
+    bool mGameOverTimerStarted = false;
+    int mFinalWave = 0;
 };
 
 #endif

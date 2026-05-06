@@ -97,7 +97,7 @@ class Tower: public Entity
         void update(sf::RenderWindow& window, float deltaTime) override;
         void updateAttack(sf::RenderWindow& window, float deltaTime);
         void drawAttack(sf::RenderTarget& target) const;
-        void takeDamage(float damage) { mHP -= damage; }
+        void takeDamage(float amount) { mHP = std::max(0.f, mHP - amount); }
         float getHealth() const { return mHP; }
         bool towerDestroyed(sf::RenderWindow& window);
         std::vector<std::unique_ptr<Attack>>& getAttacks() { return mAttack; }
@@ -118,6 +118,22 @@ class Tower: public Entity
         void setMaxHP(float hp) { mMaxHP = hp; }
         void heal(float amount) { mHP = std::min(mMaxHP, mHP + amount); }
 
+        void reset()
+        {
+            mAttack.clear();
+            mHP = 500.f;
+            mMaxHP = 500.f;
+            mStability = 100.f;
+            mMaxStability = 100.f;
+            mDamageMultiplier = 1.0f;
+            mBulletColor = sf::Color::White;
+            mBulletDamage = 15.f;
+            mBulletSpeed = 700.f;
+            mFireRate = 1.5f;
+            mXPPoints = 0;
+            mBulletTexturePtr = nullptr;
+        }
+
         friend class Enemies;
 
     protected:
@@ -131,10 +147,12 @@ class Tower: public Entity
         const sf::Texture* mBulletTexturePtr = nullptr;
         sf::Texture mFireBulletTexture;
 
-        float mHP = 100.f;
-        float mMaxHP = 100.f;
+        float mHP = 500.f;
+        float mMaxHP = 500.f;
+        float mMaxHPBarWidth = 400.f;
         float mStability = 100.f;
         float mMaxStability = 100.f;
+        float mMaxStabilityBarWidth = 360.f;
         float mDamageMultiplier = 1.0f;
         sf::Color mBulletColor = sf::Color::White;
         float mBulletDamage = 15.f;
@@ -160,11 +178,13 @@ class Enemies: public Entity
         int getHealth() const { return mHealth; }
         bool isDead() const { return mHealth <= 0; }
         int getXPValue() const { return mXPValue; }
-        void giveXP(Tower& tower) { tower.mXPPoints += mXPValue; }
+        void giveXP(Tower& tower);
+        bool isAttacking() const { return mIsAttacking; }
 
         friend class Tower;
 
         void setSpawnSide(bool spawnedLeft);
+        void attackTower(Tower& tower, float deltaTime);
 
     protected:
         sf::Texture mJuveniles;
@@ -175,12 +195,17 @@ class Enemies: public Entity
         int mFrameCount = 0;
         float mFrameTime = 0.1f;
         bool mSpawnedLeft = false;
+        bool mXPGiven = false;
 
         //Enemy stats like movement and health
         float mSpeed = 0.f;
         float mHealth = 0.f;
         float mDamage = 0.f;
         float mXPValue = 0.f;
+
+        bool mIsAttacking = false;
+        sf::Clock mAttackClock;
+        float mAttackCooldown = 1.5f;
     
 };
 

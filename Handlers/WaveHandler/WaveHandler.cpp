@@ -86,10 +86,12 @@ void WaveHandler::StartNextWave(sf::RenderWindow& window)
 {
     mCurrentWave++;
 
+    mSpawnInterval = std::max(0.8f, SPAWN_INTERVAL_SECONDS - (mCurrentWave - 1) * 0.1f);
+
     mTotalEnemiesToSpawn = ComputeEnemyCount(mCurrentWave);
     mEnemiesRemainingToSpawn = mTotalEnemiesToSpawn;
-    mSpawnTimer = 0.f;
-    mAllSpawned  = false;
+    mSpawnTimer = mSpawnInterval;
+    mAllSpawned = false;
 
     BuildSpawnQueue(mCurrentWave);
 }
@@ -100,7 +102,7 @@ void WaveHandler::StartNextWave(sf::RenderWindow& window)
  * @param window 
  * @param deltaTime 
  */
-void WaveHandler::Update(sf::RenderWindow& window, float deltaTime)
+void WaveHandler::Update(sf::RenderWindow& window, float deltaTime, Tower& tower)
 {
     if (!mAllSpawned)
     {
@@ -123,7 +125,7 @@ void WaveHandler::Update(sf::RenderWindow& window, float deltaTime)
         }
     }
 
-    UpdateEntities(window, deltaTime);
+    UpdateEntities(window, deltaTime, tower);
 }
 
 /**
@@ -156,10 +158,9 @@ bool WaveHandler::IsWaveActive() const
  */
 int WaveHandler::ComputeEnemyCount(int wave) const
 {
-    // Formula: 10 + (n * (3.5 + 0.25 * n) / 10)
+    // Wave 1: ~4, Wave 5: ~9, Wave 10: ~11, Wave 30: ~15
     const float n = static_cast<float>(wave);
-    const float count  = 10.f + (n * (3.5f + 0.25f * n) / 10.f);
-    return std::max(1, static_cast<int>(std::round(count)));
+    return static_cast<int>(6.f * std::log(n + 1.f));
 }
 
 /**
@@ -203,4 +204,21 @@ void WaveHandler::BuildSpawnQueue(int wave)
     for (const auto& e : enemies){
         mSpawnQueue.push(e);
     }
+}
+
+/**
+ * @brief Reset wave handler
+ * 
+ */
+void WaveHandler::reset()
+{
+    EntityHandler::reset();
+    mCurrentWave = 0;
+    mTotalEnemiesToSpawn = 0;
+    mEnemiesRemainingToSpawn = 0;
+    mSpawnInterval = SPAWN_INTERVAL_SECONDS;
+    mSpawnTimer = mSpawnInterval;
+    mAllSpawned = false;
+    while (!mSpawnQueue.empty())
+        mSpawnQueue.pop();
 }
