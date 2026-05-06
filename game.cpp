@@ -20,25 +20,36 @@ Game::Game()
 
     //Load the Font once
     if(!hudFont.loadFromFile("Fonts/Norse.ttf"))
+    {
         std::cerr << "Error opening Norse.ttf" << std::endl;
-    if(!mTextBg1.loadFromFile("Sprites/Background.png"))
+    }
+    if(!mSkillTreeFont.loadFromFile("Fonts/Magic.ttf"))
+    {
+        std::cerr << "Error opening Magic.ttf" << std::endl;
+    }
+    if(!mTextBackground1.loadFromFile("Sprites/Background.png"))
+    {
         std::cerr << "Error opening Background.png" << std::endl;
-    mBg1.setTexture(mTextBg1);
-    if(!mTextFg1.loadFromFile("Sprites/foreground.png"))
+    }
+    mBackground1.setTexture(mTextBackground1);
+    if(!mTextForeground1.loadFromFile("Sprites/foreground.png"))
+    {
         std::cerr << "Error opening foreground.png" << std::endl;
-    mFg1.setTexture(mTextFg1);
+    }
+    mForeground1.setTexture(mTextForeground1);
+
 
     sf::Vector2u windowSize  = mWindow.getSize();
-    sf::Vector2u bgtextureSize = mTextBg1.getSize();
-    mBg1.setScale(
-        static_cast<float>(windowSize.x) / bgtextureSize.x,
-        static_cast<float>(windowSize.y) / bgtextureSize.y
+    sf::Vector2u backgroundtextureSize = mTextBackground1.getSize();
+    mBackground1.setScale(
+        static_cast<float>(windowSize.x) / backgroundtextureSize.x,
+        static_cast<float>(windowSize.y) / backgroundtextureSize.y
     );
 
-    sf::Vector2u fgtextureSize = mTextFg1.getSize();
-    mFg1.setScale(
-        static_cast<float>(windowSize.x) / fgtextureSize.x,
-        static_cast<float>(windowSize.y) / fgtextureSize.y
+    sf::Vector2u foregroundtextureSize = mTextForeground1.getSize();
+    mForeground1.setScale(
+        static_cast<float>(windowSize.x) / foregroundtextureSize.x,
+        static_cast<float>(windowSize.y) / foregroundtextureSize.y
     );
 
     //Skill Tree Loading
@@ -500,10 +511,44 @@ void Game::initSkillTreeView()
 
 void Game::updateSkillTreeView(sf::Event& e)
 {
-    std::string clickedId = mSkillTreeView.handleEvent(e, mWindow);
-    if (!clickedId.empty()) {
-        std::cout << "Clicked skill: " << clickedId << "\n";
+std::string clickedId = mSkillTreeView.handleEvent(e, mWindow);
+    if (clickedId.empty()) 
+    {
+
+        return;
     }
+    
+    SkillNode* node = mBraverySkillTree.findSkill(clickedId);
+    if (!node) 
+    {
+         std::cout << "[GAME] findSkill returned null for: " << clickedId << "\n";
+        return;
+    }
+    
+
+    if (node->isUnlocked)
+    { 
+    return;
+    }
+    
+    if (!mBraverySkillTree.canUnlockSkill(clickedId)) 
+    {
+        mSkillTreeView.showFailureFeedback("Prerequisites not met!");
+        return;
+    }
+    
+    if (mTower.getXPPoints() < node->cost) 
+    {
+        mSkillTreeView.showFailureFeedback("Insufficient XP!");
+        return;
+    }
+
+    mTower.spendXP(node->cost);
+    mBraverySkillTree.unlockSkill(clickedId);
+    applySkillEffect(clickedId);
+    std::cout << "Unlocked: " << node->name 
+              << " (cost: " << node->cost 
+              << ", XP remaining: " << mTower.getXPPoints() << ")\n";
 }
 
 void Game::renderSkillTreeView()
@@ -640,8 +685,8 @@ void Game::updatePlaying(float dt)
  */
 void Game::renderPlaying()
 {
-    mWindow.draw(mBg1);
-    mWindow.draw(mFg1);
+    mWindow.draw(mBackground1);
+    mWindow.draw(mForeground1);
     mWindow.draw(mTower);
     mTower.drawAttack(mWindow);
     mWaves.DrawEntities(mWindow, sf::RenderStates::Default);
@@ -670,4 +715,39 @@ void Game::renderPlaying()
     hudText.setFillColor(sf::Color::White);
     hudText.setPosition(mWindow.getSize().x - 220.f, 10.f);
     mWindow.draw(hudText);
+}
+
+void Game::applySkillEffect(const std::string& skillId)
+{
+    if (skillId == "bravery.fire_manip1.unlock")
+    {
+        mTower.setDamageMultiplier(1.50f);
+        mTower.setBulletDamage(20.f);
+        mTower.setBulletSpeed(750.f);
+        mTower.setBulletTexture(&mTower.getFireBulletTexture());
+
+    }
+    else if (skillId == "bravery.fire_manip2.unlock")
+    {
+        mTower.setDamageMultiplier(1.75f);
+        mTower.setBulletDamage(30.f);
+        mTower.setBulletSpeed(850.f);
+        mTower.setBulletTexture(&mTower.getFireBulletTexture());
+
+    }
+    else if (skillId == "bravery.fire_manip3.unlock")
+    {
+        mTower.setDamageMultiplier(2.00f);
+        mTower.setBulletDamage(40.f);
+        mTower.setBulletSpeed(950.f);
+        mTower.setBulletTexture(&mTower.getFireBulletTexture());
+    }
+    else if (skillId == "bravery.fire_manip4.unlock")
+    {
+        mTower.setDamageMultiplier(2.25f);
+        mTower.setBulletDamage(50.f);
+        mTower.setBulletSpeed(1050.f);
+        mTower.setFireRate(4.0f); // 2 shots per second
+        mTower.setBulletTexture(&mTower.getFireBulletTexture());
+    }
 }

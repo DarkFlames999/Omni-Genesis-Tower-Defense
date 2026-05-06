@@ -1,8 +1,8 @@
 {
     "skills":[
         {
-            "id": "bravery.skill1.unlock",
-            "name": "Bravery Skill 1",
+            "id": "bravery.fire_manip1.unlock",
+            "name": "Fire Manipulation",
             "description": "A skill that introduces fire damage to your attacks. - Skill Tree Test",
             "cost" : 100,
             "magic" : "Bravery",
@@ -12,15 +12,37 @@
             "position": [0, 0]
         },
         {
-            "id": "bravery.skill2.unlock",
-            "name": "Bravery Skill 2",
-            "description": "A skill that introduces electric damage to your attacks. - Skill Tree Test",
+            "id": "bravery.fire_manip2.unlock",
+            "name": "Enlarged Flames",
+            "description": "A Slightly larger flame for firee",
             "cost" : 120,
             "magic" : "Bravery",
             "kind" : "Offensive",
-            "skillpathway": ["ThermalEnergyManipulation", "ElectricManipulation"],
-            "prerequisites": ["bravery.skill1.unlock"],
+            "skillpathway": ["ThermalEnergyManipulation", "FireManipulation"],
+            "prerequisites": ["bravery.fire_manip1.unlock"],
             "position": [200, 200]
+        },
+        {
+            "id": "bravery.fire_manip3.unlock",
+            "name": "Inferno Blast",
+            "description": "Even Bigger Flames that require the previous skill.",
+            "cost" : 150,
+            "magic" : "Bravery",
+            "kind" : "Offensive",
+            "skillpathway": ["ThermalEnergyManipulation", "FireManipulation"],
+            "prerequisites": ["bravery.fire_manip2.unlock"],
+            "position": [100, 400]
+        },
+        {
+            "id": "bravery.fire_manip4.unlock",
+            "name": "Flame-Thrower",
+            "description": "Rapid Fire Flames that require all previous skills.",
+            "cost" : 250,
+            "magic" : "Bravery",
+            "kind" : "Offensive",
+            "skillpathway": ["ThermalEnergyManipulation", "FireManipulation"],
+            "prerequisites": ["bravery.fire_manip3.unlock"],
+            "position": [300, 600]
         }
     ]
 }

@@ -49,6 +49,7 @@ bool Tower::createTower(sf::RenderWindow& window, sf::Vector2f size, sf::Vector2
     loadTextureFromFile("Sprites/TowerBase.png", mTexture);
     loadTextureFromFile("Sprites/Cannon.png", mCannonTexture);
     loadTextureFromFile("Sprites/TowerStats.png", mHealthTexture);
+    loadTextureFromFile("Sprites/Fire.png", mFireBulletTexture);
 
     mSprite.setTexture(mTexture);
     sf::FloatRect baseBounds = mSprite.getLocalBounds();
@@ -160,7 +161,12 @@ void Tower::shoot(sf::RenderWindow& window)
 
     auto defaultAttack = std::make_unique<Attack>();
     defaultAttack->createAttack(spawnPoint, direction);
-    mAttack.push_back(std::move(defaultAttack)); // move, never copy
+    defaultAttack->setColor(mBulletColor);
+    defaultAttack->setDamage(mBulletDamage * mDamageMultiplier);
+    defaultAttack->setBulletSpeed(mBulletSpeed);
+
+    defaultAttack->setSpriteTexture(mBulletTexturePtr);
+    mAttack.push_back(std::move(defaultAttack));
 }
 
 /**
@@ -237,6 +243,47 @@ void Tower::drawAttack(sf::RenderTarget& target) const
 {
     for(const auto& attack : mAttack)
         target.draw(*attack);
+}
+
+bool Tower::spendXP(int amount)
+{
+    if (mXPPoints >= amount) {
+        mXPPoints -= amount;
+        return true;
+    }
+    return false;
+}
+
+void Tower::setBulletColor(sf::Color color) 
+{ 
+    mBulletColor = color;
+}
+void Tower::setBulletDamage(float damage) 
+{ 
+    mBulletDamage = damage;
+}
+
+void Tower::setBulletSpeed(float speed) 
+{ 
+    mBulletSpeed = speed;
+}
+
+void Attack::setSpriteTexture(const sf::Texture* tex) {
+    if (!tex) {
+        mUseSprite = false;
+        return;
+    }
+    float angleDeg = std::atan2(mDirection.y, mDirection.x) * (180.f / 3.14159f);
+    mBulletSprite.setRotation(angleDeg);
+
+    mBulletSprite.setTexture(*tex);
+    sf::Vector2u texSize = tex->getSize();
+    mBulletSprite.setOrigin(texSize.x / 2.f, texSize.y / 2.f);
+
+    float diameter = computeVisualSize();
+    mBulletSprite.setScale(diameter / texSize.x, diameter / texSize.y);
+    
+    mUseSprite = true;
 }
 
 // bool Tower::towerDestroyed(sf::RenderWindow& window)
@@ -493,7 +540,7 @@ void Enemies::setSpawnSide(bool spawnedLeft)
 
 //ALL BULLET/MAGIC FUNCTIONS 
 /**
- * @brief Creates default yellow bullets that spawn a few inches inside of the cannon and move in the direction of the cannon's rotation. 
+ * @brief Creates default white bullets that spawn a few inches inside of the cannon and move in the direction of the cannon's rotation. 
  * The size of the bullet is 10x10 and the origin is in the center of the bullet so that it rotates around its center. 
  * The bullets are set to alive when they are created, and will be set to not alive when they go off the screen so that they can be deleted.
  * 
@@ -504,6 +551,8 @@ void Enemies::setSpawnSide(bool spawnedLeft)
  */
 bool Attack::createAttack(sf::Vector2f position, sf::Vector2f direction)
 {
+
+
     mDirection = direction;
     mPosition = position;
     mDamage = 15.f;
@@ -536,6 +585,7 @@ void Attack::update(sf::RenderWindow& window, float deltaTime)
     //Move the attack in the direction of the velocity and include the hitbox in the movement
     mPosition += mDirection * mSpeed * deltaTime;
     mBulletShape.setPosition(mPosition);
+    mBulletSprite.setPosition(mPosition);
     mHitbox.setPosition(mPosition);
 
     //If the attack goes off the screen, set it to not alive so that the bullet and hitbox can be deleted
@@ -556,6 +606,11 @@ void Attack::update(sf::RenderWindow& window, float deltaTime)
  */
 void Attack::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
-    target.draw(mBulletShape, states);
-    mHitbox.draw(target, states); //Uncomment to see the hitbox of the bullet
+    if (mUseSprite) {
+        target.draw(mBulletSprite, states);
+    } else {
+        target.draw(mBulletShape, states);
+    }
+    mHitbox.draw(target, states);
 }
+

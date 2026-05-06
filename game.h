@@ -36,14 +36,11 @@ private:
     void processEvents();
     void update(float dt);
     void render();
-
     void updateIntro(float dt);
     void renderIntro();
-
     void initMenu();
     void updateMenu(sf::Event& e);
     void renderMenu();
-
     void initDifficultySelect();
     void updateDifficultySelect(sf::Event& e);
     void renderDifficultySelect();
@@ -55,19 +52,15 @@ private:
     void startGame();
     void updatePlaying(float dt);
     void renderPlaying();
-
     sf::RenderWindow mWindow;
     sf::Clock mClock;
     State mState { State::Intro };
     Difficulty mDifficulty { Difficulty::None };
-
     std::unique_ptr<Title>  mTitle;
     bool mIntroPlayed { false };
-
     // Main-menu buttons
     std::unique_ptr<Button> mPlayBtn;
     std::unique_ptr<Button> mQuitBtn;
-
     // Difficulty buttons
     std::unique_ptr<Button> mEasyBtn;
     std::unique_ptr<Button> mMediumBtn;
@@ -79,37 +72,32 @@ private:
 
     //Fonts
     sf::Font hudFont;
-
+    sf::Font mSkillTreeFont;
     //Backgound and foreground
-    sf::Sprite mBg1;
-    sf::Texture mTextBg1;
-    sf::Sprite mFg1;
-    sf::Texture mTextFg1;
-
-
+    sf::Sprite mBackground1;
+    sf::Texture mTextBackground1;
+    sf::Sprite mForeground1;
+    sf::Texture mTextForeground1;
     // Decorative star background for menu screens
     sf::Texture mStarTexture;
-    sf::Sprite mStarBg;
-
-
+    sf::Sprite mStarBackground;
     Tower mTower;
     WaveHandler mWaves;
     CollisionHandler mCollisionHandler;
     EntityHandler mEntityHandler;
     InputHandler mTowerKeyBindingHandler;
+    //Skill Tree Stuff - DON'T TOUCH PLEAS FOR THE LOVE OF GOD
     SkillTree mBraverySkillTree;
     Magic mActiveMagic { Magic::Bravery };
     MagicSelection mMagicSelection;
     SkillTreeView mSkillTreeView;
-    
     void initMagicSelection();
     void updateMagicSelection(sf::Event& e);
     void renderMagicSelection();
-
     void initSkillTreeView();
     void updateSkillTreeView(sf::Event& e);
     void renderSkillTreeView();
-
+    void applySkillEffect(const std::string& skillId);
     sf::SoundBuffer mMusicBuffer;
     sf::Sound mMusic;
     sf::Font mUIFont;

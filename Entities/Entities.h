@@ -43,16 +43,26 @@ class Attack: public Entity
         void update(sf::RenderWindow& window, float deltaTime) override;
         bool isAlive() const { return mAlive; }
         void setAlive(bool alive) { mAlive = alive; }
+        void setSize(float radius) { mBulletShape.setRadius(radius); mBulletShape.setOrigin(radius, radius); }
+        void setSpriteTexture(const sf::Texture* tex);
         float getDamage() const { return mDamage; }
         sf::FloatRect getCircleBounds() const { return mBulletShape.getGlobalBounds(); }
 
+        void setColor(sf::Color color) { mBulletShape.setFillColor(color); }
+        void setDamage(float damage) { mDamage = damage; }
+        void setBulletSpeed(float speed) { mSpeed = speed; }
+        float computeVisualSize() const { return 30.f + (mDamage - 15.f) * 2.f; }
+
     protected:
-        float mDamage; //Classic Damage
+        float mDamage = 15.0f;
         float mSpeed  = 700.f;
         bool  mAlive  = true;
 
+    
         sf::Vector2f mDirection;
         sf::CircleShape mBulletShape;
+        sf::Sprite mBulletSprite;
+        bool mUseSprite = false;
 
         // //Stun Tools
         // float mStunFactor;
@@ -70,7 +80,7 @@ class Attack: public Entity
         enum class AttackType{ Projectile, AreaOfEffect, Buff, Debuff, Melee } mAttackType;
         enum class MagicType{ Determination, Bravery, Justice, Kindness, Patience, Integrity, Perseverance, 
                               Apathy, Fear, Chaos, Wrath, Nihilistic, Deceit, Irresolution } mMagicType;
-        
+        friend class Tower; // Allow Tower to access protected members of Attack
 };
 
 //TOWER CLASS!
@@ -92,6 +102,21 @@ class Tower: public Entity
         bool towerDestroyed(sf::RenderWindow& window);
         std::vector<std::unique_ptr<Attack>>& getAttacks() { return mAttack; }
         int getXPPoints() const { return mXPPoints; }
+        bool spendXP(int amount);
+
+        //Cool Stats Getter/Setters for Skill tree bullcrap
+        float getDamageMultiplier() const { return mDamageMultiplier; }
+        float getFireRate() const { return mFireRate; }
+        const sf::Texture& getFireBulletTexture() const { return mFireBulletTexture; }
+
+        void setDamageMultiplier(float multiplier) { mDamageMultiplier = multiplier; }
+        void setFireRate(float rate) { mFireRate = rate; }
+        void setBulletDamage(float damage);
+        void setBulletColor(sf::Color color);
+        void setBulletSpeed(float speed);
+        void setBulletTexture(const sf::Texture* tex) { mBulletTexturePtr = tex; }
+        void setMaxHP(float hp) { mMaxHP = hp; }
+        void heal(float amount) { mHP = std::min(mMaxHP, mHP + amount); }
 
         friend class Enemies;
 
@@ -103,12 +128,17 @@ class Tower: public Entity
         sf::RectangleShape mHealthFill;
         sf::RectangleShape mStabilityFill;
         sf::Clock mShootClock;
+        const sf::Texture* mBulletTexturePtr = nullptr;
+        sf::Texture mFireBulletTexture;
 
         float mHP = 100.f;
         float mMaxHP = 100.f;
         float mStability = 100.f;
         float mMaxStability = 100.f;
         float mDamageMultiplier = 1.0f;
+        sf::Color mBulletColor = sf::Color::White;
+        float mBulletDamage = 15.f;
+        float mBulletSpeed = 700.f;
         float mFireRate = 1.5f; //How many shots per second the tower can fire
         int mXPPoints = 0; //Experience points for leveling up the tower and unlocking skills in the skill tree
         std::vector<std::unique_ptr<Attack>> mAttack;
