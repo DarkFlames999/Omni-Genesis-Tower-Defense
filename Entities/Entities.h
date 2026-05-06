@@ -103,7 +103,6 @@ class Tower: public Entity
         std::vector<std::unique_ptr<Attack>>& getAttacks() { return mAttack; }
         int getXPPoints() const { return mXPPoints; }
         bool spendXP(int amount);
-        void reset();
 
         //Cool Stats Getter/Setters for Skill tree bullcrap
         float getDamageMultiplier() const { return mDamageMultiplier; }
@@ -150,10 +149,8 @@ class Tower: public Entity
 
         float mHP = 500.f;
         float mMaxHP = 500.f;
-        float mMaxHPBarWidth = 400.f;
         float mStability = 100.f;
         float mMaxStability = 100.f;
-        float mMaxStabilityBarWidth = 360.f;
         float mDamageMultiplier = 1.0f;
         sf::Color mBulletColor = sf::Color::White;
         float mBulletDamage = 15.f;
