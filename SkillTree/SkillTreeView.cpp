@@ -88,7 +88,7 @@ std::string SkillTreeView::handleEvent(const sf::Event& e, const sf::RenderWindo
         for (const auto* node : getActiveMagicSkills()) {
             sf::Vector2f diff = worldPos - node->position;
             float distSq = diff.x * diff.x + diff.y * diff.y;
-            if (distSq <= kNodeRadius * kNodeRadius) {
+            if (distSq <= NodeRadius * NodeRadius) {
                 mHoveredId = node->id;
                 break;
             }
@@ -102,7 +102,7 @@ std::string SkillTreeView::handleEvent(const sf::Event& e, const sf::RenderWindo
         for (const auto* node : getActiveMagicSkills()) {
             sf::Vector2f diff = worldPos - node->position;
             float distSq = diff.x * diff.x + diff.y * diff.y;
-            if (distSq <= kNodeRadius * kNodeRadius) {
+            if (distSq <= NodeRadius * NodeRadius) {
                 return node->id;
             }
         }
@@ -170,8 +170,8 @@ void SkillTreeView::drawConnections(sf::RenderWindow& window) const {
 
 void SkillTreeView::drawNodes(sf::RenderWindow& window) const {
     for (const auto* node : getActiveMagicSkills()) {
-        sf::CircleShape circle(kNodeRadius);
-        circle.setOrigin(kNodeRadius, kNodeRadius);
+        sf::CircleShape circle(NodeRadius);
+        circle.setOrigin(NodeRadius, NodeRadius);
         circle.setPosition(node->position);
         circle.setFillColor(colorForNode(*node));
         circle.setOutlineColor(sf::Color::White);
@@ -184,7 +184,7 @@ void SkillTreeView::drawNodes(sf::RenderWindow& window) const {
             label.setFillColor(sf::Color::White);
             sf::FloatRect b = label.getLocalBounds();
             label.setOrigin(b.width / 2.f, 0.f);
-            label.setPosition(node->position.x, node->position.y + kNodeRadius + 5.f);
+            label.setPosition(node->position.x, node->position.y + NodeRadius + 5.f);
             window.draw(label);
         }
     }
@@ -259,13 +259,13 @@ void SkillTreeView::drawHUD(sf::RenderWindow& window, int playerXP) const {
     xpText.setFillColor(sf::Color::White);
     xpText.setPosition(20.f, 20.f);
     
-    sf::FloatRect b = xpText.getLocalBounds();
-    sf::RectangleShape bg(sf::Vector2f(b.width + 20.f, b.height + 20.f));
-    bg.setPosition(15.f, 15.f);
-    bg.setFillColor(sf::Color(0, 0, 0, 180));
-    bg.setOutlineColor(sf::Color::White);
-    bg.setOutlineThickness(1.f);
-    window.draw(bg);
+    sf::FloatRect bounds = xpText.getLocalBounds();
+    sf::RectangleShape XpBackground(sf::Vector2f(bounds.width + 20.f, bounds.height + 20.f));
+    XpBackground.setPosition(15.f, 15.f);
+    XpBackground.setFillColor(sf::Color(0, 0, 0, 180));
+    XpBackground.setOutlineColor(sf::Color::White);
+    XpBackground.setOutlineThickness(1.f);
+    window.draw(XpBackground);
     window.draw(xpText);
 }
 
@@ -274,19 +274,59 @@ void SkillTreeView::draw(sf::RenderWindow& window, int playerXP) const {
     sf::Vector2f windowCenter(window.getSize().x / 2.f, window.getSize().y / 2.f);
 
     sf::Sprite background = mBackgroundSprite;
-    background.setPosition(windowCenter.x - mPanOffset.x * kBackgroundParallax, 
-                          windowCenter.y - mPanOffset.y * kBackgroundParallax);
+    background.setPosition(windowCenter.x - mPanOffset.x * BackgroundParallax, 
+                          windowCenter.y - mPanOffset.y * BackgroundParallax);
     window.draw(background);
 
     sf::Sprite foreground = mForegroundSprite;
-    foreground.setPosition(windowCenter.x - mPanOffset.x * kForegroundParallax, 
-                          windowCenter.y - mPanOffset.y * kForegroundParallax);
+    foreground.setPosition(windowCenter.x - mPanOffset.x * ForegroundParallax, 
+                          windowCenter.y - mPanOffset.y * ForegroundParallax);
     window.draw(foreground);
     window.setView(mTreeView);
     drawConnections(window);
     drawNodes(window);
+    drawFeedback(window);
     drawHUD(window, playerXP);
     drawTooltip(window);
 
     window.setView(window.getDefaultView());
+}
+
+void SkillTreeView::showFailureFeedback(const std::string& message) {
+    mFeedbackText = message;
+    mFeedbackTimer.restart();
+}
+
+void SkillTreeView::drawFeedback(sf::RenderWindow& window) const {
+    if (mFeedbackText.empty()) 
+    {
+        return;
+    }
+    if (mFeedbackTimer.getElapsedTime().asSeconds() > FeedbackDuration) 
+    {
+        return;
+    }
+    if (!mFont) 
+    {
+        return;
+    }
+    
+    window.setView(window.getDefaultView());
+    
+    float elapsed = mFeedbackTimer.getElapsedTime().asSeconds();
+    float alpha = 255.f;
+    if (elapsed > FeedbackDuration - 0.5f) {
+        float fadeProgress = (elapsed - (FeedbackDuration - 0.5f)) / 0.5f;
+        alpha = 255.f * (1.f - fadeProgress);
+    }
+    
+    sf::Text feedback(mFeedbackText, *mFont, 32);
+    feedback.setFillColor(sf::Color(255, 100, 100, static_cast<sf::Uint8>(alpha)));
+    sf::FloatRect b = feedback.getLocalBounds();
+    feedback.setOrigin(b.width / 2.f, b.height / 2.f);
+    feedback.setPosition(window.getSize().x / 2.f, 100.f);
+    feedback.setOutlineColor(sf::Color(0, 0, 0, static_cast<sf::Uint8>(alpha)));
+    feedback.setOutlineThickness(2.f);
+    
+    window.draw(feedback);
 }

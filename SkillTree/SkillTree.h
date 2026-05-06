@@ -30,7 +30,7 @@ struct SkillNode {
     std::string id;
     std::string name;
     std::string description;
-    bool isUnlocked;
+    bool isUnlocked = false;
     Magic magicType;
     UpgradeKind upgradeType;
     int cost = 1;
