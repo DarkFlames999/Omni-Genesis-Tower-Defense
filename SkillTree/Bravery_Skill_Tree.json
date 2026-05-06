@@ -8,7 +8,8 @@
             "magic" : "Bravery",
             "kind" : "Offensive",
             "skillpathway": ["ThermalEnergyManipulation", "FireManipulation"],
-            "prerequisites": []
+            "prerequisites": [],
+            "position": [0, 0]
         },
         {
             "id": "bravery.skill2.unlock",
@@ -18,7 +19,8 @@
             "magic" : "Bravery",
             "kind" : "Offensive",
             "skillpathway": ["ThermalEnergyManipulation", "ElectricManipulation"],
-            "prerequisites": ["bravery.skill1.unlock"]
+            "prerequisites": ["bravery.skill1.unlock"],
+            "position": [200, 200]
         }
     ]
 }

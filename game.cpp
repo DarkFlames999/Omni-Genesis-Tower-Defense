@@ -134,7 +134,7 @@ void Game::processEvents()
                 break;
 
             case State::MagicSelection:
-                std::cout << "[render dispatch] state is MagicSelection\n";
+
                 if ((e.type == sf::Event::KeyPressed && e.key.code == sf::Keyboard::E))
                 {
                     mState = State::Playing; //Unpauses the game back to the main game, exiting the magic menu
@@ -144,12 +144,14 @@ void Game::processEvents()
                 updateMagicSelection(e);
                 break;
             case State::SkillTreeView:
-                if ((e.type == sf::Event::KeyPressed && e.key.code == sf::Keyboard::E)) //Allows us to exit the menu back
+                if (e.type == sf::Event::KeyPressed && 
+                    (e.key.code == sf::Keyboard::E || e.key.code == sf::Keyboard::Escape))
                 {
                     mState = State::MagicSelection;
-                    std::cout << "Exited Skill Tree View\n";
                     break;
                 }
+                updateSkillTreeView(e);
+                break;
             default:
                 break;
         }
@@ -332,8 +334,6 @@ void Game::initMagicSelection()
 {
     if (!mUIFont.loadFromFile("Fonts/Norse.ttf")) {
     std::cerr << "Failed to load Fonts/Norse.ttf\n";
-    } else {
-        std::cerr << "[FONT] Loaded successfully\n";
     }
 
     mMagicSelection.init(mWindow, mUIFont);
@@ -357,33 +357,20 @@ void Game::renderMagicSelection()
 
 void Game::initSkillTreeView()
 {
-    // Placeholder for skill tree view initialization
+    mSkillTreeView.init(mWindow, mUIFont, mBraverySkillTree, mActiveMagic);
 }
 
 void Game::updateSkillTreeView(sf::Event& e)
 {
-    // Placeholder for skill tree view update logic
+    std::string clickedId = mSkillTreeView.handleEvent(e, mWindow);
+    if (!clickedId.empty()) {
+        std::cout << "Clicked skill: " << clickedId << "\n";
+    }
 }
 
 void Game::renderSkillTreeView()
 {
-    // Placeholder for skill tree view rendering
-    // Dim background
-    sf::RectangleShape dimbg(sf::Vector2f(mWindow.getSize()));
-    dimbg.setFillColor(sf::Color(0, 0, 0, 0));
-    dimbg.setTexture(&mSkillTreeBgTexture);
-    mWindow.draw(dimbg);
-    sf::RectangleShape dimfg(sf::Vector2f(mWindow.getSize()));
-    dimfg.setFillColor(sf::Color(255, 255, 255, 0));
-    dimfg.setTexture(&mSkillTreeFgTexture);
-    mWindow.draw(dimfg);
-
-    sf::Text text("SKILL TREE VIEW (press E to close)", mUIFont, 36);
-    text.setFillColor(sf::Color::White);
-    sf::FloatRect b = text.getLocalBounds();
-    text.setOrigin(b.width / 2.f, b.height / 2.f);
-    text.setPosition(mWindow.getSize().x / 2.f, mWindow.getSize().y / 2.f);
-    mWindow.draw(text);
+    mSkillTreeView.draw(mWindow, mTower.getXPPoints());
 }
 
 /**

@@ -178,6 +178,7 @@ void SkillTree::loadFromJson(const std::string& filename) {
         node.upgradeType = parseUpgradeKind(skill["kind"].get<std::string>()); // Cast the string to the UpgradeKind enum
         node.skillpathway = skill["skillpathway"].get<std::vector<std::string>>(); // Get the skill pathway as a vector of strings
         node.prerequisites = skill["prerequisites"].get<std::vector<std::string>>(); // Get the prerequisites as a vector of strings
+        node.position = sf::Vector2f(skill["position"][0].get<float>(), skill["position"][1].get<float>()); // Get the position as a vector of floats
         addSkillNode(node); // Add the skill node to the skill tree vector
     }
 
@@ -219,3 +220,10 @@ void SkillTree::loadFromJson(const std::string& filename) {
 
         return false; 
     }
+
+    SkillNode* SkillTree::findSkill(const std::string& id) {
+    for (auto& node : skillNodes) {
+        if (node.id == id) return &node;
+    }
+    return nullptr;
+}

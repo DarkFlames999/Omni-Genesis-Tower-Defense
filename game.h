@@ -15,6 +15,7 @@
 #include "Handlers/CollisionHandler/CollisionHandler.h"
 #include "Handlers/InputHandler/InputHandler.h"
 #include "SkillTree/SkillTree.h"
+#include "SkillTree/SkillTreeView.h"
 #include "GUI-Components/MagicSelection.h"
 #include <memory>
 
@@ -81,8 +82,6 @@ private:
     // Decorative star background for menu screens
     sf::Texture mStarTexture;
     sf::Sprite mStarBg;
-    sf::Texture mSkillTreeBgTexture;
-    sf::Texture mSkillTreeFgTexture;
 
 
     Tower mTower;
@@ -93,6 +92,7 @@ private:
     SkillTree mBraverySkillTree;
     Magic mActiveMagic { Magic::Bravery };
     MagicSelection mMagicSelection;
+    SkillTreeView mSkillTreeView;
     
     void initMagicSelection();
     void updateMagicSelection(sf::Event& e);

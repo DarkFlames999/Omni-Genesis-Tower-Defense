@@ -36,6 +36,7 @@ struct SkillNode {
     int cost = 1;
     std::vector<std::string> skillpathway; // I.E. "Thermal Energy Manipulation" -> "Fire Manipulation"
     std::vector<std::string> prerequisites; // List of skill node IDs that are prerequisites
+    sf::Vector2f position;
 
     // Button skillNodeShape; // For the visual representation of the skill node in the skill tree UI
 };
@@ -46,12 +47,13 @@ public:
     SkillTree(std::string filename);
     ~SkillTree();
     void addSkillNode(const SkillNode& node);
-    //WIll need to add function to red Json file to load skill tree from file, and function to save skill tree to file
     void loadFromJson(const std::string& filename);
     void unlockSkill(const std::string& skillId);
     bool canUnlockSkill(const std::string& skillId);
+    SkillNode* findSkill(const std::string& id);
 
     float getSkillTreeSize() const { return skillNodes.size(); };
+    const std::vector<SkillNode>& getSkillNodes() const { return skillNodes; }
 
     //helper function for JSON conversation
     Magic parseMagic(const std::string& magictype);
