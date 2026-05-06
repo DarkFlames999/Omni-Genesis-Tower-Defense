@@ -121,7 +121,7 @@ bool MagicSelection::handleEvent(const sf::Event& e, const sf::RenderWindow& win
 }
 
 void MagicSelection::draw(sf::RenderWindow& window) const {
-    // Dim background
+    // Dimensions of background
     sf::RectangleShape dim(sf::Vector2f(window.getSize()));
     dim.setFillColor(sf::Color(0, 0, 0, 200));
     window.draw(dim);

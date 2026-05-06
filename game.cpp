@@ -23,10 +23,6 @@ Game::Game()
     {
         std::cerr << "Error opening Norse.ttf" << std::endl;
     }
-    if(!mSkillTreeFont.loadFromFile("Fonts/Magic.ttf"))
-    {
-        std::cerr << "Error opening Magic.ttf" << std::endl;
-    }
     if(!mTextBackground1.loadFromFile("Sprites/Background.png"))
     {
         std::cerr << "Error opening Background.png" << std::endl;
@@ -54,7 +50,6 @@ Game::Game()
 
     //Skill Tree Loading
     mBraverySkillTree = SkillTree("SkillTree/Bravery_Skill_Tree.json");
-    std::cout << "Loaded " << mBraverySkillTree.getSkillTreeSize() << " skills\n";
 
     // Background music
     if (!mMusicBuffer.loadFromFile("music/background.ogg")) {
@@ -68,9 +63,9 @@ Game::Game()
         std::cerr << "Warning: failed to load UI font\n";
     }
 
-    // mMusic.setLoop(true);
-    // mMusic.setVolume(50.f);
-    // mMusic.play();
+    mMusic.setLoop(true);
+    mMusic.setVolume(50.f);
+    mMusic.play();
 
     // The intro runs first
     mTitle = std::make_unique<Title>("Omni-Genesis/Tower Defense");
@@ -165,6 +160,9 @@ void Game::processEvents()
                     break;
                 }
                 updateSkillTreeView(e);
+                break;
+            case State::GameOver:
+                updateGameOver(e);
                 break;
             default:
                 break;
@@ -316,6 +314,14 @@ void Game::updateMenu(sf::Event& e)
         return;
     }
 
+    // Transition to Controls screen
+    if (mControlsBtn->mFading && mControlsBtn->mColorIndex >= mControlsBtn->rainbow.size() - 1)
+    {
+        initControls();
+        mState = State::Controls;
+        return;
+    }
+
     if (mQuitBtn->mFading && mQuitBtn->mColorIndex >= mQuitBtn->rainbow.size() - 1) {
         mWindow.close();
     }
@@ -368,123 +374,6 @@ void Game::initDifficultySelect()
         sf::Color(180, 20, 20, 255));
 }
 
-/**
- * @brief Initialize control page
- * 
- */
-void Game::initControls()
-{
-    sf::Vector2u ws = mWindow.getSize();
-    mControlsBackBtn = std::make_unique<Button>(
-        "Back",
-        sf::Vector2f(ws.x / 2.0f, ws.y - 80.f),
-        sf::Vector2f(200.f, 60.f),
-        sf::Color(80, 80, 80, 255));
-}
-
-/**
- * @brief Check for control page updates
- * 
- * @param e 
- */
-void Game::updateControls(sf::Event& e)
-{
-    mControlsBackBtn->update(e, mWindow);
-
-    if (mControlsBackBtn->mFading && mControlsBackBtn->mColorIndex >= mControlsBackBtn->rainbow.size() - 1)
-    {
-        initMenu();
-        mState = State::Menu;
-    }
-}
-
-/**
- * @brief Render the controls page
- * 
- */
-void Game::renderControls()
-{
-    sf::Vector2u ws = mWindow.getSize();
-    float cx = ws.x / 2.0f;
-
-    // title
-    sf::Text title("Controls", mUIFont, 48);
-    title.setFillColor(sf::Color::White);
-    title.setStyle(sf::Text::Bold);
-    sf::FloatRect tb = title.getLocalBounds();
-    title.setOrigin(tb.width / 2.f, tb.height / 2.f);
-    title.setPosition(cx, 80.f);
-    mWindow.draw(title);
-
-    struct Row { std::string input; std::string action; };
-    const std::vector<Row> rows =
-    {
-        { "Left Click",     "Fire cannon (hold to fire continuously)" },
-        { "Mouse Movement", "Aim cannon"                              },
-        { "E",              "Open / Close Magic Selection menu"       },
-        { "Escape",         "Back / Return to Main Menu"              },
-    };
-
-    const float margin      = ws.x * 0.08f;
-    const float tableLeft   = margin;
-    const float tableWidth  = ws.x - margin * 2.f;
-    const float inputColW   = tableWidth * 0.28f;
-    const float colLeft     = tableLeft;
-    const float colRight    = tableLeft + inputColW;
-    const float rowStart    = 200.f;
-    const float rowStep     = 65.f;
-    const unsigned int fontSize = 28;
-
-    // Header row
-    auto makeHeader = [&](const std::string& s, float x)
-    {
-        sf::Text t(s, mUIFont, fontSize + 4);
-        t.setFillColor(sf::Color(255, 200, 50, 255));
-        t.setStyle(sf::Text::Bold | sf::Text::Underlined);
-        t.setPosition(x, rowStart - 55.f);
-        mWindow.draw(t);
-    };
-    makeHeader("Input",  colLeft);
-    makeHeader("Action", colRight);
-
-    // Separator line under header
-    sf::RectangleShape sep(sf::Vector2f(tableWidth, 2.f));
-    sep.setFillColor(sf::Color(255, 255, 255, 80));
-    sep.setPosition(tableLeft, rowStart - 12.f);
-    mWindow.draw(sep);
-
-    for (std::size_t i = 0; i < rows.size(); ++i)
-    {
-        float y = rowStart + i * rowStep;
-
-        if (i % 2 == 0)
-        {
-            sf::RectangleShape strip(sf::Vector2f(tableWidth, rowStep - 4.f));
-            strip.setFillColor(sf::Color(255, 255, 255, 18));
-            strip.setPosition(tableLeft, y + 2.f);
-            mWindow.draw(strip);
-        }
-
-        sf::Text tInput(rows[i].input, mUIFont, fontSize);
-        tInput.setFillColor(sf::Color(180, 220, 255, 255));
-        tInput.setStyle(sf::Text::Bold);
-        tInput.setPosition(colLeft, y + 10.f);
-        mWindow.draw(tInput);
-
-        sf::Text tAction(rows[i].action, mUIFont, fontSize);
-        tAction.setFillColor(sf::Color::White);
-        tAction.setPosition(colRight, y + 10.f);
-        mWindow.draw(tAction);
-    }
-
-    // Bottom separator
-    sf::RectangleShape sep2(sf::Vector2f(tableWidth, 2.f));
-    sep2.setFillColor(sf::Color(255, 255, 255, 80));
-    sep2.setPosition(tableLeft, rowStart + rows.size() * rowStep);
-    mWindow.draw(sep2);
-
-    mWindow.draw(*mControlsBackBtn);
-}
 
 void Game::initMagicSelection()
 {
@@ -528,7 +417,7 @@ std::string clickedId = mSkillTreeView.handleEvent(e, mWindow);
     SkillNode* node = mBraverySkillTree.findSkill(clickedId);
     if (!node) 
     {
-         std::cout << "[GAME] findSkill returned null for: " << clickedId << "\n";
+         std::cout << "findSkill returned null for: " << clickedId << "\n";
         return;
     }
     
@@ -621,6 +510,10 @@ void Game::renderDifficultySelect()
  */
 void Game::startGame()
 {
+    mTower.reset();
+    mWaves.reset();
+    mBraverySkillTree.reset();
+
     mTower.createTower(mWindow, {40.0f, 130.0f}, {10.f, 10.f});
 
     int startWave = 0;
@@ -654,9 +547,10 @@ void Game::startGame()
  */
 void Game::updatePlaying(float dt)
 {
+    sf::FloatRect TowerHurtboxBounds = mTower.getHurtboxBounds();
     mTower.update(mWindow, dt);
     mTower.updateAttack(mWindow, dt);
-    mWaves.Update(mWindow, dt, mTower);
+    mWaves.Update(mWindow, dt);
     mCollisionHandler.checkBulletEnemyCollision(mTower.getAttacks(), mWaves);
     mCollisionHandler.checkEnemyTowerCollision(mWaves, mTower);
 
@@ -664,6 +558,7 @@ void Game::updatePlaying(float dt)
         mTower.shoot(mWindow);
 
     // Grant XP for kills
+
     for (auto& enemy : mWaves.getEnemies())
     {
         Enemies* enemies = dynamic_cast<Enemies*>(enemy.get());
@@ -691,10 +586,11 @@ void Game::renderPlaying()
 {
     mWindow.draw(mBackground1);
     mWindow.draw(mForeground1);
-    mWindow.draw(mTower);
     mTower.drawAttack(mWindow);
+    mWindow.draw(mTower);
     mWaves.DrawEntities(mWindow, sf::RenderStates::Default);
 
+    // show current difficulty in top-right
     std::string diffStr;
     switch (mDifficulty)
     {
@@ -754,7 +650,7 @@ void Game::applySkillEffect(const std::string& skillId)
 {
     if (skillId == "bravery.fire_manip1.unlock")
     {
-        mTower.setDamageMultiplier(1.50f);
+        mTower.setDamageMultiplier(1.125f);
         mTower.setBulletDamage(20.f);
         mTower.setBulletSpeed(750.f);
         mTower.setBulletTexture(&mTower.getFireBulletTexture());
@@ -762,7 +658,7 @@ void Game::applySkillEffect(const std::string& skillId)
     }
     else if (skillId == "bravery.fire_manip2.unlock")
     {
-        mTower.setDamageMultiplier(1.75f);
+        mTower.setDamageMultiplier(1.25f);
         mTower.setBulletDamage(30.f);
         mTower.setBulletSpeed(850.f);
         mTower.setBulletTexture(&mTower.getFireBulletTexture());
@@ -770,17 +666,17 @@ void Game::applySkillEffect(const std::string& skillId)
     }
     else if (skillId == "bravery.fire_manip3.unlock")
     {
-        mTower.setDamageMultiplier(2.00f);
+        mTower.setDamageMultiplier(1.50f);
         mTower.setBulletDamage(40.f);
         mTower.setBulletSpeed(950.f);
         mTower.setBulletTexture(&mTower.getFireBulletTexture());
     }
     else if (skillId == "bravery.fire_manip4.unlock")
     {
-        mTower.setDamageMultiplier(2.25f);
+        mTower.setDamageMultiplier(1.75f);
         mTower.setBulletDamage(50.f);
         mTower.setBulletSpeed(1050.f);
-        mTower.setFireRate(4.0f); // 2 shots per second
+        mTower.setFireRate(4.0f);
         mTower.setBulletTexture(&mTower.getFireBulletTexture());
     }
 }

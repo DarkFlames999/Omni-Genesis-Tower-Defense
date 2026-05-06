@@ -14,6 +14,7 @@
 
 void EntityHandler::SpawnEntity(const std::string& type, sf::RenderWindow& window)
 {
+
     auto iteration = mEnemyTypeMapping.find(type);
     if(iteration == mEnemyTypeMapping.end()) return;
     auto entity = iteration->second();

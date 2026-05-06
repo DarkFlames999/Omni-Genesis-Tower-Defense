@@ -33,23 +33,21 @@ public:
     int getCurrentWave() const { return mCurrentWave; }
     int GetTotalEnemiesThisWave() const { return mTotalEnemiesToSpawn; }
     int GetEnemiesRemainingToSpawn() const { return mEnemiesRemainingToSpawn; }
+    void reset();
+
+    void reset();
 
     void reset();
 
 private:
     int ComputeEnemyCount(int wave) const;
-
     void BuildSpawnQueue(int wave);
-
     int mCurrentWave;
     int mTotalEnemiesToSpawn;
     int mEnemiesRemainingToSpawn;
-
     float mSpawnInterval;
     float mSpawnTimer;
-
     std::queue<std::string> mSpawnQueue;
-
     bool mAllSpawned;
 };
 

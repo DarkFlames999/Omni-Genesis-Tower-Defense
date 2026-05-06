@@ -54,11 +54,11 @@ public:
 
     float getSkillTreeSize() const { return skillNodes.size(); };
     const std::vector<SkillNode>& getSkillNodes() const { return skillNodes; }
+    void reset();
 
-    //helper function for JSON conversation
+    //helper functions for my JSON conversation func aka loadFromJson
     Magic parseMagic(const std::string& magictype);
     UpgradeKind parseUpgradeKind(const std::string& upgradekind);
-    
     friend class Game;
 
 protected:
